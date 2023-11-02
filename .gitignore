@@ -1,0 +1,13 @@
+/Temp
+/Library
+/Obj
+/UnityGenerated
+/Build
+/Builds
+/*.sln
+/Assembly-CSharp.csproj
+*.suo
+*.user
+*.userprefs
+*.blend1
+*.blend1.meta
