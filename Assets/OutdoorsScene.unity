@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2160.3733, g: 2264.051, b: 3286.5864, a: 1}
+  m_IndirectSpecularColor: {r: 2163.6233, g: 2271.262, b: 3306.438, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1168,7 +1168,7 @@ GameObject:
   - component: {fileID: 1459078180}
   - component: {fileID: 1459078181}
   - component: {fileID: 1459078182}
-  - component: {fileID: 1459078183}
+  - component: {fileID: 1459078184}
   m_Layer: 0
   m_Name: WAM-V
   m_TagString: Untagged
@@ -1263,7 +1263,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1459078176}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: dbb103b8b00371e428d6788171934f9a, type: 3}
   m_Name: 
@@ -1310,16 +1310,16 @@ MonoBehaviour:
   thrustK: 1
   maxThrust: 250
   maxRpmVisual: 500
---- !u!114 &1459078183
+--- !u!114 &1459078184
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1459078176}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 304d6c3dda352c24595c64158108f3bb, type: 3}
+  m_Script: {fileID: 11500000, guid: 647167f7d9346d54599058b546e74bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1617511394
