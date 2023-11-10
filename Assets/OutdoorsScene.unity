@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2163.6233, g: 2271.262, b: 3306.438, a: 1}
+  m_IndirectSpecularColor: {r: 2158.1477, g: 2262.5608, b: 3286.3794, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -460,7 +460,7 @@ MonoBehaviour:
   foamTextureTiling: 0.15
   foamSmoothness: 1
   simulationFoam: 1
-  simulationFoamAmount: 1
+  simulationFoamAmount: 0.402
   simulationFoamMask: {fileID: 0}
   simulationFoamMaskExtent: {x: 100, y: 100}
   simulationFoamMaskOffset: {x: 0, y: 0}
@@ -506,10 +506,10 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  repetitionSize: 500
+  repetitionSize: 538
   largeOrientationValue: 0
-  largeWindSpeed: 0
-  largeChaos: 0.244
+  largeWindSpeed: 14
+  largeChaos: 0.283
   largeBand0Multiplier: 1
   largeBand0FadeMode: 1
   largeBand0FadeStart: 1500
@@ -521,7 +521,7 @@ MonoBehaviour:
   ripples: 1
   ripplesMotionMode: 0
   ripplesOrientationValue: 0
-  ripplesWindSpeed: 2.49
+  ripplesWindSpeed: 3.1
   ripplesChaos: 0.04
   ripplesFadeMode: 1
   ripplesFadeStart: 50
@@ -1322,6 +1322,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 647167f7d9346d54599058b546e74bd6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  FwdMaxF: 500
+  RightMaxF: 500
+  YawMaxT: 300
 --- !u!1 &1617511394
 GameObject:
   m_ObjectHideFlags: 0

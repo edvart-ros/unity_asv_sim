@@ -76,7 +76,7 @@ public class CollectData : MonoBehaviour
         Directory.CreateDirectory(dataDirectory); // This is safe to call; it won't overwrite if the directory already exists
 
         // Combine the new path with the filename
-        string filePath = Path.Combine(dataDirectory, "data.csv");
+        string filePath = Path.Combine(dataDirectory, "validation_data.csv");
 
         try
         {
