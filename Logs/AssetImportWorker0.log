@@ -191,3 +191,18 @@ Domain Reload Profiling: 2209ms
 		ExecutionOrderSort2 (0ms)
 		AwakeInstancesAfterBackupRestoration (52ms)
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.02 seconds
+Refreshing native plugins compatible for Editor in 2.13 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 402 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 6475 unused Assets / (8.1 MB). Loaded Objects now: 7377.
+Memory consumption went from 264.5 MB to 256.4 MB.
+Total: 14.902800 ms (FindLiveObjects: 1.344400 ms CreateObjectMapping: 1.310600 ms MarkObjects: 6.730500 ms  DeleteObjects: 5.515200 ms)
+
+========================================================================
+Received Import Request.
+  Time since last request: 137944.088699 seconds.
+  path: Assets/Scripts/water_interaction/foam_regulator.cs
+  artifactKey: Guid(f024c85b0b1bff940a6de1d8d12a4e8c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/Scripts/water_interaction/foam_regulator.cs using Guid(f024c85b0b1bff940a6de1d8d12a4e8c) Importer(815301076,1909f56bfc062723c751e8b465ee728b) (PreviewImporter) -> (artifact id: 'acd603b1569bd0919a1b9aee4c975d56') in 0.0076253 seconds
+Number of updated asset objects reloaded before import = 0Number of asset objects unloaded after import = 0
+

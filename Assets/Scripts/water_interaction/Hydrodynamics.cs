@@ -2,6 +2,9 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
+using Unity.Mathematics;
 
 public class Hydrodynamics : MonoBehaviour
 {
@@ -77,6 +80,16 @@ public class Hydrodynamics : MonoBehaviour
     private const float hullZMax = 2.9f;
     private const float boatLength = hullZMax-hullZMin;
 
+    // water height querying (burst)
+    // Input job parameters
+    NativeArray<float3> targetPositionBuffer;
+    // Output job parameters
+    NativeArray<float> errorBuffer;
+    NativeArray<float3> candidatePositionBuffer;
+    NativeArray<float3> projectedPositionWSBuffer;
+    NativeArray<float3> directionBuffer;
+    NativeArray<int> stepCountBuffer;
+
 
     void Start()
     {
@@ -94,6 +107,16 @@ public class Hydrodynamics : MonoBehaviour
         basePatchMeshGrid = ConstructBaseMeshGrid();
         // assign mesh to waterPatch
         waterPatchMeshFilter.mesh = basePatchMeshGrid;
+        int numItems = basePatchMeshGrid.vertices.Length;
+
+        // Allocate the buffers
+        targetPositionBuffer = new NativeArray<float3>(numItems, Allocator.Persistent);
+        errorBuffer = new NativeArray<float>(numItems, Allocator.Persistent);
+        candidatePositionBuffer = new NativeArray<float3>(numItems, Allocator.Persistent);
+        projectedPositionWSBuffer = new NativeArray<float3>(numItems, Allocator.Persistent);
+        directionBuffer = new NativeArray<float3>(numItems, Allocator.Persistent);
+        stepCountBuffer = new NativeArray<int>(numItems, Allocator.Persistent);
+
         hullSurfaceArea = CalculateMeshArea(simplifiedMeshFilter.mesh);
         boatRigidBodyPrev = rigidBody;
     }
@@ -197,11 +220,56 @@ public class Hydrodynamics : MonoBehaviour
         return triangleAreas.ToArray();
     }
 
+    // private void UpdateWaterPatch(){
+    //     Vector3[] vertices = basePatchMeshGrid.vertices;
+    //     for (var i = 0; i < vertices.Length; i++){
+    //         Vector3 vertex = vertices[i];
+    //         float waterHeight = GetWaterHeight(vertex+transform.position);
+    //         vertex.x += transform.position.x;
+    //         vertex.z += transform.position.z;
+    //         vertex.y = waterHeight;
+    //         vertices[i] = vertex;
+    //     }
+    //     gridOrigin = new Vector3(-sideLength/2 + transform.position.x, 0, sideLength/2 + transform.position.z);
+    //     waterPatchMeshFilter.mesh.vertices = vertices;
+    // }
+
+    // burst version
     private void UpdateWaterPatch(){
         Vector3[] vertices = basePatchMeshGrid.vertices;
+
+        WaterSimSearchData simData = new WaterSimSearchData();
+        if (!targetSurface.FillWaterSearchData(ref simData))
+            return;
+
+        for (int i = 0; i < vertices.Length;     i++){
+            targetPositionBuffer[i] = transform.position + vertices[i];
+        }
+        // Prepare the first band
+        WaterSimulationSearchJob searchJob = new WaterSimulationSearchJob();
+        // Assign the simulation data
+        searchJob.simSearchData = simData;
+        // Fill the input data
+        searchJob.targetPositionWSBuffer = targetPositionBuffer;
+        searchJob.startPositionWSBuffer = targetPositionBuffer;
+        searchJob.maxIterations = 8;
+        searchJob.error = 0.01f;
+        searchJob.includeDeformation = true;
+        searchJob.excludeSimulation = false;
+        
+        searchJob.errorBuffer = errorBuffer;
+        searchJob.candidateLocationWSBuffer = candidatePositionBuffer;
+        searchJob.projectedPositionWSBuffer = projectedPositionWSBuffer;
+        searchJob.directionBuffer = directionBuffer;
+        searchJob.stepCountBuffer = stepCountBuffer;
+        // Schedule the job with one Execute per index in the results array and only 1 item per processing batch
+        JobHandle handle = searchJob.Schedule(vertices.Length, 1);
+        handle.Complete();
+
+        // update vertex positions
         for (var i = 0; i < vertices.Length; i++){
             Vector3 vertex = vertices[i];
-            float waterHeight = GetWaterHeight(vertex+transform.position);
+            float waterHeight = projectedPositionWSBuffer[i].y;
             vertex.x += transform.position.x;
             vertex.z += transform.position.z;
             vertex.y = waterHeight;
@@ -210,6 +278,7 @@ public class Hydrodynamics : MonoBehaviour
         gridOrigin = new Vector3(-sideLength/2 + transform.position.x, 0, sideLength/2 + transform.position.z);
         waterPatchMeshFilter.mesh.vertices = vertices;
     }
+
 
     private void UpdateSubmerged(){
         submergedMeshFilter.mesh.Clear();

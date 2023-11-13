@@ -191,3 +191,10 @@ Domain Reload Profiling: 2166ms
 		ExecutionOrderSort2 (0ms)
 		AwakeInstancesAfterBackupRestoration (48ms)
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.01 seconds
+Refreshing native plugins compatible for Editor in 1.92 ms, found 3 plugins.
+Preloading 0 native plugins for Editor in 0.00 ms.
+Unloading 402 Unused Serialized files (Serialized files now loaded: 0)
+Unloading 6475 unused Assets / (8.0 MB). Loaded Objects now: 7377.
+Memory consumption went from 264.5 MB to 256.6 MB.
+Total: 15.022400 ms (FindLiveObjects: 1.346000 ms CreateObjectMapping: 1.264200 ms MarkObjects: 7.064100 ms  DeleteObjects: 5.346500 ms)
+
