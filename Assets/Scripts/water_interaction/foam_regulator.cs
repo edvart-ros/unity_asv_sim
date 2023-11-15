@@ -12,19 +12,18 @@ public class foam_regulator : MonoBehaviour
     public float maxFoamGain = 0.5f;
     public WaterFoamGenerator[] foamGenerators;
     private float vel;
+    private float angVel;
     private Rigidbody rb;
     private float foamGain;
 
     // Start is called before the first frame update
-    void Start()
-    {
+    void Start(){
         rb = targetObject.GetComponent<Rigidbody>(); 
         vel = rb.velocity.magnitude;
+        angVel = rb.angularVelocity.magnitude;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
+    void Update(){
         if (foamGenerators.Length != 0){
             vel = rb.velocity.magnitude;
             foamGain = Mathf.Min(Mathf.Min(vel/maxVelocity, 1), maxFoamGain);

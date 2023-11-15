@@ -220,6 +220,7 @@ public class Hydrodynamics : MonoBehaviour
         return triangleAreas.ToArray();
     }
 
+    // simple version
     // private void UpdateWaterPatch(){
     //     Vector3[] vertices = basePatchMeshGrid.vertices;
     //     for (var i = 0; i < vertices.Length; i++){
@@ -459,9 +460,12 @@ public class Hydrodynamics : MonoBehaviour
             }
             Vector3 F = rho*g*heights[i]*normalsWorld[i];
             Vector3 FVertical = new Vector3(0.0f, F.y, 0.0f);
+            F = Vector3.Dot(F, normalsWorld[i])/(Vector3.Dot(normalsWorld[i], normalsWorld[i]))*normalsWorld[i];
             if (debugBuoyancy){
-                Debug.DrawRay(centersWorld[i], FVertical*buoyancyRayLength, Color.green);
+                Debug.DrawRay(centersWorld[i], F*buoyancyRayLength, Color.green);
             }
+            
+            // rigidBody.AddForceAtPosition(F, centersWorld[i]);
             rigidBody.AddForceAtPosition(FVertical, centersWorld[i]);
         }
     }
@@ -891,5 +895,15 @@ public class Hydrodynamics : MonoBehaviour
         Debug.DrawLine(triangle[0], triangle[2], color);
         Debug.DrawLine(triangle[1], triangle[2], color);
     }
+
+    private void OnDestroy()
+        {
+            targetPositionBuffer.Dispose();
+            errorBuffer.Dispose();
+            candidatePositionBuffer.Dispose();
+            projectedPositionWSBuffer.Dispose();
+            directionBuffer.Dispose();
+            stepCountBuffer.Dispose();
+        }
 }
 

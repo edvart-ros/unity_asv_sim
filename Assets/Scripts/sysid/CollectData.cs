@@ -81,7 +81,7 @@ public class CollectData : MonoBehaviour
         try
         {
             File.WriteAllLines(filePath, data);
-            Debug.Log("Data saved to: " + filePath);
+            // Debug.Log("Data saved to: " + filePath);
         }
         catch (System.Exception ex)
         {
