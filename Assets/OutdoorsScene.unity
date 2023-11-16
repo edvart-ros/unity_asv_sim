@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2161.8372, g: 2265.7463, b: 3288.9614, a: 1}
+  m_IndirectSpecularColor: {r: 2159.554, g: 2263.344, b: 3286.399, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -1701,68 +1701,6 @@ Transform:
   - {fileID: 1396347125}
   m_Father: {fileID: 1459078177}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
---- !u!1 &1704063565
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1704063567}
-  - component: {fileID: 1704063566}
-  m_Layer: 0
-  m_Name: Water Box Deformer
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1704063566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1704063565}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 78cf48dc57241ca4180a616b92b5d9f2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  type: 1
-  amplitude: -1
-  regionSize: {x: 5, y: 5}
-  scaleMode: 0
-  boxBlend: {x: 2, y: 1}
-  cubicBlend: 1
-  waveLength: 3
-  waveRepetition: 10
-  waveSpeed: 15
-  waveOffset: 0
-  waveBlend: {x: 0.3, y: 0.6}
-  breakingRange: {x: 0.7, y: 0.8}
-  deepFoamRange: {x: 0.5, y: 0.8}
-  bowWaveElevation: 1
-  range: {x: 0, y: 1}
-  texture: {fileID: 0}
-  deepFoamDimmer: 1
-  surfaceFoamDimmer: 1
---- !u!4 &1704063567
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1704063565}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1731257781
 GameObject:
   m_ObjectHideFlags: 0
@@ -2393,4 +2331,3 @@ SceneRoots:
   - {fileID: 2013410475}
   - {fileID: 212667276}
   - {fileID: 1801125938}
-  - {fileID: 1704063567}
