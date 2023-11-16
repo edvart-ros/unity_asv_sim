@@ -465,8 +465,8 @@ public class Hydrodynamics : MonoBehaviour
                 Debug.DrawRay(centersWorld[i], F*buoyancyRayLength, Color.green);
             }
             
-            // rigidBody.AddForceAtPosition(F, centersWorld[i]);
-            rigidBody.AddForceAtPosition(FVertical, centersWorld[i]);
+            rigidBody.AddForceAtPosition(F, centersWorld[i]);
+            //rigidBody.AddForceAtPosition(FVertical, centersWorld[i]);
         }
     }
 
