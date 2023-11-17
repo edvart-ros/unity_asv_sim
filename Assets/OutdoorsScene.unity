@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2161.7434, g: 2265.676, b: 3288.852, a: 1}
+  m_IndirectSpecularColor: {r: 2160.4016, g: 2264.6077, b: 3288.0942, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -825,7 +825,7 @@ Transform:
   m_GameObject: {fileID: 1011503355}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.955, z: 0}
+  m_LocalPosition: {x: 0, y: 0.944, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -844,6 +844,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topicName: imu/raw
+  frameId: wamv/imu_link
   Hz: 50
 --- !u!54 &1011503358
 Rigidbody:
@@ -1250,7 +1251,7 @@ Transform:
   m_GameObject: {fileID: 1459078176}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.84, y: 1.25, z: 1.899}
+  m_LocalPosition: {x: 0, y: 2.131, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1274,7 +1275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetSurface: {fileID: 1830969872}
-  sideLength: 10
+  sideLength: 20
   waterPatch: {fileID: 1731257781}
   simplifiedMesh: {fileID: 1175223176}
   submergedMesh: {fileID: 1617511394}
@@ -1306,7 +1307,7 @@ Rigidbody:
   m_Mass: 350
   m_Drag: 0
   m_AngularDrag: 0
-  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_CenterOfMass: {x: 0, y: -0.3, z: 0}
   m_InertiaTensor: {x: 393, y: 446, z: 120}
   m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
   m_IncludeLayers:
@@ -2175,7 +2176,7 @@ MonoBehaviour:
     m_RotationOrder: 4
   repetitionSize: 500
   largeOrientationValue: 0
-  largeWindSpeed: 31
+  largeWindSpeed: 45
   largeChaos: 0.137
   largeBand0Multiplier: 1
   largeBand0FadeMode: 1
@@ -2188,7 +2189,7 @@ MonoBehaviour:
   ripples: 1
   ripplesMotionMode: 0
   ripplesOrientationValue: 0
-  ripplesWindSpeed: 13.74
+  ripplesWindSpeed: 10.7
   ripplesChaos: 0.8
   ripplesFadeMode: 1
   ripplesFadeStart: 50
@@ -2265,7 +2266,7 @@ MonoBehaviour:
   maxRange: 100
   publishData: 0
   topicName: points
-  frameId: lidar
+  frameId: wamv/lidar_link
   numHorizontalBeams: 432
   Hz: 60
   numVerticalBeams: 4
