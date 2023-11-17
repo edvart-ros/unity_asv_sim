@@ -8,6 +8,7 @@ public class Imu : MonoBehaviour
 {
     ROSConnection ros;
     public string topicName = "imu/raw";
+    public string frameId = "wamv/imu_link";
     private Rigidbody imuBody;
     [Range(0.1f, 100.0f)]
     public float Hz = 50.0f;
@@ -31,8 +32,10 @@ public class Imu : MonoBehaviour
             return;
         }
 
-        Msg = new ImuMsg()
-        {
+        Msg = new ImuMsg(){
+            header = new RosMessageTypes.Std.HeaderMsg(){
+                frame_id = frameId
+            },
             orientation = imuBody.transform.rotation.To<FLU>(),
             angular_velocity = imuBody.angularVelocity.To<FLU>()
         };

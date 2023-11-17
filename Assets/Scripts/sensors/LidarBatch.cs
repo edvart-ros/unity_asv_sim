@@ -15,7 +15,7 @@ public class LidarBatch : MonoBehaviour
     public float maxRange = 100.0f;
     public bool publishData = true;
     public string topicName = "points";
-    public string frameId = "lidar";
+    public string frameId = "wamv/lidar_link";
 
     [Range(0, 5000)]
     public int numHorizontalBeams = 500; 

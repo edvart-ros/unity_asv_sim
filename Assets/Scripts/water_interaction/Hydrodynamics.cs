@@ -129,7 +129,9 @@ public class Hydrodynamics : MonoBehaviour
         
         if (buoyancyForceActive){
             ApplyBuoyancy();
-        }        
+            //ApplyBuoyancyCP();
+
+        }
         if (simpleDampingActive){
             ApplySimpleDamping(rigidBody.velocity, linearDamping, quadraticDamping, hullSurfaceArea, submergedSurfaceArea);
             ApplySimpleDampingAngular(rigidBody.angularVelocity, linearDamping, quadraticDamping, hullSurfaceArea, submergedSurfaceArea);
@@ -221,29 +223,34 @@ public class Hydrodynamics : MonoBehaviour
     }
 
     // simple version
-    // private void UpdateWaterPatch(){
-    //     Vector3[] vertices = basePatchMeshGrid.vertices;
-    //     for (var i = 0; i < vertices.Length; i++){
-    //         Vector3 vertex = vertices[i];
-    //         float waterHeight = GetWaterHeight(vertex+transform.position);
-    //         vertex.x += transform.position.x;
-    //         vertex.z += transform.position.z;
-    //         vertex.y = waterHeight;
-    //         vertices[i] = vertex;
-    //     }
-    //     gridOrigin = new Vector3(-sideLength/2 + transform.position.x, 0, sideLength/2 + transform.position.z);
-    //     waterPatchMeshFilter.mesh.vertices = vertices;
-    // }
+    //private void UpdateWaterPatch()
+    //{
+    //    Vector3[] vertices = basePatchMeshGrid.vertices;
+    //    for (var i = 0; i < vertices.Length; i++)
+    //    {
+    //        Vector3 vertex = vertices[i];
+    //        float waterHeight = GetWaterHeight(vertex + transform.position);
+    //        vertex.x += transform.position.x;
+    //        vertex.z += transform.position.z;
+    //        vertex.y = waterHeight;
+    //        vertices[i] = vertex;
+    //    }
+    //    gridOrigin = new Vector3(-sideLength / 2 + transform.position.x, 0, sideLength / 2 + transform.position.z);
+    //    waterPatchMeshFilter.mesh.vertices = vertices;
+    //}
 
-    // burst version
-    private void UpdateWaterPatch(){
+
+    //burst version
+    private void UpdateWaterPatch()
+    {
         Vector3[] vertices = basePatchMeshGrid.vertices;
 
         WaterSimSearchData simData = new WaterSimSearchData();
         if (!targetSurface.FillWaterSearchData(ref simData))
             return;
 
-        for (int i = 0; i < vertices.Length;     i++){
+        for (int i = 0; i < vertices.Length; i++)
+        {
             targetPositionBuffer[i] = transform.position + vertices[i];
         }
         // Prepare the first band
@@ -257,7 +264,7 @@ public class Hydrodynamics : MonoBehaviour
         searchJob.error = 0.01f;
         searchJob.includeDeformation = true;
         searchJob.excludeSimulation = false;
-        
+
         searchJob.errorBuffer = errorBuffer;
         searchJob.candidateLocationWSBuffer = candidatePositionBuffer;
         searchJob.projectedPositionWSBuffer = projectedPositionWSBuffer;
@@ -268,7 +275,8 @@ public class Hydrodynamics : MonoBehaviour
         handle.Complete();
 
         // update vertex positions
-        for (var i = 0; i < vertices.Length; i++){
+        for (var i = 0; i < vertices.Length; i++)
+        {
             Vector3 vertex = vertices[i];
             float waterHeight = projectedPositionWSBuffer[i].y;
             vertex.x += transform.position.x;
@@ -276,7 +284,7 @@ public class Hydrodynamics : MonoBehaviour
             vertex.y = waterHeight;
             vertices[i] = vertex;
         }
-        gridOrigin = new Vector3(-sideLength/2 + transform.position.x, 0, sideLength/2 + transform.position.z);
+        gridOrigin = new Vector3(-sideLength / 2 + transform.position.x, 0, sideLength / 2 + transform.position.z);
         waterPatchMeshFilter.mesh.vertices = vertices;
     }
 
@@ -460,11 +468,11 @@ public class Hydrodynamics : MonoBehaviour
             }
             Vector3 F = rho*g*heights[i]*normalsWorld[i];
             Vector3 FVertical = new Vector3(0.0f, F.y, 0.0f);
-            F = Vector3.Dot(F, normalsWorld[i])/(Vector3.Dot(normalsWorld[i], normalsWorld[i]))*normalsWorld[i];
+            //F = Vector3.Dot(F, normalsWorld[i])/(Vector3.Dot(normalsWorld[i], normalsWorld[i]))*normalsWorld[i];
             if (debugBuoyancy){
-                Debug.DrawRay(centersWorld[i], F*buoyancyRayLength, Color.green);
+                Debug.DrawRay(centersWorld[i], FVertical*buoyancyRayLength, Color.green);
             }
-            
+
             rigidBody.AddForceAtPosition(F, centersWorld[i]);
             //rigidBody.AddForceAtPosition(FVertical, centersWorld[i]);
         }
@@ -526,7 +534,7 @@ public class Hydrodynamics : MonoBehaviour
             }
 
             //sum (original triangle)
-            
+
             Vector3 triangleCP = (topCP*buoyancyForceTop + bottomCP*buoyancyForceBot)/(buoyancyForceTop + buoyancyForceBot);
             (iCell, jCell) = PointToCell(triangleCP, gridOrigin, cellSize);
             xInCell = (triangleCP.x - gridOrigin.x)-cellSize*jCell;
@@ -541,9 +549,10 @@ public class Hydrodynamics : MonoBehaviour
             Vector3 F = rho*g*triangleCPDepth*normalWorld;
             Vector3 FVertical = new Vector3(0.0f, F.y, 0.0f);
 
-            rigidBody.AddForceAtPosition(FVertical, triangleCP);
-            // Debug.DrawRay(triangleCP, Vector3.up, Color.red);
-            // DebugDrawTriangle(triangleVerticesWorld, Color.white);
+            rigidBody.AddForceAtPosition(F, triangleCP);
+            DebugDrawTriangle(triangleVerticesWorld, Color.white);
+            Debug.DrawRay(triangleCP, F, Color.green);
+
         }
     }
     private void ApplySimpleDamping(Vector3 velocity, float linear_factor, float quad_factor, float area, float submergedArea){
@@ -780,51 +789,69 @@ public class Hydrodynamics : MonoBehaviour
     private (Vector3[], Vector3[]) SplitSubmergedTriangleHorizontally(Vector3[] triangleWorld){
         // Get the vertex depths and sort
         Vector3[] patchVerticesCache = waterPatchMeshFilter.mesh.vertices;
-        float[] vertexHeights = new float[3];
+        
+        // SIMPLY USE THE WORLD HEIGHTS FOR SORTING!!!
+        float[] vertexHeights = new float[3] { triangleWorld[0].y, triangleWorld[1].y, triangleWorld[2].y };
         Vector3[] patchTriangleVerticesWorld = new Vector3[3];
 
-        for (var i = 0; i < 3; i++){
-            Vector3 vertexWorld = triangleWorld[i];
-            (int iCell, int jCell) = PointToCell(vertexWorld, gridOrigin, cellSize);
-            float xInCell = (vertexWorld.x - gridOrigin.x)-cellSize*jCell;
-            float zInCell = (vertexWorld.z - gridOrigin.z)-(cellSize*(-iCell));
-            if (xInCell >= -zInCell){
-                patchTriangleVerticesWorld = GetPatchRightTriangleVertices(iCell, jCell, patchVerticesCache);
-            }
-            else{
-                patchTriangleVerticesWorld = GetPatchLeftTriangleVertices(iCell, jCell, patchVerticesCache);
-            }
-            vertexHeights[i] = GetHeightAboveTriangle(vertexWorld, patchTriangleVerticesWorld);
-        }
+
+        // THIS IS WRONG!!
+        // SHOULDNT BE SORTING AGAINST WATER HEIGHT... SHOULD SORT AGAINST WORLD HEIGHT!!! ????
+
+        //for (var i = 0; i < 3; i++){
+        //    Vector3 vertexWorld = triangleWorld[i];
+        //    (int iCell, int jCell) = PointToCell(vertexWorld, gridOrigin, cellSize);
+        //    float xInCell = (vertexWorld.x - gridOrigin.x)-cellSize*jCell;
+        //    float zInCell = (vertexWorld.z - gridOrigin.z)-(cellSize*(-iCell));
+        //    if (xInCell >= -zInCell){
+        //        patchTriangleVerticesWorld = GetPatchRightTriangleVertices(iCell, jCell, patchVerticesCache);
+        //    }
+        //    else{
+        //        patchTriangleVerticesWorld = GetPatchLeftTriangleVertices(iCell, jCell, patchVerticesCache);
+        //    }
+        //    vertexHeights[i] = GetHeightAboveTriangle(vertexWorld, patchTriangleVerticesWorld);
+        //}
+
+
         (Vector3[] sortedVerticesWorld, float[] sortedHeights) = SortVerticesAgainstWaterHeight(triangleWorld, vertexHeights);
         (Vector3 L, Vector3 M, Vector3 H) = (sortedVerticesWorld[0], sortedVerticesWorld[1], sortedVerticesWorld[2]);
-
+        
+        // Initialize the points for the new triangles
         Vector3 D;
         Vector3[] upperTriangle;
         Vector3[] lowerTriangle;
-        if (Math.Abs(H.x - L.x) < 1e-6)
+
+        // Check for vertical alignment of L and H
+        if (Math.Abs(H.x - L.x) < 1e-6 && Math.Abs(H.z - L.z) < 1e-6)
         {
-            // If LH is approximately vertical, set D.x directly to L.x or H.x
-            D = new Vector3(L.x, M.y, (L.z + H.z) / 2); // Assuming an average z for vertical lines
+            // If LH is approximately vertical
+            D = new Vector3(L.x, M.y, L.z);
 
             upperTriangle = new Vector3[] { H, M, D };
             lowerTriangle = new Vector3[] { L, D, M };
+        }
+        else
+        {
+            // General case
+            // Calculate the slope for the LH line segment
+            float dx = H.x - L.x;
+            float dz = H.z - L.z;
+            float dy = H.y - L.y;
+            float mX = dx / dy;
+            float mZ = dz / dy;
 
-            return (upperTriangle, lowerTriangle);
+            // Calculate the x and z coordinates of D
+            float x = L.x + mX * (M.y - L.y);
+            float z = L.z + mZ * (M.y - L.y);
+            D = new Vector3(x, M.y, z);
+
+            upperTriangle = new Vector3[] { H, M, D };
+            lowerTriangle = new Vector3[] { L, D, M };
         }
 
-        float m = (H.y - L.y) / (H.x - L.x);
-        float x = (M.y - L.y) / m + L.x;
-
-        float alpha = (x - L.x) / (H.x - L.x);
-        float z = L.z + alpha * (H.z - L.z);
-        D = new Vector3(x, M.y, z);
-
-        upperTriangle = new Vector3[]{H, M, D};
-        lowerTriangle = new Vector3[]{L, D, M};
-
         return (upperTriangle, lowerTriangle);
-    }
+
+}
 
     private Vector3 CalculateBuoyancyCenterTopTriangle(Vector3[] triangle){
         // takes in a triangle in world coordinates (with a horizontal base) and calculates its center of pressure/buoyancy
