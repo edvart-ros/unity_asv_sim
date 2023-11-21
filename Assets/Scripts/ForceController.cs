@@ -14,7 +14,7 @@ public class ForceController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         // Apply Forces based on WASD input
         if (Input.GetKey(KeyCode.W))
