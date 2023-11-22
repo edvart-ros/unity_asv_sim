@@ -6,7 +6,7 @@ using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 
-public class Hydrodynamics : MonoBehaviour
+public class KernerDynamics : MonoBehaviour
 {
 
     public WaterSurface targetSurface = null;
