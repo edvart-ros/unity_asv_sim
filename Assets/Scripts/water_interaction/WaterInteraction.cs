@@ -11,6 +11,7 @@ namespace WaterInteraction{
     public static class Constants{
         public const float g = 9.80665f;
         public const float rho = 0.5f*997;
+        public const float waterViscosity = 1.0016f;
     }
     public class Patch{
 
@@ -433,6 +434,37 @@ namespace WaterInteraction{
             mesh.triangles = submergedTrianglesLocal.ToArray();
         }
 
+    public float GetResistanceCoefficient(float speed, float hullZmin, float hullZmax){
+        float submergedArea = Utils.CalculateMeshArea(mesh);
+        Vector3[] vertices = mesh.vertices;
+        int[] triangles = mesh.triangles;
+        float Rn = CalculateReynoldsNumber(speed, Math.Abs(hullZmax - hullZmin));
+
+        float onePlusK = 0;
+        for (int i = 0; i < triangles.Length - 2; i +=3){
+            Vector3 v0 = vertices[triangles[i]];
+            Vector3 v1 = vertices[triangles[i+1]];
+            Vector3 v2 = vertices[triangles[i+2]];
+            float Si = (0.5f)*Vector3.Cross((v1-v0),(v2-v0)).magnitude;
+            float Ki = GetTriangleK((v0.z+v1.z+v2.z)/3, hullZmin, hullZmax);
+            onePlusK += (1+Ki)*Si;
+        }
+        onePlusK = onePlusK/submergedArea;
+        float Cf = 0.075f/((Mathf.Log10(Rn)-2)*(Mathf.Log10(Rn)-2));
+        float Cfr = onePlusK*Cf;
+        return Cfr;
+    }
+
+    private float CalculateReynoldsNumber(float velocity, float L, float viscosity=Constants.waterViscosity){
+        return (velocity*L)/viscosity;
+    }
+
+    
+    private float GetTriangleK(float z, float hullZmin, float hullZmax){
+        float f = (-3/(hullZmax-hullZmin))*z + 3*hullZmax/(hullZmax-hullZmin) - 1;
+        return f;
+    }
+
     }
     public class Utils{
         public static Vector3 GetFaceNormal(Vector3 A, Vector3 B, Vector3 C){
@@ -444,6 +476,33 @@ namespace WaterInteraction{
             Debug.DrawLine(triangle[0], triangle[1], color);
             Debug.DrawLine(triangle[0], triangle[2], color);
             Debug.DrawLine(triangle[1], triangle[2], color);
+        }
+        public static float CalculateMeshArea(Mesh mesh){
+            int[] triangles = mesh.triangles;
+            Vector3[] vertices = mesh.vertices;
+            float totalArea = 0.0f;
+            for (int i = 0; i < triangles.Length - 2; i += 3){
+                Vector3 v1 = vertices[triangles[i+1]] - vertices[triangles[i]];
+                Vector3 v2 = vertices[triangles[i+2]] - vertices[triangles[i]];
+                Vector3 cross = Vector3.Cross(v1, v2);
+                totalArea += 0.5f*cross.magnitude;            
+            }
+            return totalArea;
+        }
+
+        public static float[] CalculateTriangleAreas(Mesh mesh){
+            int[] triangles = mesh.triangles;
+            Vector3[] vertices = mesh.vertices;
+            int L = triangles.Length;
+            float triangleArea;
+            List<float> triangleAreas = new List<float>(L); 
+            for (int i = 0; i < L - 2; i += 3){
+                Vector3 v1 = vertices[triangles[i+1]] - vertices[triangles[i]];
+                Vector3 v2 = vertices[triangles[i+2]] - vertices[triangles[i]];
+                triangleArea = 0.5f*(Vector3.Cross(v1, v2)).magnitude;
+                triangleAreas.Add(triangleArea);
+            }
+            return triangleAreas.ToArray();
         }
     }
     public static class Forces{
