@@ -7,12 +7,12 @@ public class Buoyancy : MonoBehaviour
 {
 
     public WaterSurface targetSurface = null;
-    public float sideLength;
+    public float sideLength = 10;
     public GameObject waterPatch;
     public GameObject simplifiedMesh;
     public GameObject submergedMesh;
     public Rigidbody rigidBody;
-    public bool buoyancyForceActive;
+    public bool buoyancyForceActive = true;
     public bool debugBuoyancy;
     [Range(0.0f, 1.0f)]
 

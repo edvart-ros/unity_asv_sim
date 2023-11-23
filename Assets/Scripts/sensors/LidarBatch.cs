@@ -42,8 +42,6 @@ public class LidarBatch : MonoBehaviour
 
     Vector3[] scanDirVectors;
     private Transform _transform;
-    private NativeArray<RaycastCommand> commands;
-    private NativeArray<RaycastHit> results;
 
 
     private float[] scanPatternParams;
@@ -52,8 +50,6 @@ public class LidarBatch : MonoBehaviour
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<PointCloud2Msg>(topicName);
         scanDirVectors = GenerateScanVectors();
-        commands = new NativeArray<RaycastCommand>(scanDirVectors.Length, Allocator.TempJob);
-        results = new NativeArray<RaycastHit>(scanDirVectors.Length, Allocator.TempJob);
         scanPatternParamsPrev = new float[4];
     }
 
@@ -61,10 +57,6 @@ public class LidarBatch : MonoBehaviour
         scanPatternParams = new float[4]{numHorizontalBeams, numVerticalBeams, horizontalFOV, verticalFOV};
         if (scanPatternParams != scanPatternParamsPrev){ //dont re-calculate lidar scan vectors if parameters unchanged
             scanDirVectors = GenerateScanVectors();
-            results.Dispose();
-            commands.Dispose();
-            commands = new NativeArray<RaycastCommand>(scanDirVectors.Length, Allocator.TempJob);
-            results = new NativeArray<RaycastHit>(scanDirVectors.Length, Allocator.TempJob);
         }
         _transform = transform;
         timeSinceScan += Time.deltaTime;
@@ -117,6 +109,8 @@ public class LidarBatch : MonoBehaviour
     {
         int numPoints = dirs.Length;
         Vector3 nanVec = new Vector3(float.NaN, float.NaN, float.NaN);
+        var commands = new NativeArray<RaycastCommand>(numPoints, Allocator.TempJob);
+        var results = new NativeArray<RaycastHit>(numPoints, Allocator.TempJob);
 
         for (int i = 0; i < numPoints; i++)
         {
@@ -147,6 +141,8 @@ public class LidarBatch : MonoBehaviour
             }
         }
 
+        results.Dispose();
+        commands.Dispose();
         return points;
     }
 
@@ -179,8 +175,7 @@ public class LidarBatch : MonoBehaviour
         msg.is_dense = true;
 
         // finally, populate the data field, containing the actual points in bytes
-        int byteCount = points.Length * 12; // 12 bytes per point (3 floats, 4 bytes each)
-        List<byte> dataList = new List<byte>(byteCount);
+        List<byte> dataList = new List<byte>();
         foreach(Vector3 point in points) {
             dataList.AddRange(BitConverter.GetBytes(point.z));
             dataList.AddRange(BitConverter.GetBytes(-point.x));
