@@ -105,24 +105,30 @@ namespace WaterInteraction{
             Vector3 adjustedPoint = point - gridOrigin;
             int i = Mathf.FloorToInt(-adjustedPoint.z / cellSize);
             int j = Mathf.FloorToInt(adjustedPoint.x / cellSize);
-            return new (i, j);
+            return (i, j);
         }
 
 
-        public Vector3[] GetPatchLeftTriangleVertices(int i, int j){
+        public void GetPatchLeftTriangleVertices(ref Vector3[] inVerts,int i, int j){
             int n = gridFidelity + 1;
             Vector3 topLeftVertex = patchVertices[i*n + j];
             Vector3 bottomLeftVertex = patchVertices[(i+1)*n+ j];
             Vector3 bottomRightVertex = patchVertices[(i+1)*n + (j+1)];
-            return new Vector3[] {topLeftVertex, bottomLeftVertex, bottomRightVertex};
+            inVerts[0] = topLeftVertex;
+            inVerts[1] = bottomLeftVertex;
+            inVerts[2] = bottomRightVertex;
+            return;
         }
 
-        public Vector3[] GetPatchRightTriangleVertices(int i, int j){
+        public void GetPatchRightTriangleVertices(ref Vector3[] inVerts, int i, int j){
             int n = gridFidelity + 1;
             Vector3 topLeftVertex = patchVertices[i*n + j];
             Vector3 topRightVertex = patchVertices[i*n + (j+1)];
             Vector3 bottomRightVertex = patchVertices[(i+1)*n + (j+1)];
-            return new Vector3[] {topLeftVertex, topRightVertex, bottomRightVertex};
+            inVerts[0] = topLeftVertex;
+            inVerts[1] = topRightVertex;
+            inVerts[2] = bottomRightVertex;
+            return;
         }
 
         public float GetHeightAboveTriangle(Vector3 point, Vector3[] triangle){
@@ -196,11 +202,9 @@ namespace WaterInteraction{
             Vector3[] vertices = gridMesh.vertices;
             for (var i = 0; i < vertices.Length; i++)
             {
-                Vector3 vertex = vertices[i];
-                targetPositionBuffer[i] = transform.position + vertex;
-                vertex.x += transform.position.x;
-                vertex.z += transform.position.z;
-                vertices[i] = vertex;
+                targetPositionBuffer[i] = transform.position + vertices[i];
+                vertices[i].x += transform.position.x;
+                vertices[i].z += transform.position.z;
             }
 
             WaterSimSearchData simData = new WaterSimSearchData();
@@ -235,10 +239,8 @@ namespace WaterInteraction{
             // update vertex positions
             for (var i = 0; i < vertices.Length; i++)
             {
-                Vector3 vertex = vertices[i];
                 float waterHeight = projectedPositionWSBuffer[i].y;
-                vertex.y = waterHeight;
-                vertices[i] = vertex;
+                vertices[i].y = waterHeight;
             }
             patchVertices = vertices;
             return;
@@ -262,15 +264,29 @@ namespace WaterInteraction{
         public Vector3[] FaceNormalsWorld;
         public Vector3[] FaceCentersWorld;
         public float[] FaceCenterHeightsAboveWater;
-
+        private int L;
         public Submerged(Mesh simplifiedHullMesh){
             hullMesh = simplifiedHullMesh;
+            L = hullMesh.vertices.Length;
         }
 
         public void Update(Patch patch, Transform transform){
             mesh.Clear();
+            
+            //  this helps with performance.. right? Kitchen sink approach, since I'm having garbage collection problems and dont know Unity/C# that well.
+            Vector3[] triangleVerticesLocal = new Vector3[3];
+            Vector3[] triangleVerticesWorld = new Vector3[3];
+            Vector3[] patchTriangleVerticesWorld = new Vector3[3];
+
+            float[] vertexHeights = new float[3];
+            float xInCell, zInCell, t_M, t_H, t_L;
+            float[] sortedHeights;
+            int iCell, jCell, submergedCount, numExistingVertices;
+            Vector3 originalFaceNormalWorld, vertexLocal, vertexWorld, centerWorld, faceNormalWorld, 
+            LH, LM, LJ_H, LJ_M, J_H, J_M, MH, LI_L, LI_M, I_L, I_M, A, B, C;
+            Vector3[] sortedVerticesLocal;
+            
             // For storing the new resulting submerged mesh
-            int L = hullMesh.vertices.Length;
             List<Vector3> submergedVerticesLocal = new List<Vector3>(L); // Upper bound = vertices in the hull mesh
             List<int> submergedTrianglesLocal = new List<int>(L * 2); // Upper bound = twice the number of triangles in the hull mesh
             List<Vector3> submergedNormalsWorld = new List<Vector3>(L * 2); // Upper bound = twice the number of triangles in the hull mesh
@@ -283,41 +299,38 @@ namespace WaterInteraction{
             Vector3[] patchVerticesCache = patch.patchVertices;
             Vector3[] hullVerticesCache = hullMesh.vertices;
             int[] hullTrianglesCache = hullMesh.triangles;
+
+            
+            //  Loop through all triangles and identify the submerged part of the mesh
             for (var i = 0; i < numTriangles-2; i += 3){
-                Vector3[] triangleVerticesLocal = new Vector3[] {
-                    hullVerticesCache[hullTrianglesCache[i]], 
-                    hullVerticesCache[hullTrianglesCache[i+1]], 
-                    hullVerticesCache[hullTrianglesCache[i+2]]
-                };
-                Vector3[] triangleVerticesWorld = new Vector3[] {
-                    transform.TransformPoint(triangleVerticesLocal[0]),
-                    transform.TransformPoint(triangleVerticesLocal[1]),
-                    transform.TransformPoint(triangleVerticesLocal[2])
-                };
-                Vector3[] patchTriangleVerticesWorld = new Vector3[3];
-                Vector3 originalFaceNormalWorld = Utils.GetFaceNormal(triangleVerticesWorld[0], triangleVerticesWorld[1], triangleVerticesWorld[2]);
-                float[] vertexHeights = new float[3];
+                triangleVerticesLocal[0] = hullVerticesCache[hullTrianglesCache[i]];
+                triangleVerticesLocal[1] = hullVerticesCache[hullTrianglesCache[i+1]];
+                triangleVerticesLocal[2] = hullVerticesCache[hullTrianglesCache[i+2]];
+
+                triangleVerticesWorld[0] = transform.TransformPoint(triangleVerticesLocal[0]);
+                triangleVerticesWorld[1] = transform.TransformPoint(triangleVerticesLocal[1]);
+                triangleVerticesWorld[2] = transform.TransformPoint(triangleVerticesLocal[2]);
+                
+                originalFaceNormalWorld = Utils.GetFaceNormal(triangleVerticesWorld[0], triangleVerticesWorld[1], triangleVerticesWorld[2]);
 
                 for (var j = 0; j < 3; j++){
-                    Vector3 vertexLocal = triangleVerticesLocal[j];
-                    Vector3 vertexWorld = transform.TransformPoint(vertexLocal);
-                    (int iCell, int jCell) = patch.PointToCell(vertexWorld);
-                    float xInCell = (vertexWorld.x - patch.gridOrigin.x)-patch.cellSize*jCell;
-                    float zInCell = (vertexWorld.z - patch.gridOrigin.z)-(patch.cellSize*(-iCell));
+                    vertexLocal = triangleVerticesLocal[j];
+                    vertexWorld = transform.TransformPoint(vertexLocal);
+                    (iCell, jCell) = patch.PointToCell(vertexWorld);
+                    xInCell = (vertexWorld.x - patch.gridOrigin.x)-patch.cellSize*jCell;
+                    zInCell = (vertexWorld.z - patch.gridOrigin.z)-(patch.cellSize*(-iCell));
                     if (xInCell >= -zInCell){
-                        patchTriangleVerticesWorld = patch.GetPatchRightTriangleVertices(iCell, jCell);
+                        patch.GetPatchRightTriangleVertices(ref patchTriangleVerticesWorld, iCell, jCell);
                     }
                     else{
-                        patchTriangleVerticesWorld = patch.GetPatchLeftTriangleVertices(iCell, jCell);
+                        patch.GetPatchLeftTriangleVertices(ref patchTriangleVerticesWorld, iCell, jCell);
                     }
                     vertexHeights[j] = patch.GetHeightAboveTriangle(vertexWorld, patchTriangleVerticesWorld);
                 }
 
                 // check whether the triangle has 3, 2, 1 or 0 submerged triangles
-                int submergedCount = 0;
-                int numExistingVertices = submergedVerticesLocal.Count;
-                Vector3 centerWorld;
-                Vector3 faceNormalWorld;
+                submergedCount = 0;
+                numExistingVertices = submergedVerticesLocal.Count;
                 if (vertexHeights[0] < 0) submergedCount ++;
                 if (vertexHeights[1] < 0) submergedCount ++;
                 if (vertexHeights[2] < 0) submergedCount ++;
@@ -326,18 +339,18 @@ namespace WaterInteraction{
                         break;
                     case 1: {
                         //sort the triangles, L, M, H from lowest to highest
-                        (Vector3[] sortedVerticesLocal, float[] sortedHeights) = patch.SortVerticesAgainstWaterHeight(triangleVerticesLocal, vertexHeights);
-                        Vector3 LH = sortedVerticesLocal[2] - sortedVerticesLocal[0];
-                        Vector3 LM = sortedVerticesLocal[1] - sortedVerticesLocal[0];
+                        (sortedVerticesLocal, sortedHeights) = patch.SortVerticesAgainstWaterHeight(triangleVerticesLocal, vertexHeights);
+                        LH = sortedVerticesLocal[2] - sortedVerticesLocal[0];
+                        LM = sortedVerticesLocal[1] - sortedVerticesLocal[0];
 
-                        float t_M = -sortedHeights[0]/(sortedHeights[1]-sortedHeights[0]);
-                        float t_H = -sortedHeights[0]/(sortedHeights[2]-sortedHeights[0]);
+                        t_M = -sortedHeights[0]/(sortedHeights[1]-sortedHeights[0]);
+                        t_H = -sortedHeights[0]/(sortedHeights[2]-sortedHeights[0]);
                         //approximate where the water cuts the triangle (along LM and LH)
-                        Vector3 LJ_H = t_H*LH;
-                        Vector3 LJ_M = t_M*LM;
+                        LJ_H = t_H*LH;
+                        LJ_M = t_M*LM;
 
-                        Vector3 J_H = sortedVerticesLocal[0] + LJ_H;
-                        Vector3 J_M = sortedVerticesLocal[0] + LJ_M;
+                        J_H = sortedVerticesLocal[0] + LJ_H;
+                        J_M = sortedVerticesLocal[0] + LJ_M;
 
                         submergedVerticesLocal.Add(sortedVerticesLocal[0]);
                         submergedVerticesLocal.Add(J_H);
@@ -360,19 +373,19 @@ namespace WaterInteraction{
                     }
                     case 2: {
                         //sort the triangles, L, M, H from lowest to highest
-                        (Vector3[] sortedVerticesLocal, float[] sortedHeights) = patch.SortVerticesAgainstWaterHeight(triangleVerticesLocal, vertexHeights);
-                        Vector3 LH = sortedVerticesLocal[2] - sortedVerticesLocal[0];
-                        Vector3 MH = sortedVerticesLocal[2] - sortedVerticesLocal[1];
+                        (sortedVerticesLocal, sortedHeights) = patch.SortVerticesAgainstWaterHeight(triangleVerticesLocal, vertexHeights);
+                        LH = sortedVerticesLocal[2] - sortedVerticesLocal[0];
+                        MH = sortedVerticesLocal[2] - sortedVerticesLocal[1];
 
                         //approximate parameters t_M and t_L, which approximate how far the submerged parts of the traingel edges extend
                         // LI_L ~= t_L*LH, where LI_L is the vector from the lowest vertex to the estimated interesection of the water and LH
-                        float t_M = -sortedHeights[1]/(sortedHeights[2]-sortedHeights[1]);
-                        float t_L = -sortedHeights[0]/(sortedHeights[2]-sortedHeights[0]);
-                        Vector3 LI_L = t_L*LH;
-                        Vector3 LI_M = t_M*MH;
+                        t_M = -sortedHeights[1]/(sortedHeights[2]-sortedHeights[1]);
+                        t_L = -sortedHeights[0]/(sortedHeights[2]-sortedHeights[0]);
+                        LI_L = t_L*LH;
+                        LI_M = t_M*MH;
 
-                        Vector3 I_L = sortedVerticesLocal[0] + LI_L;
-                        Vector3 I_M = sortedVerticesLocal[1] + LI_M;
+                        I_L = sortedVerticesLocal[0] + LI_L;
+                        I_M = sortedVerticesLocal[1] + LI_M;
 
                         submergedVerticesLocal.Add(sortedVerticesLocal[1]);
                         submergedVerticesLocal.Add(I_M);
@@ -408,7 +421,7 @@ namespace WaterInteraction{
                         break;
                     }
                     case 3: {
-                        (Vector3 A, Vector3 B, Vector3 C) = (triangleVerticesLocal[0], 
+                        (A, B, C) = (triangleVerticesLocal[0], 
                                                             triangleVerticesLocal[1], 
                                                             triangleVerticesLocal[2]);
                         submergedVerticesLocal.Add(A);
@@ -493,17 +506,18 @@ namespace WaterInteraction{
         public static float[] CalculateTriangleAreas(Mesh mesh){
             int[] triangles = mesh.triangles;
             Vector3[] vertices = mesh.vertices;
-            int L = triangles.Length;
-            float triangleArea;
-            List<float> triangleAreas = new List<float>(L); 
-            for (int i = 0; i < L - 2; i += 3){
+            int triangleCount = triangles.Length / 3;
+            float[] triangleAreas = new float[triangleCount];
+
+            for (int i = 0; i < triangles.Length; i += 3){
                 Vector3 v1 = vertices[triangles[i+1]] - vertices[triangles[i]];
                 Vector3 v2 = vertices[triangles[i+2]] - vertices[triangles[i]];
-                triangleArea = 0.5f*(Vector3.Cross(v1, v2)).magnitude;
-                triangleAreas.Add(triangleArea);
+                float area = 0.5f * Vector3.Cross(v1, v2).magnitude;
+                triangleAreas[i / 3] = area;
             }
-            return triangleAreas.ToArray();
+            return triangleAreas;
         }
+
     }
     public static class Forces{
         public static Vector3 BuoyancyForce(float height, Vector3 normal){

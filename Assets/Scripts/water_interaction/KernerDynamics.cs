@@ -59,13 +59,10 @@ public class KernerDynamics : MonoBehaviour
         waterPatchMeshFilter.mesh.vertices = patch.patchVertices; // assign the resulting patch vertices
         submerged.Update(patch, transform);
         submergedMeshFilter.mesh = submerged.mesh;
-        float submergedMeshArea = Utils.CalculateMeshArea(submergedMeshFilter.mesh);
         submergedFaceAreas = Utils.CalculateTriangleAreas(submergedMeshFilter.mesh);
                 
         if (buoyancyForceActive){
             ApplyBuoyancy();
-            //ApplyBuoyancyCP();
-
         }
         if (viscousResistActive){
             float Cfr = submerged.GetResistanceCoefficient(rigidBody.velocity.magnitude, hullZMin, hullZMax);
@@ -82,11 +79,12 @@ public class KernerDynamics : MonoBehaviour
         float[] heights = submerged.FaceCenterHeightsAboveWater;
         Vector3[] centersWorld = submerged.FaceCentersWorld;
         Vector3[] normalsWorld = submerged.FaceNormalsWorld;
+        Vector3 F;
         for (var i = 0; i < centersWorld.Length; i++){
             if (normalsWorld[i].y >  0){
                 continue;
             }
-            Vector3 F = Forces.BuoyancyForce(heights[i], normalsWorld[i]);
+            F = Forces.BuoyancyForce(heights[i], normalsWorld[i]);
             if (debugBuoyancy){
                 Debug.DrawRay(centersWorld[i], F, Color.green);
             }
@@ -100,19 +98,20 @@ public class KernerDynamics : MonoBehaviour
         Vector3 vG = rigidBody.velocity;
         Vector3 omegaG = rigidBody.angularVelocity;
         Vector3 G = rigidBody.position;
+        Vector3 n, Ci, GCi, vi, viTan, ufi, vfi, Fvi;
         for (int i = 0; i < submerged.FaceCentersWorld.Length; i++){
-            Vector3 n = submerged.FaceNormalsWorld[i].normalized;
-            Vector3 Ci = submerged.FaceCentersWorld[i];
-            Vector3 GCi = Ci - G;
+            n = submerged.FaceNormalsWorld[i].normalized;
+            Ci = submerged.FaceCentersWorld[i];
+            GCi = Ci - G;
             //something below here becomes NaN. need to debug
-            Vector3 vi = vG + Vector3.Cross(omegaG, GCi);
-            Vector3 viTan = vi-(Vector3.Dot(vi, n))*n;
-            Vector3 ufi = -viTan/(viTan.magnitude);
+            vi = vG + Vector3.Cross(omegaG, GCi);
+            viTan = vi-(Vector3.Dot(vi, n))*n;
+            ufi = -viTan/(viTan.magnitude);
             if (float.IsNaN(ufi.x)){
                 continue;
             }
-            Vector3 vfi = vi.magnitude*ufi;
-            Vector3 Fvi = (0.5f)*density*Cfr*submergedFaceAreas[i]*vfi.magnitude*vfi;
+            vfi = vi.magnitude*ufi;
+            Fvi = (0.5f)*density*Cfr*submergedFaceAreas[i]*vfi.magnitude*vfi;
             rigidBody.AddForceAtPosition(Fvi, Ci);
             if (debugResist){
                 Debug.DrawRay(Ci, Fvi, Color.red);
@@ -127,19 +126,20 @@ public class KernerDynamics : MonoBehaviour
         Vector3 vG = rigidBody.velocity;
         Vector3 omegaG = rigidBody.angularVelocity;
         Vector3 G = rigidBody.position;
-        Vector3 Fpd;
+        Vector3 Fpd, v0, v1, v2, ni, Ci, GCi, vi, ui;
+        float Si, cosThetai, viMag;
         for (int i = 0; i < triangles.Length - 2; i +=3){
-            (Vector3 v0, Vector3 v1, Vector3 v2) = (vertices[triangles[i]], vertices[triangles[i+1]], vertices[triangles[i+2]]);
-            Vector3 ni = submerged.FaceNormalsWorld[i/3].normalized;
-            Vector3 Ci = submerged.FaceCentersWorld[i/3];
-            float Si = (0.5f)*Vector3.Cross((v1-v0),(v2-v0)).magnitude;
+            (v0, v1, v2) = (vertices[triangles[i]], vertices[triangles[i+1]], vertices[triangles[i+2]]);
+            ni = submerged.FaceNormalsWorld[i/3].normalized;
+            Ci = submerged.FaceCentersWorld[i/3];
+            Si = (0.5f)*Vector3.Cross((v1-v0),(v2-v0)).magnitude;
 
-            Vector3 GCi = Ci - G;
-            Vector3 vi = vG + Vector3.Cross(omegaG, GCi);
-            Vector3 ui = vi.normalized;
-            float cosThetai = Vector3.Dot(ui, ni);
+            GCi = Ci - G;
+            vi = vG + Vector3.Cross(omegaG, GCi);
+            ui = vi.normalized;
+            cosThetai = Vector3.Dot(ui, ni);
 
-            float viMag = vi.magnitude;
+            viMag = vi.magnitude;
             if (viMag == 0.0f){
                 continue;
             }
