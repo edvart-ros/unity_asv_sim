@@ -163,9 +163,9 @@ public class LidarBatch : MonoBehaviour
         msg.width = (uint)points.Length;
         
         PointFieldMsg[] fields = new PointFieldMsg[3];
-        fields[0] = new PointFieldMsg("x", 0, 7, msg.width); // "name", offset, datatype (7 = float), number of elements in field
-        fields[1] = new PointFieldMsg("y", 4, 7, msg.width); // 4 byte offset, since float32 uses 4 bytes
-        fields[2] = new PointFieldMsg("z", 8, 7, msg.width); // another 4 bytes as offset
+        fields[0] = new PointFieldMsg("x", 0, 7, 1); // "name", offset, datatype (7 = float), number of elements in field
+        fields[1] = new PointFieldMsg("y", 4, 7, 1); // 4 byte offset, since float32 uses 4 bytes
+        fields[2] = new PointFieldMsg("z", 8, 7, 1); // another 4 bytes as offset
         // theres an option for this field too, but i dont see a use for it currently
         // fields[3] = new PointFieldMsg("intensity", 12, 7, msg.width);
         msg.fields = fields;

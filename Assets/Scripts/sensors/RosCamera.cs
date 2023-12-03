@@ -44,7 +44,6 @@ public class RosCamera : MonoBehaviour
         // Create or reuse Texture2D in RGB format
         if (camText == null || camText.width != sensorCamera.targetTexture.width || camText.height != sensorCamera.targetTexture.height)
         {
-            Debug.Log(1);
             camText = new Texture2D(sensorCamera.targetTexture.width, sensorCamera.targetTexture.height, TextureFormat.RGB24, false);
         }
         camText.ReadPixels(new Rect(0, 0, sensorCamera.targetTexture.width, sensorCamera.targetTexture.height), 0, 0);
