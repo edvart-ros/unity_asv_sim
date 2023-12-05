@@ -38,6 +38,14 @@ public class Odom : MonoBehaviour
             z = pos.y
         };
         msg.pose.pose.orientation = rigidBody.transform.rotation.To<FLU>();
+        
+        Vector3 localVelocity = transform.InverseTransformDirection(rigidBody.velocity);
+        msg.twist.twist.linear.x = localVelocity.z;
+        msg.twist.twist.linear.y = -localVelocity.x;
+        msg.twist.twist.linear.z = localVelocity.y;
+        msg.twist.twist.angular.z = -rigidBody.angularVelocity.y;
+        Debug.Log(rigidBody.angularVelocity);
+
         ros.Publish(topicName, msg);
         timeSincePublish = 0.0f;
     }
