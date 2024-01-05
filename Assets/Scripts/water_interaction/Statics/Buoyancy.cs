@@ -51,7 +51,10 @@ public class Buoyancy : MonoBehaviour
         }
     }
 
-
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireMesh(submerged.mesh);
+    }
     private void ApplyBuoyancy(){
         float[] heights = submerged.FaceCenterHeightsAboveWater;
         Vector3[] centersWorld = submerged.FaceCentersWorld;
