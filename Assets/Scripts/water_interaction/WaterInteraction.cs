@@ -262,7 +262,7 @@ namespace WaterInteraction{
         public Mesh mesh = new Mesh();
         float[] triangleAreas;
         public Vector3[] FaceNormalsWorld;
-        public Vector3[] FaceCentersWorld;
+        public Vector3[] FaceCentersWorld = new Vector3[0];
         public float[] FaceCenterHeightsAboveWater;
         private int L;
         public Submerged(Mesh simplifiedHullMesh){

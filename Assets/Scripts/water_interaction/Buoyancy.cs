@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using System;
 using WaterInteraction;
+using Unity.Collections;
 
 public class Buoyancy : MonoBehaviour
 {
@@ -14,13 +15,13 @@ public class Buoyancy : MonoBehaviour
     public Rigidbody rigidBody;
     public bool buoyancyForceActive = true;
     public bool debugBuoyancy;
-    [Range(0.0f, 1.0f)]
+    [ReadOnly]
+    public Submerged submerged;
 
     private MeshFilter waterPatchMeshFilter;
     private MeshFilter simplifiedMeshFilter;
     private MeshFilter submergedMeshFilter;
     private Patch patch;
-    private Submerged submerged;
 
     private const int gridFidelity = 4;
     private const float hullZMin = -2.5f;
