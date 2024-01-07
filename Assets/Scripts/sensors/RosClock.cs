@@ -10,7 +10,7 @@ public class ClockPublisher : MonoBehaviour
      
     private ROSConnection _ros;
     private ClockMsg _message;
-    public uint sec, nanosec;    
+    public double sec, nanosec;    
     double m_PublishRateHz = 200f;
     double m_LastPublishTimeSeconds;
     double PublishPeriodSeconds => 1.0f / m_PublishRateHz;
@@ -31,10 +31,10 @@ public class ClockPublisher : MonoBehaviour
     void PublishMessage()
     {
         var publishTime = Clock.Now;
-        sec = (uint)publishTime;
-        nanosec = (uint)((publishTime - Math.Floor(publishTime)) * Clock.k_NanoSecondsInSeconds);
+        sec = publishTime;
+        nanosec = ((publishTime - Math.Floor(publishTime)) * Clock.k_NanoSecondsInSeconds);
         _message.clock.sec = (int)sec;
-        _message.clock.nanosec = nanosec;
+        _message.clock.nanosec = (uint)nanosec;
         m_LastPublishTimeSeconds = publishTime;
         _ros.Publish(_topicName, _message);
     }
