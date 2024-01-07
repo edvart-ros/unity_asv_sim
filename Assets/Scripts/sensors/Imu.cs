@@ -3,12 +3,13 @@ using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Sensor;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
+using Unity.Robotics.Core;
 
 public class Imu : MonoBehaviour
 {
     ROSConnection ros;
     public string topicName = "imu/raw";
-    public string frameId = "wamv/imu_link";
+    public string frameId = "imu_link";
     private Rigidbody imuBody;
     [Range(0.1f, 100.0f)]
     public float Hz = 50.0f;
@@ -39,6 +40,11 @@ public class Imu : MonoBehaviour
             orientation = imuBody.transform.rotation.To<FLU>(),
             angular_velocity = imuBody.angularVelocity.To<FLU>()
         };
+        var publishTime = Clock.Now;
+        var sec = publishTime;
+        var nanosec = ((publishTime - Math.Floor(publishTime)) * Clock.k_NanoSecondsInSeconds);
+        Msg.header.stamp.sec = (int)sec;
+        Msg.header.stamp.nanosec = (uint)nanosec;
         ros.Publish(topicName, Msg);
         timeSincePublish = 0.0f;
     }

@@ -5,6 +5,7 @@ using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Sensor;
 using System.Collections.Generic;
+using Unity.Robotics.Core;
 
 
 public class LidarBatch : MonoBehaviour
@@ -15,7 +16,7 @@ public class LidarBatch : MonoBehaviour
     public float maxRange = 100.0f;
     public bool publishData = true;
     public string topicName = "points";
-    public string frameId = "wamv/lidar_link";
+    public string frameId = "lidar_link";
 
     [Range(0, 5000)]
     public int numHorizontalBeams = 500; 
@@ -149,12 +150,12 @@ public class LidarBatch : MonoBehaviour
     private PointCloud2Msg PointsToPointcloud2(Vector3[] points){
         PointCloud2Msg msg = new PointCloud2Msg();
         msg.header.frame_id = frameId;
-        
-        // unsure if this is the right way to handle timestamp with unity <-> ros
-        DateTime epochStart = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-        double currentEpochTimeSeconds = (DateTime.UtcNow - epochStart).TotalSeconds;
-        msg.header.stamp.sec = (int)currentEpochTimeSeconds;
-        msg.header.stamp.nanosec = (uint)((currentEpochTimeSeconds % 1) * 1e9);
+
+        var publishTime = Clock.Now;
+        var sec = publishTime;
+        var nanosec = ((publishTime - Math.Floor(publishTime)) * Clock.k_NanoSecondsInSeconds);
+        msg.header.stamp.sec = (int)sec;
+        msg.header.stamp.nanosec = (uint)nanosec;
 
         // publishing as unordered cloud (height = 1). might reconsider later, idk.
         msg.height = 1;
