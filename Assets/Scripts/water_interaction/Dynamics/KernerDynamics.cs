@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using System;
 using WaterInteraction;
+using System.ComponentModel;
 
 public class KernerDynamics : MonoBehaviour
 {
@@ -21,6 +22,8 @@ public class KernerDynamics : MonoBehaviour
     [Range(0.1f, 4.0f)]
     public float pressureDragFalloffPower = 1.0f;
 
+    public Vector3 totalViscousForce;
+    public Vector3 totalPressureForce;
 
     private Submerged submerged;
     private float[] submergedFaceAreas;
@@ -29,6 +32,7 @@ public class KernerDynamics : MonoBehaviour
     private const float hullZMin = -2.5f;
     private const float hullZMax = 2.9f;
 
+
     void Start()
     {
         submerged = GetComponent<Buoyancy>().submerged;
@@ -36,6 +40,9 @@ public class KernerDynamics : MonoBehaviour
 
     void FixedUpdate()
     {
+        totalViscousForce = Vector3.zero;
+        totalPressureForce = Vector3.zero;
+
         submerged = GetComponent<Buoyancy>().submerged;
         submergedFaceAreas = Utils.CalculateTriangleAreas(submerged.mesh);
 
@@ -74,10 +81,14 @@ public class KernerDynamics : MonoBehaviour
             vfi = vi.magnitude * ufi;
             Fvi = (0.5f) * density * Cfr * submergedFaceAreas[i] * vfi.magnitude * vfi;
             rigidBody.AddForceAtPosition(Fvi, Ci);
+            totalViscousForce += Fvi;
             if (debugResist)
             {
-                Debug.DrawRay(Ci, Fvi, Color.red);
+                // Debug.DrawRay(Ci, Fvi, Color.red);
             }
+        }
+        if (debugResist) {
+                Debug.DrawRay(transform.position, totalViscousForce/100, Color.red);
         }
         return;
     }
@@ -117,10 +128,14 @@ public class KernerDynamics : MonoBehaviour
                 Fpd = -(Cpd1 * (viMag / vRef) + Cpd2 * ((viMag * viMag) / (vRef * vRef))) * Si * Mathf.Pow(cosThetai, fp) * ni;
             }
             rigidBody.AddForceAtPosition(Fpd, Ci);
+            totalPressureForce += Fpd;
             if (debugPressureDrag)
             {
-                Debug.DrawRay(Ci, Fpd, Color.white);
+                // Debug.DrawRay(Ci, Fpd, Color.white);
             }
+        }
+        if (debugPressureDrag) {
+            Debug.DrawRay(transform.position, totalPressureForce/100, Color.green);
         }
         return;
     }
