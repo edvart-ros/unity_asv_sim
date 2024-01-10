@@ -16,6 +16,7 @@ public class ForceController : MonoBehaviour
 
     private void FixedUpdate()
     {
+
         // Apply Forces based on WASD input
         if (Input.GetKey(KeyCode.W))
         {
@@ -28,11 +29,23 @@ public class ForceController : MonoBehaviour
         }
         if (Input.GetKey(KeyCode.A))
         {
-            rb.AddRelativeTorque(Vector3.up * torqueAmount);
+            rb.AddRelativeTorque(-Vector3.up * torqueAmount);
         }
         if (Input.GetKey(KeyCode.D))
         {
-            rb.AddRelativeTorque(-Vector3.up * torqueAmount);
+            rb.AddRelativeTorque(Vector3.up * torqueAmount);
+        }
+        if (Input.GetKey(KeyCode.E)) {
+            rb.AddRelativeForce(new Vector3(1, 0, 1).normalized * forceAmount);
+        }
+        if (Input.GetKey(KeyCode.Q)) {
+            rb.AddRelativeForce(new Vector3(-1, 0, 1).normalized * forceAmount);
+        }
+        if (Input.GetKey(KeyCode.Z)) {
+            rb.AddRelativeForce(new Vector3(-1, 0, -1).normalized * forceAmount);
+        }
+        if (Input.GetKey(KeyCode.C)) {
+            rb.AddRelativeForce(new Vector3(1, 0, -1).normalized * forceAmount);
         }
     }
 }
