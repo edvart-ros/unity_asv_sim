@@ -814,9 +814,9 @@ MonoBehaviour:
   m_AudioPlay: 0
   m_DebugDrawModesUseInteractiveLightBakingData: 0
   m_Position:
-    m_Target: {x: 14.163321, y: -5.172285, z: 8.909996}
+    m_Target: {x: -28.82407, y: -19.552391, z: 6.8506064}
     speed: 2
-    m_Value: {x: 14.081898, y: -302.87753, z: 17.150303}
+    m_Value: {x: 14.163321, y: -5.172285, z: 8.909996}
   m_RenderMode: 0
   m_CameraMode:
     drawMode: 0
@@ -862,13 +862,13 @@ MonoBehaviour:
     m_GridAxis: 1
     m_gridOpacity: 0.5
   m_Rotation:
-    m_Target: {x: -0.4935116, y: -0.012445603, z: 0.017199185, w: -0.8703165}
+    m_Target: {x: -0.18675902, y: 0.62645346, z: -0.1475156, w: -0.74328864}
     speed: 2
-    m_Value: {x: -0.6973534, y: 0.009035596, z: 0.00340842, w: -0.7176662}
+    m_Value: {x: -0.4935116, y: -0.012445603, z: 0.017199185, w: -0.87031657}
   m_Size:
-    m_Target: 11.1535635
+    m_Target: 23.904333
     speed: 2
-    m_Value: 177.93883
+    m_Value: 11.1535635
   m_Ortho:
     m_Target: 0
     speed: 2
@@ -1115,7 +1115,7 @@ MonoBehaviour:
     m_SkipHidden: 0
     m_SearchArea: 1
     m_Folders:
-    - Assets/Scripts/sensors
+    - Assets/Scripts
     m_Globs: []
     m_ProductIds: 
     m_AnyWithAssetOrigin: 0
@@ -1134,7 +1134,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 79}
     m_SelectedIDs: 98b20000
     m_LastClickedID: 45720
-    m_ExpandedIDs: 0000000046b20000
+    m_ExpandedIDs: 000000005ab20000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
@@ -1163,7 +1163,7 @@ MonoBehaviour:
     scrollPos: {x: 0, y: 0}
     m_SelectedIDs: 
     m_LastClickedID: 0
-    m_ExpandedIDs: 0000000046b20000
+    m_ExpandedIDs: 000000005ab20000
     m_RenameOverlay:
       m_UserAcceptedRename: 0
       m_Name: 
