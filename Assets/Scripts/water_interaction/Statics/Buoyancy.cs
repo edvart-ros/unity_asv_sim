@@ -1,12 +1,14 @@
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
-using System;
 using WaterInteraction;
 using Unity.Collections;
 
 public class Buoyancy : MonoBehaviour
 {
-
+    // Toggles
+    public bool buoyancyForceActive = true;
+    public bool debugBuoyancy;
+    
     public WaterSurface targetSurface = null;
     public float sideLength = 10;
     public int gridFidelity = 4;
@@ -14,8 +16,6 @@ public class Buoyancy : MonoBehaviour
     public GameObject simplifiedMesh;
     public GameObject submergedMesh;
     public Rigidbody rigidBody;
-    public bool buoyancyForceActive = true;
-    public bool debugBuoyancy;
     [ReadOnly]
     public Submerged submerged;
 
@@ -25,22 +25,32 @@ public class Buoyancy : MonoBehaviour
     private Patch patch;
 
 
-
-    void Start()
+    private void Start()
     {
-        waterPatchMeshFilter = waterPatch.GetComponent<MeshFilter>(); // the water patch used for fast water height look-up
-        simplifiedMeshFilter = simplifiedMesh.GetComponent<MeshFilter>(); // the simplified hull used for submerged mesh calculation
-        submergedMeshFilter = submergedMesh.GetComponent<MeshFilter>(); // the calculated submerged parts of the hull- used to calculate the buoyancy forces
+        // We use the water patch for fast water height look-up
+        waterPatchMeshFilter = waterPatch.GetComponent<MeshFilter>(); 
+        // The simplified hull is used for submerged mesh calculation
+        simplifiedMeshFilter = simplifiedMesh.GetComponent<MeshFilter>(); 
+        // The calculated submerged parts of the hull is used to calculate the buoyancy forces
+        submergedMeshFilter = submergedMesh.GetComponent<MeshFilter>(); 
+        
         Vector3 gridOrigin = new Vector3(-sideLength/2, 0, sideLength/2);
+        // Sample the WaterSurface to create a patch
         patch = new Patch(targetSurface, sideLength, gridFidelity, gridOrigin);
-        submerged = new Submerged(simplifiedMeshFilter.mesh); // set up submersion by providing the simplified hull mesh
-        patch.Update(transform); // updates the patch to follow the boat and queried water height
+        // Set up submersion by providing the simplified hull mesh
+        submerged = new Submerged(simplifiedMeshFilter.mesh); 
+        // Updates the patch to follow the boat and queried water height
+        patch.Update(transform); 
 
     }
 
-    void FixedUpdate(){
-        patch.Update(transform); // updates the patch to follow the boat and queried water height
-        waterPatchMeshFilter.mesh.vertices = patch.patchVertices; // assign the resulting patch vertices
+    
+    private void FixedUpdate()
+    {
+        // Updates the patch to follow the boat and queried water height
+        patch.Update(transform); 
+        // Assign the resulting patch vertices
+        waterPatchMeshFilter.mesh.vertices = patch.patchVertices; 
         submerged.Update(patch, transform);
         submergedMeshFilter.mesh = submerged.mesh;
         
@@ -52,7 +62,8 @@ public class Buoyancy : MonoBehaviour
     }
 
 
-    private void ApplyBuoyancy(){
+    private void ApplyBuoyancy()
+    {
         float[] heights = submerged.FaceCenterHeightsAboveWater;
         Vector3[] centersWorld = submerged.FaceCentersWorld;
         Vector3[] normalsWorld = submerged.FaceNormalsWorld;
@@ -69,6 +80,7 @@ public class Buoyancy : MonoBehaviour
         }
     }
 
+    
     private void DebugPatch()
     {
         Mesh patchMesh = waterPatchMeshFilter.mesh;
@@ -79,6 +91,7 @@ public class Buoyancy : MonoBehaviour
         }
     }
 
+    
     private void OnDestroy()
         {
             // patch.DisposeRoutine();
