@@ -135,11 +135,11 @@ public class KernerDynamics : MonoBehaviour
             totalPressureForce += Fpd;
             if (debugPressureDrag)
             {
-                // Debug.DrawRay(Ci, Fpd, Color.white);
+                Debug.DrawRay(Ci, Fpd, Color.white);
             }
         }
         if (debugPressureDrag) {
-            Debug.DrawRay(transform.position, totalPressureForce/100, Color.green);
+            // Debug.DrawRay(transform.position, totalPressureForce/100, Color.green);
         }
         return;
     }
