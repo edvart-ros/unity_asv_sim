@@ -9,6 +9,7 @@ public class Buoyancy : MonoBehaviour
 
     public WaterSurface targetSurface = null;
     public float sideLength = 10;
+    public int gridFidelity = 4;
     public GameObject waterPatch;
     public GameObject simplifiedMesh;
     public GameObject submergedMesh;
@@ -23,10 +24,7 @@ public class Buoyancy : MonoBehaviour
     private MeshFilter submergedMeshFilter;
     private Patch patch;
 
-    private const int gridFidelity = 4;
-    private const float hullZMin = -2.5f;
-    private const float hullZMax = 2.9f;
-    private const float boatLength = hullZMax-hullZMin;
+
 
     void Start()
     {
@@ -49,6 +47,8 @@ public class Buoyancy : MonoBehaviour
         if (buoyancyForceActive){
             ApplyBuoyancy();
         }
+
+        DebugPatch();
     }
 
 
@@ -62,9 +62,20 @@ public class Buoyancy : MonoBehaviour
             }
             Vector3 F = Forces.BuoyancyForce(heights[i], normalsWorld[i]);
             if (debugBuoyancy){
-                Debug.DrawRay(centersWorld[i], F, Color.green);
+                //Debug.DrawRay(centersWorld[i], F, Color.green);
+                Debug.DrawRay(centersWorld[i], normalsWorld[i], Color.red);
             }
             rigidBody.AddForceAtPosition(F, centersWorld[i]);
+        }
+    }
+
+    private void DebugPatch()
+    {
+        Mesh patchMesh = waterPatchMeshFilter.mesh;
+        Vector3[] verts = patchMesh.vertices;
+        for (var i = 0; i < verts.Length; i++)
+        {
+            Debug.DrawRay(verts[i], Vector3.up);
         }
     }
 
