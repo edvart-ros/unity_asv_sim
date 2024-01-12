@@ -54,19 +54,19 @@ public class WindForce : MonoBehaviour
             Vector3 triangleNormalWorld = transform.TransformDirection(triangleNormal);
 
             if (Vector3.Dot(windVector, triangleNormalWorld) < 0) {
-                Vector3 force = -Vector3.Dot(windVector.normalized, triangleNormalWorld.normalized) * windVector * triangleArea;
+                Vector3 force = windVector * (-Vector3.Dot(windVector.normalized, triangleNormalWorld.normalized) * triangleArea);
                 totalWindForce += force;
-                //rb.AddForceAtPosition(force, triangleCenterWorld);
+                rb.AddForceAtPosition(force, triangleCenterWorld);
                 
                 if (debug) { 
-                    //Debug.DrawRay(triangleCenterWorld, force);
+                    Debug.DrawRay(triangleCenterWorld, force);
                 }
             }
             if (debug) {
-                Debug.DrawRay(Vector3.zero, windVector, Color.red);
+                //Debug.DrawRay(Vector3.zero, windVector, Color.red);
             }
         }
-        rb.AddForce(totalWindForce);
+        //rb.AddForce(totalWindForce);
         Debug.DrawRay(transform.position, totalWindForce/100);
 
         // debugging

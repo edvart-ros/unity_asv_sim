@@ -27,15 +27,17 @@ public class KernerDynamics : MonoBehaviour
 
     private Submerged submerged;
     private float[] submergedFaceAreas;
+    private Buoyancy buoyancy;
 
 
-    private const float hullZMin = -2.5f;
-    private const float hullZMax = 2.9f;
+    public float hullZMin = -2.5f;
+    public float hullZMax = 2.9f;
 
 
     void Start()
     {
-        submerged = GetComponent<Buoyancy>().submerged;
+        buoyancy = GetComponent<Buoyancy>();
+        submerged = buoyancy.submerged;
     }
 
     void FixedUpdate()
@@ -43,7 +45,7 @@ public class KernerDynamics : MonoBehaviour
         totalViscousForce = Vector3.zero;
         totalPressureForce = Vector3.zero;
 
-        submerged = GetComponent<Buoyancy>().submerged;
+        submerged = buoyancy.submerged;
         submergedFaceAreas = Utils.CalculateTriangleAreas(submerged.mesh);
 
         if (viscousResistActive)
@@ -66,12 +68,14 @@ public class KernerDynamics : MonoBehaviour
         Vector3 omegaG = rigidBody.angularVelocity;
         Vector3 G = rigidBody.position;
         Vector3 n, Ci, GCi, vi, viTan, ufi, vfi, Fvi;
+        Vector3 vCurrent = new Vector3(1.0f, 0.0f, 0.0f);
         for (int i = 0; i < submerged.FaceCentersWorld.Length; i++)
         {
             n = submerged.FaceNormalsWorld[i].normalized;
             Ci = submerged.FaceCentersWorld[i];
             GCi = Ci - G;
-            vi = vG + Vector3.Cross(omegaG, GCi);
+            vi = vG + Vector3.Cross(omegaG, GCi); // - vCurrent;
+
             viTan = vi - (Vector3.Dot(vi, n)) * n;
             ufi = -viTan / (viTan.magnitude);
             if (float.IsNaN(ufi.x))
@@ -84,11 +88,11 @@ public class KernerDynamics : MonoBehaviour
             totalViscousForce += Fvi;
             if (debugResist)
             {
-                // Debug.DrawRay(Ci, Fvi, Color.red);
+                Debug.DrawRay(Ci, Fvi, Color.red);
             }
         }
         if (debugResist) {
-                Debug.DrawRay(transform.position, totalViscousForce/100, Color.red);
+                // Debug.DrawRay(transform.position, totalViscousForce/100, Color.red);
         }
         return;
     }
