@@ -26,12 +26,13 @@ public class ClassicalHydroDynamics : MonoBehaviour
     private float[,] Ma = new float[6,6];
     private float[,] D = new float[6,6];
     private float[] state = new float[6];
-    public Rigidbody rb;
+    private Rigidbody rb;
 
 
     // Start is called before the first frame update
     void Start()
     {
+        rb = GetComponent<Rigidbody>();
         Ma[0, 0] = XdotU;
         Ma[1, 1] = YdotV;
         Ma[2, 2] = ZdotW;
