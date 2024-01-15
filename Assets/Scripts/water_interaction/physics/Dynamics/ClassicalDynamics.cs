@@ -49,7 +49,7 @@ public class ClassicalHydroDynamics : MonoBehaviour
         Cor = CalculateCoriolisMatrix(state);
         D  = CalculateDampingMatrix(state);
 
-        (Vector3 Fd, Vector3 Td) = CalculateDampingForceTorque(D, state);
+        (Vector3 Fd, Vector3 Td) = CalculateDampingForceTorque(state);
         (Vector3 Fc, Vector3 Tc) = CalculateCoriolisForceTorque(Cor, state);
         
         Vector3 F = Fd + Fc;
@@ -62,7 +62,7 @@ public class ClassicalHydroDynamics : MonoBehaviour
         rb.AddTorque(T);
     }
 
-    public float[] getState(){
+    private float[] getState(){
         float[] eta = new float[6];
         Vector3 worldVelocity = rb.velocity;
         Vector3<FLU> localVelocity = transform.InverseTransformDirection(worldVelocity).To<FLU>();
@@ -77,7 +77,7 @@ public class ClassicalHydroDynamics : MonoBehaviour
         eta[5] = localAngularVelocity.z;
         return eta;
     }
-    public float[,] CalculateCoriolisMatrix(float[] eta){
+    private float[,] CalculateCoriolisMatrix(float[] eta){
         float[,] C = new float[6, 6];
         C[0, 5] = YdotV*eta[1];
         C[1, 5] = XdotU*eta[0];
@@ -86,8 +86,7 @@ public class ClassicalHydroDynamics : MonoBehaviour
         return C;
     }
 
-    public float[,] CalculateDampingMatrix(float[] eta){
-        float[,] D = new float[6, 6];
+    private float[,] CalculateDampingMatrix(float[] eta){
         D[0, 0] = Xu + Xuu*Mathf.Abs(eta[0]);
         D[1, 1] = Yv + Yvv*Mathf.Abs(eta[1]);
         D[2, 2] = Zw + Zww*Mathf.Abs(eta[2]);
@@ -96,7 +95,7 @@ public class ClassicalHydroDynamics : MonoBehaviour
         D[5, 5] = Nr + Nrr*Mathf.Abs(eta[5]);
         return D;
     }
-    public (Vector3, Vector3) CalculateDampingForceTorque(float[,] D, float[] eta)
+    private (Vector3, Vector3) CalculateDampingForceTorque(float[] eta)
     {
         Vector3 Fd = new Vector3(); // Damping force
         Vector3 Td = new Vector3(); // Damping torque
@@ -123,7 +122,7 @@ public class ClassicalHydroDynamics : MonoBehaviour
     }
 
 
-    public (Vector3, Vector3) CalculateCoriolisForceTorque(float[,] C, float[] eta)
+    private (Vector3, Vector3) CalculateCoriolisForceTorque(float[,] C, float[] eta)
     {
         Vector3 Fc = new Vector3();
         Vector3 Tc = new Vector3();
