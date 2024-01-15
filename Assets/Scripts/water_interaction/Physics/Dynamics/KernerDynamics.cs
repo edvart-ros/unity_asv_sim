@@ -7,7 +7,6 @@ using System.ComponentModel;
 public class KernerDynamics : MonoBehaviour
 {
 
-    public Rigidbody rigidBody;
     public bool viscousResistActive;
     public bool pressureDragActive;
     public bool debugPressureDrag;
@@ -28,6 +27,7 @@ public class KernerDynamics : MonoBehaviour
     private Submerged submerged;
     private float[] submergedFaceAreas;
     private Buoyancy buoyancy;
+    private Rigidbody rigidBody;
 
 
     public float hullZMin = -2.5f;
@@ -36,6 +36,7 @@ public class KernerDynamics : MonoBehaviour
 
     void Start()
     {
+        rigidBody = GetComponent<Rigidbody>();
         buoyancy = GetComponent<Buoyancy>();
         submerged = buoyancy.submerged;
     }

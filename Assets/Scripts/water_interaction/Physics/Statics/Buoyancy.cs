@@ -10,39 +10,29 @@ public class Buoyancy : MonoBehaviour
     public WaterSurface targetSurface = null;
     public float sideLength = 10;
     public int gridFidelity = 4;
-    public GameObject waterPatch;
-    public GameObject simplifiedMesh;
-    public GameObject submergedMesh;
-    public Rigidbody rigidBody;
+    public Mesh simplifiedMesh;
     public bool buoyancyForceActive = true;
     public bool debugBuoyancy;
     [ReadOnly]
     public Submerged submerged;
-
-    private MeshFilter waterPatchMeshFilter;
-    private MeshFilter simplifiedMeshFilter;
-    private MeshFilter submergedMeshFilter;
+    private Mesh submergedMesh;
     private Patch patch;
+    private Rigidbody rigidBody;
 
 
 
     void Start()
     {
-        waterPatchMeshFilter = waterPatch.GetComponent<MeshFilter>(); // the water patch used for fast water height look-up
-        simplifiedMeshFilter = simplifiedMesh.GetComponent<MeshFilter>(); // the simplified hull used for submerged mesh calculation
-        submergedMeshFilter = submergedMesh.GetComponent<MeshFilter>(); // the calculated submerged parts of the hull- used to calculate the buoyancy forces
+        rigidBody = GetComponent<Rigidbody>();
         Vector3 gridOrigin = new Vector3(-sideLength/2, 0, sideLength/2);
         patch = new Patch(targetSurface, sideLength, gridFidelity, gridOrigin);
-        submerged = new Submerged(simplifiedMeshFilter.mesh); // set up submersion by providing the simplified hull mesh
+        submerged = new Submerged(simplifiedMesh); // set up submersion by providing the simplified hull mesh
         patch.Update(transform); // updates the patch to follow the boat and queried water height
-
     }
 
     void FixedUpdate(){
         patch.Update(transform); // updates the patch to follow the boat and queried water height
-        waterPatchMeshFilter.mesh.vertices = patch.patchVertices; // assign the resulting patch vertices
         submerged.Update(patch, transform);
-        submergedMeshFilter.mesh = submerged.mesh;
         
         if (buoyancyForceActive){
             ApplyBuoyancy();
@@ -68,14 +58,15 @@ public class Buoyancy : MonoBehaviour
             rigidBody.AddForceAtPosition(F, centersWorld[i]);
         }
     }
-
+    
     private void DebugPatch()
     {
-        Mesh patchMesh = waterPatchMeshFilter.mesh;
-        Vector3[] verts = patchMesh.vertices;
-        for (var i = 0; i < verts.Length; i++)
+        int[] tris = patch.baseGridMesh.triangles;
+        Vector3[] verts = patch.patchVertices;
+        for (var i = 0; i < tris.Length; i += 3)
         {
-            Debug.DrawRay(verts[i], Vector3.up);
+            Vector3[] tri = new Vector3[] { verts[tris[i]], verts[tris[i+1]], verts[tris[i+2]] };
+            Utils.DebugDrawTriangle(tri, Color.red);
         }
     }
 

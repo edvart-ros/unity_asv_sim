@@ -24,7 +24,7 @@ namespace WaterInteraction{
         
         public int numGridPoints;
         public Vector3[] patchVertices;
-        public Mesh gridMesh;
+        public Mesh baseGridMesh;
         public Patch(WaterSurface water, float sideLength, int gridFidelity, Vector3 gridOrigin)
         {
             this.water = water;
@@ -47,8 +47,8 @@ namespace WaterInteraction{
 
         public void Initialize(){
             cellSize = sideLength / gridFidelity;
-            gridMesh = ConstructWaterGridMesh();
-            numGridPoints = gridMesh.vertices.Length;
+            baseGridMesh = ConstructWaterGridMesh();
+            numGridPoints = baseGridMesh.vertices.Length;
             // Allocate the buffers
             targetPositionBuffer = new NativeArray<float3>(numGridPoints, Allocator.Persistent);
             errorBuffer = new NativeArray<float>(numGridPoints, Allocator.Persistent);
@@ -199,7 +199,7 @@ namespace WaterInteraction{
         public void Update(Transform transform)
         {
             gridOrigin = new Vector3(-sideLength / 2 + transform.position.x, 0, sideLength / 2 + transform.position.z);
-            Vector3[] vertices = gridMesh.vertices;
+            Vector3[] vertices = baseGridMesh.vertices;
             for (var i = 0; i < vertices.Length; i++)
             {
                 targetPositionBuffer[i] = transform.position + vertices[i];
