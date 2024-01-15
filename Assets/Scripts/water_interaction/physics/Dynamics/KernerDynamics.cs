@@ -37,8 +37,7 @@ public class KernerDynamics : MonoBehaviour
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
-        buoyancy = GetComponent<Buoyancy>();
-        submerged = buoyancy.submerged;
+        submerged = GetComponent<Submersion>().submerged;
     }
 
     void FixedUpdate()
@@ -46,7 +45,6 @@ public class KernerDynamics : MonoBehaviour
         totalViscousForce = Vector3.zero;
         totalPressureForce = Vector3.zero;
 
-        submerged = buoyancy.submerged;
         submergedFaceAreas = Utils.CalculateTriangleAreas(submerged.mesh);
 
         if (viscousResistActive)
