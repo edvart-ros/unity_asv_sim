@@ -9,6 +9,7 @@ public class Buoyancy : MonoBehaviour
 
     public bool buoyancyForceActive = true;
     public bool debugBuoyancy;
+    private Submersion submersion;
     private Submerged submerged;
     private Patch patch;
     private Rigidbody rigidBody;
@@ -18,10 +19,11 @@ public class Buoyancy : MonoBehaviour
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
-        submerged = GetComponent<Submersion>().submerged;
+        submersion = GetComponent<Submersion>();
     }
 
     void FixedUpdate(){
+        submerged = submersion.submerged;
         if (buoyancyForceActive){
             ApplyBuoyancy();
         }

@@ -25,6 +25,7 @@ public class KernerDynamics : MonoBehaviour
     public Vector3 totalPressureForce;
 
     private Submerged submerged;
+    private Submersion submersion;
     private float[] submergedFaceAreas;
     private Buoyancy buoyancy;
     private Rigidbody rigidBody;
@@ -37,11 +38,12 @@ public class KernerDynamics : MonoBehaviour
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
-        submerged = GetComponent<Submersion>().submerged;
+        submersion = GetComponent<Submersion>();
     }
 
     void FixedUpdate()
-    {
+    {   
+        submerged = submersion.submerged;
         totalViscousForce = Vector3.zero;
         totalPressureForce = Vector3.zero;
 
