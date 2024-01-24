@@ -42,6 +42,8 @@ public class KernerDynamics : MonoBehaviour
 
     void FixedUpdate()
     {
+        rigidBody = GetComponent<Rigidbody>();
+        submerged = GetComponent<Submersion>().submerged;
         totalViscousForce = Vector3.zero;
         totalPressureForce = Vector3.zero;
 

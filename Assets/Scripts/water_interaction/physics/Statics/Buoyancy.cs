@@ -22,6 +22,8 @@ public class Buoyancy : MonoBehaviour
     }
 
     void FixedUpdate(){
+        rigidBody = GetComponent<Rigidbody>();
+        submerged = GetComponent<Submersion>().submerged;
         if (buoyancyForceActive){
             ApplyBuoyancy();
         }
