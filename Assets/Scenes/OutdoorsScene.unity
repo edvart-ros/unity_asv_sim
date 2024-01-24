@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2290.9006, g: 2377.6643, b: 3434.5864, a: 1}
+  m_IndirectSpecularColor: {r: 2298.2007, g: 2391.8384, b: 3472.864, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -491,6 +491,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1708da91d5bb00a4383848e791ae536b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buoyancyForceActive: 1
+  debugBuoyancy: 0
   targetSurface: {fileID: 217986714}
   sideLength: 140
   gridFidelity: 4
@@ -498,8 +500,6 @@ MonoBehaviour:
   simplifiedMesh: {fileID: 1132465974}
   submergedMesh: {fileID: 562110250}
   rigidBody: {fileID: 96240332}
-  buoyancyForceActive: 1
-  debugBuoyancy: 0
 --- !u!54 &96240332
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2471,6 +2471,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1708da91d5bb00a4383848e791ae536b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buoyancyForceActive: 1
+  debugBuoyancy: 1
   targetSurface: {fileID: 217986714}
   sideLength: 140
   gridFidelity: 4
@@ -2478,8 +2480,6 @@ MonoBehaviour:
   simplifiedMesh: {fileID: 1177449168566759987}
   submergedMesh: {fileID: 728763499}
   rigidBody: {fileID: 822323846}
-  buoyancyForceActive: 1
-  debugBuoyancy: 1
 --- !u!54 &822323846
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -3908,7 +3908,6 @@ Transform:
   m_Children:
   - {fileID: 1289206385}
   - {fileID: 1125395694}
-  - {fileID: 1823688467}
   - {fileID: 581027216}
   - {fileID: 1674287623}
   - {fileID: 1015651504}
@@ -4005,6 +4004,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1708da91d5bb00a4383848e791ae536b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  buoyancyForceActive: 1
+  debugBuoyancy: 0
   targetSurface: {fileID: 217986714}
   sideLength: 10
   gridFidelity: 10
@@ -4012,8 +4013,6 @@ MonoBehaviour:
   simplifiedMesh: {fileID: 1175223176}
   submergedMesh: {fileID: 1617511394}
   rigidBody: {fileID: 1459078179}
-  buoyancyForceActive: 1
-  debugBuoyancy: 0
 --- !u!114 &1459078188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4594,6 +4593,53 @@ Transform:
   - {fileID: 1959097610}
   m_Father: {fileID: 952324924}
   m_LocalEulerAnglesHint: {x: 340.55, y: -360.225, z: -0.007}
+--- !u!1 &1588773259
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1588773260}
+  - component: {fileID: 1588773261}
+  m_Layer: 0
+  m_Name: CameraPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1588773260
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1588773259}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1823688467}
+  m_Father: {fileID: 1801125938}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1588773261
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1588773259}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dab42a10177f941c2aa47845ba76a9c6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ship: {fileID: 0}
+  rotationSpeed: 100
 --- !u!1 &1609958398
 GameObject:
   m_ObjectHideFlags: 0
@@ -5052,6 +5098,7 @@ Transform:
   m_Children:
   - {fileID: 1459078177}
   - {fileID: 1731257782}
+  - {fileID: 1588773260}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -76.744, z: 0}
 --- !u!1 &1817204472
@@ -5235,7 +5282,7 @@ GameObject:
   - component: {fileID: 1823688465}
   - component: {fileID: 1823688468}
   m_Layer: 0
-  m_Name: SimCam
+  m_Name: CameraGame
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5308,12 +5355,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1823688464}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.17364816, y: 0, z: 0, w: 0.9848078}
-  m_LocalPosition: {x: 0, y: 3, z: -6}
+  m_LocalRotation: {x: 0.1227878, y: 0.6963643, z: -0.12278782, w: 0.6963642}
+  m_LocalPosition: {x: -6, y: 3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 1459078177}
+  m_Father: {fileID: 1588773260}
   m_LocalEulerAnglesHint: {x: 20, y: 0, z: 0}
 --- !u!114 &1823688468
 MonoBehaviour:
