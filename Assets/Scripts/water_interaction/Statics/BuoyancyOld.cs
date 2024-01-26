@@ -3,7 +3,7 @@ using UnityEngine.Rendering.HighDefinition;
 using WaterInteraction;
 using Unity.Collections;
 
-public class Buoyancy : MonoBehaviour
+public class BuoyancyOld : MonoBehaviour
 {
     // Toggles
     public bool buoyancyForceActive = true;

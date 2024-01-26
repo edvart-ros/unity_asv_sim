@@ -1,0 +1,82 @@
+{
+    "name": "InputActions",
+    "maps": [
+        {
+            "name": "Camera",
+            "id": "6a5880ef-1499-41bf-ab8d-8fda5645ad89",
+            "actions": [
+                {
+                    "name": "Pan",
+                    "type": "Value",
+                    "id": "2e114cde-a4e1-44c8-9d5b-149e755113fa",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Zoom",
+                    "type": "Value",
+                    "id": "a8821cf1-a7c9-45f3-ac0a-291b90d54054",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "37b323cb-b0c3-441d-9e1d-1fbef1bdba42",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "StickDeadzone",
+                    "groups": "",
+                    "action": "Pan",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c08edf7-457a-4aad-ac7b-82f5802cda63",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Zoom",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Movement",
+            "id": "93b14135-ea06-42ee-b5e0-fe89187edaf9",
+            "actions": [
+                {
+                    "name": "Rudder",
+                    "type": "Value",
+                    "id": "d91a91d4-0ee5-42f8-834c-4f17441f1fba",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "d4b2154f-125d-41ea-b741-94a6d18678b8",
+                    "path": "<Gamepad>/leftStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Rudder",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
