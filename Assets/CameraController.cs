@@ -45,7 +45,7 @@ public class CameraController : MonoBehaviour
 
         // Clamp the x rotation between -45 and 90 degrees
         Vector3 eulerAngles = currentRotation.eulerAngles;
-        eulerAngles.x = Mathf.Clamp(eulerAngles.x, 5, 60);
+        eulerAngles.x = Mathf.Clamp(eulerAngles.x, 1, 70);
         eulerAngles.z = 0;
         currentRotation.eulerAngles = eulerAngles;
 
