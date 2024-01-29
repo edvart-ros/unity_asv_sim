@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0, g: 0, b: 0, a: 1}
+  m_IndirectSpecularColor: {r: 1830.513, g: 1984.4514, b: 2912.7346, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -3797,14 +3797,13 @@ GameObject:
   - component: {fileID: 2082548589}
   - component: {fileID: 2082548588}
   - component: {fileID: 2082548587}
-  - component: {fileID: 2082548586}
+  - component: {fileID: 2082548579}
   - component: {fileID: 2082548585}
   - component: {fileID: 2082548584}
   - component: {fileID: 2082548583}
   - component: {fileID: 2082548582}
   - component: {fileID: 2082548581}
   - component: {fileID: 2082548580}
-  - component: {fileID: 2082548579}
   m_Layer: 0
   m_Name: WAM-V
   m_TagString: Untagged
@@ -3824,21 +3823,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 768f6824f5c10484dbcd9eb7854836dd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Xu: 100
-  Xuu: 100
+  Xu: 50
+  Xuu: 50
   Xuuu: 0
-  Yv: 100
-  Yvv: 100
+  Yv: 50
+  Yvv: 50
   Yvvv: 0
-  Yr: 100
+  Yr: 30
   Zw: 100
   Zww: 100
   Kp: 100
   Kpp: 100
   Mq: 100
   Mqq: 100
-  Nr: 100
-  Nrr: 100
+  Nr: 300
+  Nrr: 300
   Nrrr: 0
   Nv: 0
 --- !u!114 &2082548580
@@ -3947,39 +3946,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forceAmount: 1200
   torqueAmount: 800
---- !u!114 &2082548586
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2082548578}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48d5fb5f7e6e11f48b5f492d488e04a3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Damping: 1
-  AddedMass: 0
-  Coriolis: 1
-  XdotU: 5
-  YdotV: 5
-  ZdotW: 0.1
-  KdotP: 0
-  MdotQ: 0
-  NdotR: 0
-  Xu: 100
-  Xuu: 150
-  Yv: 100
-  Yvv: 100
-  Zw: 500
-  Zww: 0
-  Kp: 300
-  Kpp: 600
-  Mq: 900
-  Mqq: 900
-  Nr: 800
-  Nrr: 800
 --- !u!114 &2082548587
 MonoBehaviour:
   m_ObjectHideFlags: 0
