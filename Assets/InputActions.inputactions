@@ -50,7 +50,7 @@
             ]
         },
         {
-            "name": "Movement",
+            "name": "Ship",
             "id": "93b14135-ea06-42ee-b5e0-fe89187edaf9",
             "actions": [
                 {
@@ -58,6 +58,24 @@
                     "type": "Value",
                     "id": "d91a91d4-0ee5-42f8-834c-4f17441f1fba",
                     "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "PositivePropulsion",
+                    "type": "Value",
+                    "id": "8d7f47e7-10f1-40b0-a2da-a744bb499b48",
+                    "expectedControlType": "Axis",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "NegativePropulsion",
+                    "type": "Value",
+                    "id": "73995f8a-9e2a-4a5f-8a9f-ff6376f91027",
+                    "expectedControlType": "Axis",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
@@ -72,6 +90,28 @@
                     "processors": "",
                     "groups": "",
                     "action": "Rudder",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "1dc57be3-cbbe-47a5-829e-9db8c0e096d2",
+                    "path": "<Gamepad>/rightTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "PositivePropulsion",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2542ccd0-da5b-4bb1-af01-ea15bb2443b0",
+                    "path": "<Gamepad>/leftTrigger",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "NegativePropulsion",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

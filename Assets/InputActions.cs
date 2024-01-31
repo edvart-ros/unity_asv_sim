@@ -72,7 +72,7 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
             ]
         },
         {
-            ""name"": ""Movement"",
+            ""name"": ""Ship"",
             ""id"": ""93b14135-ea06-42ee-b5e0-fe89187edaf9"",
             ""actions"": [
                 {
@@ -80,6 +80,24 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""type"": ""Value"",
                     ""id"": ""d91a91d4-0ee5-42f8-834c-4f17441f1fba"",
                     ""expectedControlType"": ""Vector2"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""PositivePropulsion"",
+                    ""type"": ""Value"",
+                    ""id"": ""8d7f47e7-10f1-40b0-a2da-a744bb499b48"",
+                    ""expectedControlType"": ""Axis"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""NegativePropulsion"",
+                    ""type"": ""Value"",
+                    ""id"": ""73995f8a-9e2a-4a5f-8a9f-ff6376f91027"",
+                    ""expectedControlType"": ""Axis"",
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
@@ -96,6 +114,28 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""action"": ""Rudder"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1dc57be3-cbbe-47a5-829e-9db8c0e096d2"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""PositivePropulsion"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""2542ccd0-da5b-4bb1-af01-ea15bb2443b0"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""NegativePropulsion"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -106,9 +146,11 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Camera = asset.FindActionMap("Camera", throwIfNotFound: true);
         m_Camera_Pan = m_Camera.FindAction("Pan", throwIfNotFound: true);
         m_Camera_Zoom = m_Camera.FindAction("Zoom", throwIfNotFound: true);
-        // Movement
-        m_Movement = asset.FindActionMap("Movement", throwIfNotFound: true);
-        m_Movement_Rudder = m_Movement.FindAction("Rudder", throwIfNotFound: true);
+        // Ship
+        m_Ship = asset.FindActionMap("Ship", throwIfNotFound: true);
+        m_Ship_Rudder = m_Ship.FindAction("Rudder", throwIfNotFound: true);
+        m_Ship_PositivePropulsion = m_Ship.FindAction("PositivePropulsion", throwIfNotFound: true);
+        m_Ship_NegativePropulsion = m_Ship.FindAction("NegativePropulsion", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -221,58 +263,76 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
     }
     public CameraActions @Camera => new CameraActions(this);
 
-    // Movement
-    private readonly InputActionMap m_Movement;
-    private List<IMovementActions> m_MovementActionsCallbackInterfaces = new List<IMovementActions>();
-    private readonly InputAction m_Movement_Rudder;
-    public struct MovementActions
+    // Ship
+    private readonly InputActionMap m_Ship;
+    private List<IShipActions> m_ShipActionsCallbackInterfaces = new List<IShipActions>();
+    private readonly InputAction m_Ship_Rudder;
+    private readonly InputAction m_Ship_PositivePropulsion;
+    private readonly InputAction m_Ship_NegativePropulsion;
+    public struct ShipActions
     {
         private @InputActions m_Wrapper;
-        public MovementActions(@InputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Rudder => m_Wrapper.m_Movement_Rudder;
-        public InputActionMap Get() { return m_Wrapper.m_Movement; }
+        public ShipActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @Rudder => m_Wrapper.m_Ship_Rudder;
+        public InputAction @PositivePropulsion => m_Wrapper.m_Ship_PositivePropulsion;
+        public InputAction @NegativePropulsion => m_Wrapper.m_Ship_NegativePropulsion;
+        public InputActionMap Get() { return m_Wrapper.m_Ship; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(MovementActions set) { return set.Get(); }
-        public void AddCallbacks(IMovementActions instance)
+        public static implicit operator InputActionMap(ShipActions set) { return set.Get(); }
+        public void AddCallbacks(IShipActions instance)
         {
-            if (instance == null || m_Wrapper.m_MovementActionsCallbackInterfaces.Contains(instance)) return;
-            m_Wrapper.m_MovementActionsCallbackInterfaces.Add(instance);
+            if (instance == null || m_Wrapper.m_ShipActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_ShipActionsCallbackInterfaces.Add(instance);
             @Rudder.started += instance.OnRudder;
             @Rudder.performed += instance.OnRudder;
             @Rudder.canceled += instance.OnRudder;
+            @PositivePropulsion.started += instance.OnPositivePropulsion;
+            @PositivePropulsion.performed += instance.OnPositivePropulsion;
+            @PositivePropulsion.canceled += instance.OnPositivePropulsion;
+            @NegativePropulsion.started += instance.OnNegativePropulsion;
+            @NegativePropulsion.performed += instance.OnNegativePropulsion;
+            @NegativePropulsion.canceled += instance.OnNegativePropulsion;
         }
 
-        private void UnregisterCallbacks(IMovementActions instance)
+        private void UnregisterCallbacks(IShipActions instance)
         {
             @Rudder.started -= instance.OnRudder;
             @Rudder.performed -= instance.OnRudder;
             @Rudder.canceled -= instance.OnRudder;
+            @PositivePropulsion.started -= instance.OnPositivePropulsion;
+            @PositivePropulsion.performed -= instance.OnPositivePropulsion;
+            @PositivePropulsion.canceled -= instance.OnPositivePropulsion;
+            @NegativePropulsion.started -= instance.OnNegativePropulsion;
+            @NegativePropulsion.performed -= instance.OnNegativePropulsion;
+            @NegativePropulsion.canceled -= instance.OnNegativePropulsion;
         }
 
-        public void RemoveCallbacks(IMovementActions instance)
+        public void RemoveCallbacks(IShipActions instance)
         {
-            if (m_Wrapper.m_MovementActionsCallbackInterfaces.Remove(instance))
+            if (m_Wrapper.m_ShipActionsCallbackInterfaces.Remove(instance))
                 UnregisterCallbacks(instance);
         }
 
-        public void SetCallbacks(IMovementActions instance)
+        public void SetCallbacks(IShipActions instance)
         {
-            foreach (var item in m_Wrapper.m_MovementActionsCallbackInterfaces)
+            foreach (var item in m_Wrapper.m_ShipActionsCallbackInterfaces)
                 UnregisterCallbacks(item);
-            m_Wrapper.m_MovementActionsCallbackInterfaces.Clear();
+            m_Wrapper.m_ShipActionsCallbackInterfaces.Clear();
             AddCallbacks(instance);
         }
     }
-    public MovementActions @Movement => new MovementActions(this);
+    public ShipActions @Ship => new ShipActions(this);
     public interface ICameraActions
     {
         void OnPan(InputAction.CallbackContext context);
         void OnZoom(InputAction.CallbackContext context);
     }
-    public interface IMovementActions
+    public interface IShipActions
     {
         void OnRudder(InputAction.CallbackContext context);
+        void OnPositivePropulsion(InputAction.CallbackContext context);
+        void OnNegativePropulsion(InputAction.CallbackContext context);
     }
 }
