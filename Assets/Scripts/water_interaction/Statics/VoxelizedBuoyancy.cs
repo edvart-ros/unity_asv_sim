@@ -18,6 +18,15 @@ public class VoxelizedBuoyancy : MonoBehaviour
         voxelVolume = voxelSize * voxelSize * voxelSize;
         
     }
+    
+    // TODO: See following list:
+    // 1. Read points from file
+    // 2. 
+    
+    
+    
+    
+    
     // Start is called before the first frame update
     void Start()
     {
