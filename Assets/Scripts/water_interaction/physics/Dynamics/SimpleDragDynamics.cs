@@ -16,6 +16,8 @@ public class SimpleDragDynamics : MonoBehaviour
 
     private Vector3 vel;
     private Vector3 angVel;
+    private float dt;
+    private float m;
 
     
     private Vector3 localVel;
@@ -24,10 +26,12 @@ public class SimpleDragDynamics : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody>();
+        dt = Time.fixedDeltaTime;
+        m = rb.mass;
     }
 
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
         vel = rb.velocity;
         angVel = rb.angularVelocity;
@@ -45,14 +49,19 @@ public class SimpleDragDynamics : MonoBehaviour
 
     void ApplyDampingForce()
     {
+        float FwMax = Mathf.Abs(m * w);
+
         float Fu = -(Xu * u + Xuu * Math.Abs(u) * u + Xuuu * u * u * u);
         float Fv = -(Yv * v + Yr * r + Yvv * Math.Abs(v) * v + Yvvv * v * v * v);
         float Fw = -(Zw * w + Zww * Math.Abs(w) * w);
+        Fw = Mathf.Clamp(Fw, -FwMax, FwMax);
 
         float Tp = -(Kp * p + Kpp * Math.Abs(p) * p);
         float Tq = -(Mq * q + Mqq * Math.Abs(q) * q);
         float Tr = -(Nv * r + Nr * r + Nrr * Math.Abs(r) * r + Nrrr * r * r * r);
-        rb.AddRelativeForce(new Vector3(-Fv, Fw,Fu));
+        Vector3 F = transform.TransformDirection(new Vector3(-Fv, Fw, Fu));
+        rb.AddForce(F);
+        Debug.DrawRay(transform.position, F);
         rb.AddTorque(new Vector3(Tq, -Tr, -Tp));
     }
 }

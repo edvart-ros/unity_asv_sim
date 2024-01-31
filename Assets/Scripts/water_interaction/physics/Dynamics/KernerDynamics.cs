@@ -21,8 +21,6 @@ public class KernerDynamics : MonoBehaviour
     [Range(0.1f, 4.0f)]
     public float pressureDragFalloffPower = 1.0f;
 
-    public Vector3 totalViscousForce;
-    public Vector3 totalPressureForce;
 
     private Submerged submerged;
     private float[] submergedFaceAreas;
@@ -44,8 +42,6 @@ public class KernerDynamics : MonoBehaviour
     {
         rigidBody = GetComponent<Rigidbody>();
         submerged = GetComponent<Submersion>().submerged;
-        totalViscousForce = Vector3.zero;
-        totalPressureForce = Vector3.zero;
 
         submergedFaceAreas = Utils.CalculateTriangleAreas(submerged.mesh);
 
@@ -53,6 +49,7 @@ public class KernerDynamics : MonoBehaviour
         {
             float Cfr = submerged.GetResistanceCoefficient(rigidBody.velocity.magnitude, hullZMin, hullZMax);
             ApplyViscousResistance(Cfr);
+            Debug.Log(Cfr);
         }
         if (pressureDragActive)
         {
@@ -86,7 +83,6 @@ public class KernerDynamics : MonoBehaviour
             vfi = vi.magnitude * ufi;
             Fvi = (0.5f) * density * Cfr * submergedFaceAreas[i] * vfi.magnitude * vfi;
             rigidBody.AddForceAtPosition(Fvi, Ci);
-            totalViscousForce += Fvi;
             if (debugResist)
             {
                 Debug.DrawRay(Ci, Fvi, Color.red);
@@ -133,7 +129,6 @@ public class KernerDynamics : MonoBehaviour
                 Fpd = -(Cpd1 * (viMag / vRef) + Cpd2 * ((viMag * viMag) / (vRef * vRef))) * Si * Mathf.Pow(cosThetai, fp) * ni;
             }
             rigidBody.AddForceAtPosition(Fpd, Ci);
-            totalPressureForce += Fpd;
             if (debugPressureDrag)
             {
                 Debug.DrawRay(Ci, Fpd, Color.white);
