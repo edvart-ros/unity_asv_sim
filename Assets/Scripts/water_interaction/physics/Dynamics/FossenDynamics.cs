@@ -70,7 +70,6 @@ public class FossenDynamics : MonoBehaviour
         Vector3 F = DampingFactor*Fd + CoriolisFactor*Fc + AddedMassFactor*Fma;
         Vector3 T = DampingFactor*Td + CoriolisFactor*Tc + AddedMassFactor*Tma;
 
-        Debug.Log((Fd, Fc, Fma, Td, Tc, Tma));
         // Convert from right-handed, z-up to left-handed, y-up (Unity's coordinate system)
         F = new Vector3(-F.y, F.z, F.x); // Switch y and z, negate new y
         T = new Vector3(T.y, -T.z, -T.x); // Switch y and z, negate new z
