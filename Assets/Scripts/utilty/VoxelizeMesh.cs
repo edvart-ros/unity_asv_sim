@@ -75,7 +75,8 @@ public class VoxelizeMesh : MonoBehaviour
 
         // Write the number of points in the list to a file
         
-        
+        // TODO: This saving might not work.
+        SavePoints(pointsInsideMesh, "Assets/pointsData.txt");
         print("No. of points in list: " + pointsInsideMesh.Count);
         pointsData = pointsInsideMesh;
     }

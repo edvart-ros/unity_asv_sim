@@ -1,15 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
+// TODO: Add a camera follow mode with curve back to default if moved
+// TODO: Add a camera zoom mode
 public class CameraController : MonoBehaviour
 {
     public Transform ship; // Reference to the ship's transform
     private InputActions inputActions;
     private Vector2 panInput;
     public float rotationSpeed = 100.0f; // Speed of camera rotation
+    public Vector3 cameraOffset = new Vector3(0, 0, 0);
 
     private void Awake()
     {
@@ -53,6 +57,6 @@ public class CameraController : MonoBehaviour
         }
 
         // Update the camera's position to follow the ship
-        transform.position = ship.position;
+        transform.position = ship.position - cameraOffset;
     }
 }
