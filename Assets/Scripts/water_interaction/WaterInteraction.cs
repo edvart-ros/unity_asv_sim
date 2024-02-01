@@ -141,7 +141,6 @@ namespace WaterInteraction {
             Vector3 AC = triangle[2] - triangle[0];
             Vector3 abc = Vector3.Cross(AB, AC);
             float d = Vector3.Dot(abc, triangle[0]);
-            if (abc.y == 0.0f) Debug.LogError("Division by zero when calculating height of point above triangle plane!");
             return (point.y - (d - abc.x * point.x - abc.z * point.z) / abc.y);
         }
 
@@ -284,11 +283,10 @@ namespace WaterInteraction {
     public class Submerged {
         public Mesh hullMesh;
         public Mesh mesh = new Mesh();
-        public float[] triangleAreas;
-        public Vector3[] FaceNormalsL = new Vector3[0];
+        float[] triangleAreas;
+        public Vector3[] FaceNormalsWorld = new Vector3[0];
         public Vector3[] FaceCentersWorld = new Vector3[0];
-        public float[] FaceCenterHeightsAboveWater = new float[0];
-        public Vector3[] pressureCenters = new Vector3[0];
+        public float[] FaceCenterHeightsAboveWater;
         private int L;
         public Submerged(Mesh simplifiedHullMesh) {
             hullMesh = simplifiedHullMesh;
@@ -300,49 +298,41 @@ namespace WaterInteraction {
             // cache hull vertices and wave field approximation vertices
             Vector3[] hullVerts = hullMesh.vertices;
             int[] hullTris = hullMesh.triangles;
-            Vector3[] hullVertNormals = hullMesh.normals;
 
-            // get the set of completely submerged triangles and their normals
-            (Vector3[] subVerts, int[] subTris, Vector3[] subNormals) = GetSubmergedTriangles(patch, t, hullVerts, hullTris, hullVertNormals);
-            // split these further into vertical and horizontal triangles and assign to submersion mesh
-            (subVerts, subTris, subNormals) = SplitTrianglesHorizontally(subVerts, subTris, subNormals, t);
+            // get the set of completely submerged triangles
+            (Vector3[] subVerts, int[] subTris) = GetSubmergedTriangles(patch, t, hullVerts, hullTris);
+            // split these into vertical and horizontal triangles
+            (subVerts, subTris) = SplitTrianglesHorizontally(subVerts, subTris, t);
+            triangleAreas = GetTriangleAreas(subVerts);
+
+            FaceCenterHeightsAboveWater = GetTriangleCenterHeights(patch, t, subVerts, subTris);
             mesh.vertices = subVerts;
             mesh.triangles = subTris;
-            FaceNormalsL = subNormals;
-            triangleAreas = GetTriangleAreas(subVerts);
-            //store the height at the center of each triangle for buoyancy force calculation
-            FaceCenterHeightsAboveWater = GetTriangleCenterHeights(patch, t, subVerts, subTris);
-            // calculate the centers of pressure for each triangle for buoyancy force application points
-            pressureCenters = GetPressureCenters(patch, t, subVerts, subTris);
-            
+
         }
 
 
 
-        public (Vector3[], int[], Vector3[]) GetSubmergedTriangles(Patch patch, Transform t, Vector3[] bodyVerts, int[] bodyTris, Vector3[] bodyVertNormals) {
-            List<int> trisOut = new List<int>();
+        public (Vector3[], int[]) GetSubmergedTriangles(Patch patch, Transform t, Vector3[] bodyVerts, int[] bodyTris) {
             List<Vector3> vertsOut = new List<Vector3>();
-            List<Vector3> normalsOut = new List<Vector3>();
+            List<int> trisOut = new List<int>();
 
             // loop through input triangles
             for (int i = 0; i < bodyTris.Length - 2; i += 3) {
                 Vector3[] vertsL = new Vector3[3];
-                Vector3[] normalsL = new Vector3[3];
                 Vector3[] vertsW = new Vector3[3];
                 float[] vertHeights = new float[3];
-
                 int submCount = 0;
 
                 // get the local and world positions of the current triangle, compute depth, track number of submerged verts in triangle
                 for (int j = 0; j < 3; j++) {
                     vertsL[j] = bodyVerts[bodyTris[i + j]];
-                    normalsL[j] = bodyVertNormals[bodyTris[i + j]];
                     vertsW[j] = t.TransformPoint(vertsL[j]);
                     float height = patch.GetPatchRelativeHeight(vertsW[j]);
                     vertHeights[j] = height;
                     if (height < 0) submCount++; // depth > 0 == submerged point
                 }
-                Vector3 triangleNormal = (normalsL[0] + normalsL[1] + normalsL[2]).normalized;
+
 
                 // how many vertices are underwater?
                 switch (submCount) {
@@ -361,8 +351,7 @@ namespace WaterInteraction {
 
                             Vector3 J_H = sortedVertsL[0] + LJ_H;
                             Vector3 J_M = sortedVertsL[0] + LJ_M;
-                            Vector3 normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[0], J_H, J_M).magnitude;
-                            AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[0], J_H, J_M, triangleNormal);
+                            AppendTriangle(ref vertsOut, ref trisOut, sortedVertsL[0], J_H, J_M);
 
                             break;
                         }
@@ -379,67 +368,50 @@ namespace WaterInteraction {
 
                             Vector3 I_L = sortedVertsL[0] + LI_L;
                             Vector3 I_M = sortedVertsL[1] + LI_M;
-                            Vector3 normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[1], I_M, sortedVertsL[0]).magnitude;
-                            AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[1], I_M, sortedVertsL[0], triangleNormal);
-                            normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[0], I_M, I_L).magnitude;
-                            AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[0], I_M, I_L, triangleNormal);
+                            AppendTriangle(ref vertsOut, ref trisOut, sortedVertsL[1], I_M, sortedVertsL[0]);
+                            AppendTriangle(ref vertsOut, ref trisOut, sortedVertsL[0], I_M, I_L);
 
                             break;
                         }
-                    case 3: {
-                            Vector3 normal = triangleNormal * Utils.GetFaceNormal(vertsL[0], vertsL[1], vertsL[2]).magnitude;
-                            AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, vertsL[0], vertsL[1], vertsL[2], triangleNormal);
-                            break;
-                    }
+                    case 3:
+                        AppendTriangle(ref vertsOut, ref trisOut, vertsL[0], vertsL[1], vertsL[2]);
+                        break;
 
 
                 }
             }
-            return (vertsOut.ToArray(), trisOut.ToArray(), normalsOut.ToArray());
+            return (vertsOut.ToArray(), trisOut.ToArray());
         }
 
-        public (Vector3[], int[], Vector3[]) SplitTrianglesHorizontally(Vector3[] verts, int[] tris, Vector3[] normals, Transform t) {
-            List<Vector3> outVerts = new List<Vector3>(tris.Length*2);
-            List<int> outTris = new List<int>(tris.Length*2);
-            List<Vector3> outNormals = new List<Vector3>((tris.Length*2)/3);
+        public (Vector3[], int[]) SplitTrianglesHorizontally(Vector3[] verts, int[] tris, Transform t) {
+            List<Vector3> subVerts = new List<Vector3>(tris.Length*2);
+            List<int> subTris = new List<int>(tris.Length*2);
             for (int i = 0; i < tris.Length - 2; i += 3) {
-                Vector3[] vertsL = new Vector3[3];
                 Vector3[] vertsW = new Vector3[3];
-                Vector3 triNormal = normals[i / 3];
-                for (int j = 0; j < 3; j++) {
-                    vertsL[j] = verts[tris[i + j]];
-                    vertsW[j] = t.TransformPoint(vertsL[j]);
-                }
+                for (int j = 0; j < 3; j++) vertsW[j] = t.TransformPoint(verts[tris[i + j]]);
                 (Vector3[] topTri, Vector3[] botTri) = SplitSubmergedTriangleHorizontally(vertsW);
-
-                AppendTriangle(ref outVerts, ref outTris, ref outNormals, t.InverseTransformPoint(topTri[0]),t.InverseTransformPoint(topTri[1]), t.InverseTransformPoint(topTri[2]), triNormal);
-                AppendTriangle(ref outVerts, ref outTris, ref outNormals, t.InverseTransformPoint(botTri[0]), t.InverseTransformPoint(botTri[1]), t.InverseTransformPoint(botTri[2]), triNormal);
+                AppendTriangle(ref subVerts, ref subTris, t.InverseTransformPoint(topTri[0]),t.InverseTransformPoint(topTri[1]), t.InverseTransformPoint(topTri[2]));
+                AppendTriangle(ref subVerts, ref subTris, t.InverseTransformPoint(botTri[0]), t.InverseTransformPoint(botTri[1]), t.InverseTransformPoint(botTri[2]));
             }
-            return (outVerts.ToArray(), outTris.ToArray(), outNormals.ToArray());
+            return (subVerts.ToArray(), subTris.ToArray());
         }
 
         public Vector3[] GetPressureCenters(Patch patch, Transform t, Vector3[] verts, int[] tris) {
-            int triIdx = 0;
-            Vector3[] pressureCenters = new Vector3[tris.Length / 3];
-            for (int i = 0; i < tris.Length - 5; i += 6) {
-                Vector3[] vertsTopW = new Vector3[3];
-                Vector3[] vertsBotW = new Vector3[3];
-                for (int j = 0; j < 3; j++) {
-                    vertsTopW[j] = t.TransformPoint(verts[tris[i + j]]);
-                    vertsBotW[j] = t.TransformPoint(verts[tris[i + j + 3]]);
-                }
-                pressureCenters[triIdx] = CalculateBuoyancyCenterTopTriangle(patch, vertsTopW);
-                pressureCenters[triIdx+1] = CalculateBuoyancyCenterBottomTriangle(patch, vertsBotW);
-                triIdx+=2;
+            // TODO
+            for (int i = 0; i < tris.Length - 2; i += 3) {
+                Vector3[] vertsL = new Vector3[3];
+                Vector3[] vertsW = new Vector3[3];
+
+                for (int j = 0; j < 3; j++) vertsW[j] = t.TransformPoint(verts[tris[i + j]]);
             }
-            return pressureCenters;
+            return new Vector3[0];
         }
 
 
         public float[] GetTriangleCenterHeights(Patch patch, Transform t, Vector3[] verts, int[] tris) {
             float[] heights = new float[verts.Length / 3];
             for (int i = 0; i < tris.Length - 2; i += 3) {
-                Vector3 centerVert = (verts[tris[i]] + verts[tris[i+1]] + verts[tris[i+2]])/3.0f;
+                Vector3 centerVert = (verts[tris[i]] + verts[tris[i+1]] + verts[tris[i+2]])/3;
                 heights[i/3] = patch.GetPatchRelativeHeight(t.TransformPoint(centerVert));
             }
             return heights;
@@ -469,9 +441,6 @@ namespace WaterInteraction {
                 float dx = H.x - L.x;
                 float dz = H.z - L.z;
                 float dy = H.y - L.y;
-                if (dy == 0) {
-                    dy = 1e-12f;
-                }
                 float mX = dx / dy;
                 float mZ = dz / dy;
 
@@ -490,13 +459,14 @@ namespace WaterInteraction {
         public float[] GetTriangleAreas(Vector3[] verts) {
             float[] areas = new float[verts.Length/3];
             for (int i = 0; i < verts.Length-2; i+=3) {
-                Vector3 n = Utils.GetFaceNormal(verts[i], verts[i+1], verts[i+2]);
+                Vector3 n = Utils.GetFaceNormal(verts[0], verts[1], verts[2]);
                 areas[i / 3] = n.magnitude;
             }
             return areas;
         }
 
-        public void AppendTriangle(ref List<Vector3> verts, ref List<int> tris, ref List<Vector3> normals, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 triNormal) {
+
+        public void AppendTriangle(ref List<Vector3> verts, ref List<int> tris, Vector3 v1, Vector3 v2, Vector3 v3) {
             int count = verts.Count;
             verts.Add(v1);
             verts.Add(v2);
@@ -504,7 +474,6 @@ namespace WaterInteraction {
             tris.Add(count);
             tris.Add(count + 1);
             tris.Add(count + 2);
-            normals.Add(triNormal);
         }
 
 
@@ -520,11 +489,11 @@ namespace WaterInteraction {
                 Vector3 v1 = vertices[triangles[i + 1]];
                 Vector3 v2 = vertices[triangles[i + 2]];
                 float Si = (0.5f) * Vector3.Cross((v1 - v0), (v2 - v0)).magnitude;
-                float Ki = GetTriangleK((v0.z + v1.z + v2.z) / 3.0f, hullZmin, hullZmax);
+                float Ki = GetTriangleK((v0.z + v1.z + v2.z) / 3, hullZmin, hullZmax);
                 onePlusK += (1 + Ki) * Si;
             }
             onePlusK = Mathf.Clamp(onePlusK / submergedArea, 1.22f, 1.65f);
-            float Cf = 0.075f / ((Mathf.Log10(Rn) - 2.0f) * (Mathf.Log10(Rn) - 2.0f));
+            float Cf = 0.075f / ((Mathf.Log10(Rn) - 2) * (Mathf.Log10(Rn) - 2));
             float Cfr = onePlusK * Cf;
             return Cfr;
         }
@@ -535,41 +504,8 @@ namespace WaterInteraction {
 
 
         private float GetTriangleK(float z, float hullZmin, float hullZmax) {
-            float f = (-3.0f / (hullZmax - hullZmin)) * z + 3.0f * hullZmax / (hullZmax - hullZmin) - 1.0f;
+            float f = (-3 / (hullZmax - hullZmin)) * z + 3 * hullZmax / (hullZmax - hullZmin) - 1;
             return f;
-        }
-
-        private Vector3 CalculateBuoyancyCenterTopTriangle(Patch patch, Vector3[] triVerts) {
-            // takes in a triangle in world coordinates (with a horizontal base) and calculates its center of pressure/buoyancy
-            Vector3 A = triVerts[0];
-            Vector3 B = triVerts[1];
-            Vector3 C = triVerts[2];
-
-            float y0 = -patch.GetPatchRelativeHeight(A);
-            float h = A.y - B.y; 
-            float tc = (4.0f * y0 + 3.0f * h) / (6.0f * y0 + 4.0f * h);
-
-            //if ((6 * y0 + 4 * h) == 0) {
-            //    tc = 0.75f;
-            //}
-            //tc = 0.75f;
-
-            Vector3 centerBuoyancy = A + tc * ((B + C) / 2.0f - A);
-            return centerBuoyancy;
-        }
-
-
-        private Vector3 CalculateBuoyancyCenterBottomTriangle(Patch patch, Vector3[] triVerts) {
-            Vector3 A = triVerts[0];
-            Vector3 B = triVerts[1];
-            Vector3 C = triVerts[2];
-
-            float y0 = -patch.GetPatchRelativeHeight(B);
-            float h = B.y-A.y;
-            float tc = (2.0f * y0 + h) / (6.0f * y0 + 2.0f * h);
-            //tc = 0.5f;
-            Vector3 centerBuoyancy = A + tc * ((B + C) / 2.0f - A);
-            return centerBuoyancy;
         }
 
     }
@@ -625,8 +561,8 @@ namespace WaterInteraction {
 
     }
     public static class Forces {
-        public static Vector3 BuoyancyForce(float height, Vector3 normal, float area) {
-            Vector3 F = Constants.rho * Constants.g * height * normal*area;
+        public static Vector3 BuoyancyForce(float height, Vector3 normal) {
+            Vector3 F = Constants.rho * Constants.g * height * normal;
             Vector3 FVertical = new Vector3(0.0f, F.y, 0.0f);
             return FVertical;
         }
