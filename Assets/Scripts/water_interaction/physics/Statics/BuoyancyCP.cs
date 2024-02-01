@@ -27,7 +27,6 @@ public class BuoyancyCP : MonoBehaviour
     private const float hullZMax = 2.9f;
     private const float boatLength = hullZMax-hullZMin;
 
-    /*
     void Start()
     {
         waterPatchMeshFilter = waterPatch.GetComponent<MeshFilter>(); // the water patch used for fast water height look-up
@@ -235,7 +234,4 @@ public class BuoyancyCP : MonoBehaviour
         {
             // patch.DisposeRoutine();
         }
-
-*/
-
 }

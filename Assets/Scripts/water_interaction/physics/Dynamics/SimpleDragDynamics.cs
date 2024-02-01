@@ -6,8 +6,8 @@ using UnityEngine;
 public class SimpleDragDynamics : MonoBehaviour
 {
     private Rigidbody rb;
-    public float Xu, Xuu;
-    public float Yv, Yvv; //, Yvvv, Yr;
+    public float Xu, Xuu, Xuuu;
+    public float Yv, Yvv, Yvvv, Yr;
     public float Zw, Zww;
     public float Kp, Kpp;
     public float Mq, Mqq;
@@ -21,10 +21,7 @@ public class SimpleDragDynamics : MonoBehaviour
 
     
     private Vector3 localVel;
-    private float Yr;
-    private float Xuuu;
-    private float Yvvv;
-
+    
     // Start is called before the first frame update
     void Start()
     {
