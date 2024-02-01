@@ -15,6 +15,7 @@ public class LimitFPS : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Application.targetFrameRate != targetFPS)
+            Application.targetFrameRate = targetFPS;
     }
 }

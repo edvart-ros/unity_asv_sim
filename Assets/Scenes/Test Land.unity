@@ -2369,7 +2369,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26952bc3b0c51154f8fd10cd54eaff81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsText: {fileID: 1619208909}
+  fpsText: {fileID: 0}
 --- !u!114 &1842765365
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2626,8 +2626,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   forceMultiplier: 10
   rotationMultiplier: 0.1
+  hasRudder: 1
   rotationText: {fileID: 28055537}
   forceText: {fileID: 561113048}
+  currentAngleText: {fileID: 0}
+  currentForceText: {fileID: 0}
 --- !u!54 &1945039440
 Rigidbody:
   m_ObjectHideFlags: 0
