@@ -33,24 +33,20 @@ public class ShipController : MonoBehaviour
     private void Awake()
     {
         inputActions = new InputActions();
-
         inputActions.Ship.Rudder.performed += ctx => rotateValue = ctx.ReadValue<Vector2>();
         inputActions.Ship.Rudder.canceled += ctx => rotateValue = Vector2.zero;
-
     }
     
     
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        //currentThrust = 0.0f;
-        //currentAngle = NormalizeAngle(engineJoint.transform.rotation.eulerAngles.y);
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    
+    private void FixedUpdate()
     {
+        GameObject propulsionRoot = GameObject.Find("Propulsion");
         float rightTriggerValue = inputActions.Ship.PositivePropulsion.ReadValue<float>();
         float leftTriggerValue = inputActions.Ship.NegativePropulsion.ReadValue<float>();
         float leftStickValue = inputActions.Ship.Rudder.ReadValue<Vector2>().x;
@@ -58,45 +54,10 @@ public class ShipController : MonoBehaviour
         // Net force is in the range of -1 to 1.
         float netForce = rightTriggerValue - leftTriggerValue;
         
-        GameObject propulsion = GameObject.Find("Propulsion");
-        if (propulsion != null)
+        if (propulsionRoot != null)
         {
-            // Find all engine joints as children of the propulsion object
-            foreach (Transform child in propulsion.transform)
-            {
-                // Do something with the engine joint
-                if (child.name == "EngineJointRear")
-                {
-                    ApplyRotation(leftStickValue, child.transform);
-                    
-                    Transform propellerJoint = child.Find("PropellerJoint");
-                    if (propellerJoint != null)
-                    {
-                        ApplyForce(netForce, currentAngle, propellerJoint.position);
-                        //print("Applying force");
-                    }
-                    
-                }
-                if (child.name == "EngineJointFront")
-                {
-                    //print("front hit");
-                    ApplyRotation(leftStickValue, child.transform);
-                    
-                    Transform propellerJoint = child.Find("PropellerJoint");
-                    if (propellerJoint != null)
-                    {
-                        ApplyForce(netForce, -currentAngle , propellerJoint.position);
-                        //print("Applying force");
-                    }
-                    
-                    
-                    
-                }
-            }
+            SearchForChildAndApplyForces(propulsionRoot, leftStickValue, netForce);
         }
-        
-        
-        
         
         // Update TextMeshPro objects
         forceText.text = "Force: " + netForce.ToString("F2");
@@ -105,7 +66,28 @@ public class ShipController : MonoBehaviour
     }
     
     
-    void ApplyForce(float force, float angle, Vector3 position)
+    private void SearchForChildAndApplyForces(GameObject firstTargetChild, float leftStickValue, float netForce)
+    {
+        // Find all engine joints as children of the propulsion object
+        foreach (Transform secondTargetChild in firstTargetChild.transform)
+        {
+            Transform propellerJoint = secondTargetChild.Find("PropellerJoint");
+            // Do something with the engine joints
+            if (secondTargetChild.name == "EngineJointRear" && propellerJoint) 
+            {
+                ApplyRotation(leftStickValue, secondTargetChild.transform);
+                ApplyForce(netForce, currentAngle, propellerJoint.position);
+            }
+            else if (secondTargetChild.name == "EngineJointFront" && propellerJoint)
+            {
+                ApplyRotation(leftStickValue, secondTargetChild.transform);
+                ApplyForce(netForce, -currentAngle , propellerJoint.position);
+            }
+        }
+    }
+    
+    
+    private void ApplyForce(float force, float angle, Vector3 position)
     {
         float finalForce = force * forceMultiplier;
         Quaternion rotation = Quaternion.Euler(0, angle, 0);
@@ -117,7 +99,8 @@ public class ShipController : MonoBehaviour
         
     }
     
-    void ApplyRotation(float rotationValue, Transform joint)
+    
+    private void ApplyRotation(float rotationValue, Transform joint)
     {
         float desiredRotation = - rotationValue * rotationMultiplier;
         
@@ -139,20 +122,12 @@ public class ShipController : MonoBehaviour
         //joint.gameObject.transform.RotateAround(joint.position, Vector3.up, currentAngle);
         
         Quaternion targetRotation = Quaternion.Euler(0, currentAngle, 0);
-        // Check the joint name to determine if the rotation should be reversed
-
-        // Apply the rotation to the joint
         joint.localRotation = targetRotation;
-
-        
         currentAngleText.text = "Current Angle: " + currentAngle;
     }
     
     
-    
-    
-    
-    float NormalizeAngle(float angle)
+    private float NormalizeAngle(float angle)
     {
         // while (angle < 0.0f) angle += 360.0f;
         // while (angle >= 360.0f) angle -= 360.0f;
@@ -164,11 +139,13 @@ public class ShipController : MonoBehaviour
         return angle;
     }
     
+    
     private void OnEnable()
     {
         inputActions.Enable();
     }
 
+    
     private void OnDisable()
     {
         inputActions.Disable();
