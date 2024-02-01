@@ -35,13 +35,12 @@ public class Buoyancy : MonoBehaviour
         Vector3[] centersWorld = submerged.FaceCentersWorld;
         Vector3[] normalsWorld = submerged.FaceNormalsWorld;
         for (var i = 0; i < centersWorld.Length; i++){
-            if (normalsWorld[i].y >  0){
-                continue;
-            }
+            // if (normalsWorld[i].y >  0){
+            //    continue;
+            //}
             Vector3 F = Forces.BuoyancyForce(heights[i], normalsWorld[i]);
             if (debugBuoyancy){
-                Debug.DrawRay(centersWorld[i], F, Color.green);
-                //Debug.DrawRay(centersWorld[i], normalsWorld[i], Color.red);
+                Debug.DrawRay(centersWorld[i], F, Color.blue);
             }
             rigidBody.AddForceAtPosition(F, centersWorld[i]);
         }

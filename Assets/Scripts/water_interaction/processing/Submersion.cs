@@ -30,7 +30,7 @@ public class Submersion : MonoBehaviour
     void Update()
     {
         patch.Update(transform); // updates the patch to follow the boat and queried water height
-        submerged.Update(patch, transform);
+        submerged.Update2(patch, transform);
         if (drawPatch) DebugPatch();
         if (drawSubmerged) DebugSubmerged();
     }
@@ -48,14 +48,16 @@ public class Submersion : MonoBehaviour
 
     private void DebugSubmerged()
     {
+        float[] centerHeights = submerged.FaceCenterHeightsAboveWater;
         int[] tris = submerged.mesh.triangles;
         Vector3[] verts = submerged.mesh.vertices;
-        for (var i = 0; i < tris.Length; i += 3)
-        {
+        Debug.Log(tris.Length/3);
+        for (int i = 0; i < tris.Length - 2; i += 3) {
             Vector3[] tri = new Vector3[] { 
                 transform.TransformPoint(verts[tris[i]]), 
                 transform.TransformPoint(verts[tris[i+1]]), 
                 transform.TransformPoint(verts[tris[i+2]])};
+
             Utils.DebugDrawTriangle(tri, Color.green);
         }
     }
