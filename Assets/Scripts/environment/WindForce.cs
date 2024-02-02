@@ -69,13 +69,5 @@ public class WindForce : MonoBehaviour
         //rb.AddForce(totalWindForce);
         Debug.DrawRay(transform.position, totalWindForce/100);
 
-        // debugging
-        Vector3 debugVec = new Vector3(
-            (kernerDynamics.totalPressureForce + kernerDynamics.totalViscousForce + totalWindForce).x,
-            0,
-            (kernerDynamics.totalPressureForce + kernerDynamics.totalViscousForce + totalWindForce).z
-            );
-        
-        Debug.DrawRay(transform.position, debugVec.normalized, Color.blue);
     }
 }
