@@ -275,7 +275,7 @@ namespace WaterInteraction
         public void Update(Patch patch, Transform transform){
             mesh.Clear();
             
-            //  this helps with performance.. right? Kitchen sink approach, since I'm having garbage collection problems and dont know Unity/C# that well.
+            //  this helps with performance.. right? Kitchen sink, since I'm having garbage collection problems and dont know Unity/C# that well.
             Vector3[] triangleVerticesLocal = new Vector3[3];
             Vector3[] triangleVerticesWorld = new Vector3[3];
             Vector3[] patchTriangleVerticesWorld = new Vector3[3];
@@ -464,7 +464,7 @@ namespace WaterInteraction
             float Ki = GetTriangleK((v0.z+v1.z+v2.z)/3, hullZmin, hullZmax);
             onePlusK += (1+Ki)*Si;
         }
-        onePlusK = onePlusK/submergedArea;
+        onePlusK = Mathf.Clamp(onePlusK / submergedArea, 1.22f, 1.65f);
         float Cf = 0.075f/((Mathf.Log10(Rn)-2)*(Mathf.Log10(Rn)-2));
         float Cfr = onePlusK*Cf;
         return Cfr;
