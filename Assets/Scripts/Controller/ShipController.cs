@@ -37,7 +37,10 @@ public class ShipController : MonoBehaviour
     // Propeller setup
     //private GameObject engineJoint;
     //private GameObject propellerJoint;
+    private Vector3 initialPosition;
+    private Quaternion initialRotation;
     
+
     
     struct EnginePropellerPair
     {
@@ -57,14 +60,20 @@ public class ShipController : MonoBehaviour
     
     private void Awake()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         inputActions = new InputActions();
         inputActions.Ship.Rudder.performed += ctx => rotateValue = ctx.ReadValue<Vector2>();
         inputActions.Ship.Rudder.canceled += ctx => rotateValue = Vector2.zero;
+        inputActions.Debug.ResetButton.performed += ctx => ResetPosition();
     }
     
     
     private void Start()
     {
+        // Save the initial position and rotation
+        initialPosition = transform.position;
+        initialRotation = transform.rotation;
         propulsionRoot = GameObject.Find("Propulsion");
         rb = GetComponent<Rigidbody>();
         SearchAndAssignChild(propulsionRoot);
@@ -80,21 +89,17 @@ public class ShipController : MonoBehaviour
     
     private void FixedUpdate()
     {
-        
+        //resetButton = inputActions.Debug.ResetPosition;
         float rightTriggerValue = inputActions.Ship.PositivePropulsion.ReadValue<float>();
         float leftTriggerValue = inputActions.Ship.NegativePropulsion.ReadValue<float>();
         float netForce = rightTriggerValue - leftTriggerValue; // Net force is in the range of -1 to 1.
         float leftStickValue = inputActions.Ship.Rudder.ReadValue<Vector2>().x;
         
-        
-        
-
         if (propulsionRoot) WorkOnJoints(leftStickValue, netForce);
         
-        // Update TextMeshPro objects
         forceText.text = "Force: " + netForce.ToString("F2");
-        // Update TextMeshPro objects
         rotationText.text = "Rotation: " + leftStickValue.ToString("F2");
+        currentAngleText.text = "Current Angle: " + currentAngle;
     }
     
     
@@ -103,23 +108,19 @@ public class ShipController : MonoBehaviour
         // Iterate over each pair in the list
         foreach (EnginePropellerPair pair in enginePropellerPairs)
         {
-            // You can access the engine joint and propeller joint like this:
             Transform engineJoint = pair.EngineJoint.transform;
             Transform propellerJoint = pair.PropellerJoint.transform;
-
-            //print("hit pair");
             
-            RotateRudder(leftStickValue, engineJoint);
-            ApplyForce(netForce, currentAngle, propellerJoint.position);
-            // Now apply your logic based on the engine and propeller joints
             if (engineJoint.name == "EngineJoint")
             {
-                RotatePropeller(propellerJoint);
+                RotateRudder(GetDesiredRotation(leftStickValue, engineJoint));
+                ApplyForce(netForce, currentAngle, propellerJoint.position);
+                //RotatePropeller(propellerJoint);
             }
             else if (engineJoint.name == "EngineJointBow")
             {
-                //RotateRudder(GetDesiredRotation(leftStickValue, engineJoint));
-                RotateRudder(leftStickValue, engineJoint);
+                RotateRudder(GetDesiredRotation(leftStickValue, engineJoint));
+                //RotateRudder(leftStickValue, engineJoint);
                 ApplyForce(netForce, -currentAngle , propellerJoint.position);
             }
         }
@@ -151,34 +152,20 @@ public class ShipController : MonoBehaviour
         currentForceText.text = "Current Force: " + finalForce.ToString("F2");
         
         rb.AddForceAtPosition(direction * finalForce, position);
-        
     }
     
     
-    private void RotateRudder(float rotationValue, Transform joint)
+    private void RotateRudder((Quaternion targetRotation, Transform joint, float desiredRotation) data)
     {
-        float desiredRotation = - rotationValue * rotationMultiplier;
-        float newRotation = joint.localEulerAngles.y + desiredRotation;
-        newRotation = NormalizeAngle(newRotation);
-        if (newRotation > 300) newRotation -= 360; // To avoid snapping at 0/360 degrees
-        currentAngle = Mathf.Clamp(newRotation, -45f, 45f);
-        
-        Quaternion targetRotation = Quaternion.Euler(0, currentAngle, 0);
         if (holdingRudder)
-        {
-            joint.localRotation = targetRotation;
-        }
-        else if (desiredRotation < -0.001 || desiredRotation > 0.001)
-        {
-            //if (newRotation > 180) newRotation -= 360;
-            joint.localRotation = Quaternion.Lerp(joint.localRotation, targetRotation, returnSpeed); //Time.deltaTime *
-        }
-        else ReturnToDefault(joint.transform);
-        
-        currentAngleText.text = "Current Angle: " + currentAngle;
+            data.joint.localRotation = data.targetRotation;
+        else if (data.desiredRotation < -0.001 || data.desiredRotation > 0.001)
+            data.joint.localRotation = Quaternion.Lerp(data.joint.localRotation, data.targetRotation, returnSpeed); //Time.deltaTime *
+        else
+            ResetRotation(data.joint.transform);
     }
     
-    private (Quaternion, Transform) GetDesiredRotation(float rotationValue, Transform joint) 
+    private (Quaternion, Transform, float) GetDesiredRotation(float rotationValue, Transform joint) 
     {
         float desiredRotation = - rotationValue * rotationMultiplier;
         float newRotation = joint.localEulerAngles.y + desiredRotation;
@@ -186,7 +173,7 @@ public class ShipController : MonoBehaviour
         if (newRotation > 300) newRotation -= 360; // To avoid snapping at 0/360 degrees
         currentAngle = Mathf.Clamp(newRotation, -45f, 45f);
         Quaternion targetRotation = Quaternion.Euler(0, currentAngle, 0);
-        return (targetRotation, joint);
+        return (targetRotation, joint, desiredRotation);
     }
     
     
@@ -209,7 +196,7 @@ public class ShipController : MonoBehaviour
     }
     
     
-    private void ReturnToDefault(Transform joint)
+    private void ResetRotation(Transform joint)
     {
         float currentYRotation = NormalizeAngle(joint.localEulerAngles.y);
         //if (currentYRotation > 180) currentYRotation -= 360; // Normalize to -180 to 180
@@ -228,6 +215,29 @@ public class ShipController : MonoBehaviour
             angle += 360;
         }
         return angle;
+    }
+
+
+    private void ResetPosition() // Callback function for the reset button
+    {
+        float positionThreshold = 2.0f; 
+        float rotationThreshold = 10.0f; 
+        float positionDifference = Vector3.Distance(transform.position, initialPosition);
+        float rotationDifference = Quaternion.Angle(transform.rotation, initialRotation);
+        if (positionDifference > positionThreshold || rotationDifference > rotationThreshold)
+        {
+            transform.position = initialPosition;
+            transform.rotation = initialRotation;
+            if (rb != null)
+            {
+                rb.velocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.ResetInertiaTensor(); // Optional, use if we need to reset rotational velocities due to inertia changes
+            }
+            print("Position and rotation reset. Forces removed.");
+        }
+        else
+            print("Reset hit, but position and rotation are within thresholds.");
     }
     
     

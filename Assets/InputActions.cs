@@ -60,8 +60,19 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": """",
+                    ""id"": ""833a1c06-b28c-4fc3-aa34-0bdc82a26b3f"",
+                    ""path"": ""<Mouse>/delta"",
+                    ""interactions"": """",
+                    ""processors"": ""ScaleVector2(x=0.1,y=0.1)"",
+                    ""groups"": """",
+                    ""action"": ""Pan"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
                     ""id"": ""2c08edf7-457a-4aad-ac7b-82f5802cda63"",
-                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""path"": ""<Gamepad>/leftShoulder"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -193,6 +204,45 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 }
             ]
+        },
+        {
+            ""name"": ""Debug"",
+            ""id"": ""8d2094aa-c240-47d6-852a-60506566b801"",
+            ""actions"": [
+                {
+                    ""name"": ""ResetButton"",
+                    ""type"": ""Button"",
+                    ""id"": ""9b7390df-3c7d-4e11-a343-ac2ba17f089b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""bbda5cf0-6fc7-4c22-9061-d73b27dcb022"",
+                    ""path"": ""<Gamepad>/buttonNorth"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResetButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""308a2120-2c04-498e-8d12-e096659ecb19"",
+                    ""path"": ""<Keyboard>/r"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""ResetButton"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": []
@@ -206,6 +256,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         m_Ship_Rudder = m_Ship.FindAction("Rudder", throwIfNotFound: true);
         m_Ship_PositivePropulsion = m_Ship.FindAction("PositivePropulsion", throwIfNotFound: true);
         m_Ship_NegativePropulsion = m_Ship.FindAction("NegativePropulsion", throwIfNotFound: true);
+        // Debug
+        m_Debug = asset.FindActionMap("Debug", throwIfNotFound: true);
+        m_Debug_ResetButton = m_Debug.FindAction("ResetButton", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -379,6 +432,52 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         }
     }
     public ShipActions @Ship => new ShipActions(this);
+
+    // Debug
+    private readonly InputActionMap m_Debug;
+    private List<IDebugActions> m_DebugActionsCallbackInterfaces = new List<IDebugActions>();
+    private readonly InputAction m_Debug_ResetButton;
+    public struct DebugActions
+    {
+        private @InputActions m_Wrapper;
+        public DebugActions(@InputActions wrapper) { m_Wrapper = wrapper; }
+        public InputAction @ResetButton => m_Wrapper.m_Debug_ResetButton;
+        public InputActionMap Get() { return m_Wrapper.m_Debug; }
+        public void Enable() { Get().Enable(); }
+        public void Disable() { Get().Disable(); }
+        public bool enabled => Get().enabled;
+        public static implicit operator InputActionMap(DebugActions set) { return set.Get(); }
+        public void AddCallbacks(IDebugActions instance)
+        {
+            if (instance == null || m_Wrapper.m_DebugActionsCallbackInterfaces.Contains(instance)) return;
+            m_Wrapper.m_DebugActionsCallbackInterfaces.Add(instance);
+            @ResetButton.started += instance.OnResetButton;
+            @ResetButton.performed += instance.OnResetButton;
+            @ResetButton.canceled += instance.OnResetButton;
+        }
+
+        private void UnregisterCallbacks(IDebugActions instance)
+        {
+            @ResetButton.started -= instance.OnResetButton;
+            @ResetButton.performed -= instance.OnResetButton;
+            @ResetButton.canceled -= instance.OnResetButton;
+        }
+
+        public void RemoveCallbacks(IDebugActions instance)
+        {
+            if (m_Wrapper.m_DebugActionsCallbackInterfaces.Remove(instance))
+                UnregisterCallbacks(instance);
+        }
+
+        public void SetCallbacks(IDebugActions instance)
+        {
+            foreach (var item in m_Wrapper.m_DebugActionsCallbackInterfaces)
+                UnregisterCallbacks(item);
+            m_Wrapper.m_DebugActionsCallbackInterfaces.Clear();
+            AddCallbacks(instance);
+        }
+    }
+    public DebugActions @Debug => new DebugActions(this);
     public interface ICameraActions
     {
         void OnPan(InputAction.CallbackContext context);
@@ -389,5 +488,9 @@ public partial class @InputActions: IInputActionCollection2, IDisposable
         void OnRudder(InputAction.CallbackContext context);
         void OnPositivePropulsion(InputAction.CallbackContext context);
         void OnNegativePropulsion(InputAction.CallbackContext context);
+    }
+    public interface IDebugActions
+    {
+        void OnResetButton(InputAction.CallbackContext context);
     }
 }
