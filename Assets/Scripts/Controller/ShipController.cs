@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 
@@ -27,15 +28,32 @@ public class ShipController : MonoBehaviour
     private Vector2 rotateValue;
     [SerializeField] private float returnSpeed = 10f;
     private Rigidbody rb;
+    private GameObject propulsionRoot;
     
     // Global placeholders
     private float currentAngle  = 0.0f;
     private float currentThrust = 0.0f;
     
     // Propeller setup
-    private GameObject engineJoint;
-    private GameObject propellerJoint;
+    //private GameObject engineJoint;
+    //private GameObject propellerJoint;
     
+    
+    struct EnginePropellerPair
+    {
+        public GameObject EngineJoint;
+        public GameObject PropellerJoint;
+
+        public EnginePropellerPair(Transform engine, Transform propeller)
+        {
+            EngineJoint = engine.GameObject();
+            PropellerJoint = propeller.GameObject();
+        }
+    }
+    
+    // List to hold all engine-propeller pairs
+    private List<EnginePropellerPair> enginePropellerPairs = new List<EnginePropellerPair>();
+
     
     private void Awake()
     {
@@ -47,25 +65,31 @@ public class ShipController : MonoBehaviour
     
     private void Start()
     {
+        propulsionRoot = GameObject.Find("Propulsion");
         rb = GetComponent<Rigidbody>();
+        SearchAndAssignChild(propulsionRoot);
+        print(enginePropellerPairs.Count);
+        foreach (EnginePropellerPair pair in enginePropellerPairs)
+        {
+            print(pair.EngineJoint.name);
+            print(pair.PropellerJoint.name);
+        }
         //print("current gamepad:" + Gamepad.current);
     }
 
     
     private void FixedUpdate()
     {
-        GameObject propulsionRoot = GameObject.Find("Propulsion");
+        
         float rightTriggerValue = inputActions.Ship.PositivePropulsion.ReadValue<float>();
         float leftTriggerValue = inputActions.Ship.NegativePropulsion.ReadValue<float>();
+        float netForce = rightTriggerValue - leftTriggerValue; // Net force is in the range of -1 to 1.
         float leftStickValue = inputActions.Ship.Rudder.ReadValue<Vector2>().x;
         
-        // Net force is in the range of -1 to 1.
-        float netForce = rightTriggerValue - leftTriggerValue;
         
-        if (propulsionRoot != null)
-        {
-            SearchForChildAndApplyForces(propulsionRoot, leftStickValue, netForce);
-        }
+        
+
+        if (propulsionRoot) WorkOnJoints(leftStickValue, netForce);
         
         // Update TextMeshPro objects
         forceText.text = "Force: " + netForce.ToString("F2");
@@ -74,24 +98,44 @@ public class ShipController : MonoBehaviour
     }
     
     
-    private void SearchForChildAndApplyForces(GameObject firstTargetChild, float leftStickValue, float netForce)
+    private void WorkOnJoints(float leftStickValue, float netForce)
     {
-        // Find all engine joints as children of the propulsion object
-        foreach (Transform secondTargetChild in firstTargetChild.transform)
+        // Iterate over each pair in the list
+        foreach (EnginePropellerPair pair in enginePropellerPairs)
         {
-            Transform propellerJoint = secondTargetChild.Find("PropellerJoint");
-            // Do something with the engine joints
-            if (secondTargetChild.name == "EngineJointStern" && propellerJoint) 
+            // You can access the engine joint and propeller joint like this:
+            Transform engineJoint = pair.EngineJoint.transform;
+            Transform propellerJoint = pair.PropellerJoint.transform;
+
+            //print("hit pair");
+            
+            RotateRudder(leftStickValue, engineJoint);
+            ApplyForce(netForce, currentAngle, propellerJoint.position);
+            // Now apply your logic based on the engine and propeller joints
+            if (engineJoint.name == "EngineJoint")
             {
-                print("hit stern");
-                ApplyYRotation(leftStickValue, secondTargetChild.transform);
-                ApplyForce(netForce, currentAngle, propellerJoint.position);
-                ApplyXRotation(propellerJoint.transform);
+                RotatePropeller(propellerJoint);
             }
-            else if (secondTargetChild.name == "EngineJointBow" && propellerJoint)
+            else if (engineJoint.name == "EngineJointBow")
             {
-                ApplyYRotation(leftStickValue, secondTargetChild.transform);
+                //RotateRudder(GetDesiredRotation(leftStickValue, engineJoint));
+                RotateRudder(leftStickValue, engineJoint);
                 ApplyForce(netForce, -currentAngle , propellerJoint.position);
+            }
+        }
+    }
+    
+    
+    private void SearchAndAssignChild(GameObject firstTargetChild)
+    {
+        // Find all engine joints as children of the propulsion object and populate the list
+        foreach (Transform engineJoint in firstTargetChild.transform)
+        {
+            Transform propellerJoint = engineJoint.Find("PropellerJoint");
+            if (propellerJoint != null)
+            {
+                // Add the pair to the list
+                enginePropellerPairs.Add(new EnginePropellerPair(engineJoint, propellerJoint));
             }
         }
     }
@@ -111,13 +155,14 @@ public class ShipController : MonoBehaviour
     }
     
     
-    private void ApplyYRotation(float rotationValue, Transform joint)
+    private void RotateRudder(float rotationValue, Transform joint)
     {
         float desiredRotation = - rotationValue * rotationMultiplier;
         float newRotation = joint.localEulerAngles.y + desiredRotation;
         newRotation = NormalizeAngle(newRotation);
         if (newRotation > 300) newRotation -= 360; // To avoid snapping at 0/360 degrees
         currentAngle = Mathf.Clamp(newRotation, -45f, 45f);
+        
         Quaternion targetRotation = Quaternion.Euler(0, currentAngle, 0);
         if (holdingRudder)
         {
@@ -133,8 +178,19 @@ public class ShipController : MonoBehaviour
         currentAngleText.text = "Current Angle: " + currentAngle;
     }
     
+    private (Quaternion, Transform) GetDesiredRotation(float rotationValue, Transform joint) 
+    {
+        float desiredRotation = - rotationValue * rotationMultiplier;
+        float newRotation = joint.localEulerAngles.y + desiredRotation;
+        newRotation = NormalizeAngle(newRotation);
+        if (newRotation > 300) newRotation -= 360; // To avoid snapping at 0/360 degrees
+        currentAngle = Mathf.Clamp(newRotation, -45f, 45f);
+        Quaternion targetRotation = Quaternion.Euler(0, currentAngle, 0);
+        return (targetRotation, joint);
+    }
     
-    private void ApplyXRotation(Transform joint)
+    
+    private void RotatePropeller(Transform joint)
     {
         float desiredRotation =  Mathf.Abs(currentThrust * rotationMultiplier);
         desiredRotation *= propellerRotationMinimizer;
