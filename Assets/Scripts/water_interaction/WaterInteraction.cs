@@ -7,8 +7,10 @@ using Unity.Jobs;
 using Unity.Mathematics;
 
 
-namespace WaterInteraction{
-    public static class Constants{
+namespace WaterInteraction
+{
+    public static class Constants
+    {
         public const float g = 9.80665f;
         public const float rho = 0.5f*997;
         public const float waterViscosity = 1.0016f;
