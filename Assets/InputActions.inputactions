@@ -38,8 +38,19 @@
                 },
                 {
                     "name": "",
+                    "id": "833a1c06-b28c-4fc3-aa34-0bdc82a26b3f",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "ScaleVector2(x=0.1,y=0.1)",
+                    "groups": "",
+                    "action": "Pan",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
                     "id": "2c08edf7-457a-4aad-ac7b-82f5802cda63",
-                    "path": "<Gamepad>/leftTrigger",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -167,6 +178,45 @@
                     "processors": "",
                     "groups": "",
                     "action": "NegativePropulsion",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Debug",
+            "id": "8d2094aa-c240-47d6-852a-60506566b801",
+            "actions": [
+                {
+                    "name": "ResetButton",
+                    "type": "Button",
+                    "id": "9b7390df-3c7d-4e11-a343-ac2ba17f089b",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "bbda5cf0-6fc7-4c22-9061-d73b27dcb022",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ResetButton",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "308a2120-2c04-498e-8d12-e096659ecb19",
+                    "path": "<Keyboard>/r",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ResetButton",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
