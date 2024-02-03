@@ -6,31 +6,30 @@ using Unity.Collections;
 
 public class Buoyancy : MonoBehaviour
 {
-
     public bool buoyancyForceActive = true;
     public bool debugBuoyancy;
     private Submerged submerged;
     private Patch patch;
     private Rigidbody rigidBody;
 
-
-
+    
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
         submerged = GetComponent<Submersion>().submerged;
     }
 
-    void FixedUpdate(){
+    
+    void FixedUpdate()
+    {
         rigidBody = GetComponent<Rigidbody>();
         submerged = GetComponent<Submersion>().submerged;
-        if (buoyancyForceActive){
-            ApplyBuoyancy();
-        }
+        if (buoyancyForceActive) ApplyBuoyancy();
     }
 
 
-    private void ApplyBuoyancy(){
+    private void ApplyBuoyancy()
+    {
         float[] heights = submerged.FaceCenterHeightsAboveWater;
         Vector3[] centersWorld = submerged.FaceCentersWorld;
         Vector3[] normalsWorld = submerged.FaceNormalsWorld;
@@ -49,7 +48,7 @@ public class Buoyancy : MonoBehaviour
     
 
     private void OnDestroy()
-        {
-            // patch.DisposeRoutine();
-        }
+    {
+        //patch.DisposeRoutine();
+    }
 }
