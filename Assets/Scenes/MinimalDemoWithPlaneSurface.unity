@@ -709,8 +709,6 @@ MonoBehaviour:
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 1
-  totalViscousForce: {x: 0, y: 0, z: 0}
-  totalPressureForce: {x: 0, y: 0, z: 0}
   hullZMin: -2.5
   hullZMax: 2.9
 --- !u!114 &278488020
@@ -799,8 +797,6 @@ MonoBehaviour:
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 1
-  totalViscousForce: {x: 0, y: 0, z: 0}
-  totalPressureForce: {x: 0, y: 0, z: 0}
   hullZMin: -2.5
   hullZMax: 2.9
 --- !u!114 &498820952
@@ -1719,8 +1715,6 @@ MonoBehaviour:
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 1
-  totalViscousForce: {x: 0, y: 0, z: 0}
-  totalPressureForce: {x: 0, y: 0, z: 0}
   hullZMin: -2.5
   hullZMax: 2.9
 --- !u!114 &1540208752
@@ -2041,8 +2035,6 @@ MonoBehaviour:
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 1
-  totalViscousForce: {x: 0, y: 0, z: 0}
-  totalPressureForce: {x: 0, y: 0, z: 0}
   hullZMin: -64
   hullZMax: 64
 --- !u!114 &1715571883
@@ -2522,8 +2514,6 @@ MonoBehaviour:
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 1
-  totalViscousForce: {x: 0, y: 0, z: 0}
-  totalPressureForce: {x: 0, y: 0, z: 0}
   hullZMin: -2.5
   hullZMax: 2.9
 --- !u!114 &1922917217
@@ -2627,10 +2617,12 @@ MonoBehaviour:
   forceMultiplier: 10
   rotationMultiplier: 0.1
   hasRudder: 1
-  rotationText: {fileID: 28055537}
+  holdingRudder: 0
   forceText: {fileID: 561113048}
+  rotationText: {fileID: 28055537}
+  currentSpinText: {fileID: 0}
   currentAngleText: {fileID: 0}
-  currentForceText: {fileID: 0}
+  currentThrustText: {fileID: 0}
 --- !u!54 &1945039440
 Rigidbody:
   m_ObjectHideFlags: 0

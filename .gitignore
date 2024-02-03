@@ -16,6 +16,7 @@ Logs/*
 .vs/*
 .vsconfig
 
+.DS_Store
 
 
 
