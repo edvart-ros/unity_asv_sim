@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2736.9531, g: 2734.7192, b: 3821.6646, a: 1}
+  m_IndirectSpecularColor: {r: 2738.8403, g: 2736.274, b: 3822.7896, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -509,7 +509,7 @@ MonoBehaviour:
   repetitionSize: 481
   largeOrientationValue: 0
   largeWindSpeed: 25
-  largeChaos: 0.329
+  largeChaos: 0.221
   largeBand0Multiplier: 1
   largeBand0FadeMode: 1
   largeBand0FadeStart: 1500
@@ -521,8 +521,8 @@ MonoBehaviour:
   ripples: 1
   ripplesMotionMode: 0
   ripplesOrientationValue: 0
-  ripplesWindSpeed: 10.95
-  ripplesChaos: 0.389
+  ripplesWindSpeed: 12.95
+  ripplesChaos: 0.254
   ripplesFadeMode: 1
   ripplesFadeStart: 50
   ripplesFadeDistance: 200
@@ -1142,8 +1142,18 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4396695912827006872, guid: b3b7b131f82bf4f20b30e983ed9c8166,
         type: 3}
+      propertyPath: followTarget
+      value: 
+      objectReference: {fileID: 8902144147312290846}
+    - target: {fileID: 4396695912827006872, guid: b3b7b131f82bf4f20b30e983ed9c8166,
+        type: 3}
       propertyPath: cameraOffset.x
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4396695912827006872, guid: b3b7b131f82bf4f20b30e983ed9c8166,
+        type: 3}
+      propertyPath: enableMousePan
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6676685322939254795, guid: b3b7b131f82bf4f20b30e983ed9c8166,
         type: 3}
@@ -1213,12 +1223,12 @@ PrefabInstance:
     - target: {fileID: 8830007361359320116, guid: b3b7b131f82bf4f20b30e983ed9c8166,
         type: 3}
       propertyPath: field of view
-      value: 23.15746
+      value: 30.000002
       objectReference: {fileID: 0}
     - target: {fileID: 8830007361359320116, guid: b3b7b131f82bf4f20b30e983ed9c8166,
         type: 3}
       propertyPath: m_FocalLength
-      value: 45.56
+      value: 34.83683
       objectReference: {fileID: 0}
     - target: {fileID: 8830007361359320116, guid: b3b7b131f82bf4f20b30e983ed9c8166,
         type: 3}
@@ -1229,6 +1239,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LensShift.x
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8830007361359320116, guid: b3b7b131f82bf4f20b30e983ed9c8166,
+        type: 3}
+      propertyPath: far clip plane
+      value: 750
       objectReference: {fileID: 0}
     - target: {fileID: 8830007361359320116, guid: b3b7b131f82bf4f20b30e983ed9c8166,
         type: 3}
@@ -1701,7 +1716,7 @@ GameObject:
   - component: {fileID: 1061759493}
   - component: {fileID: 1061759492}
   m_Layer: 5
-  m_Name: CurrentForce
+  m_Name: CurrentThrust
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1746,7 +1761,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Current Force: 0'
+  m_text: 'Current Thrust: 0'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2935,58 +2950,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2603303172965880638}
   m_Mesh: {fileID: 317079038945986314, guid: 592669f32c32343778410d0e1e7f7f8a, type: 3}
---- !u!23 &919132149363698697
-MeshRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5353932094907703109}
-  m_Enabled: 0
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_DynamicOccludee: 1
-  m_StaticShadowCaster: 0
-  m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
-  m_RayTracingMode: 2
-  m_RayTraceProcedural: 0
-  m_RayTracingAccelStructBuildFlagsOverride: 0
-  m_RayTracingAccelStructBuildFlags: 1
-  m_RenderingLayerMask: 257
-  m_RendererPriority: 0
-  m_Materials:
-  - {fileID: 5998169284449076856, guid: 05a0294a68bd641d5b168614eb077008, type: 3}
-  m_StaticBatchInfo:
-    firstSubMesh: 0
-    subMeshCount: 0
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_ReceiveGI: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_StitchLightmapSeams: 1
-  m_SelectedEditorRenderState: 3
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
-  m_SortingOrder: 0
-  m_AdditionalVertexStreams: {fileID: 0}
---- !u!33 &919132149363698698
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5353932094907703109}
-  m_Mesh: {fileID: -2298813174041190793, guid: 05a0294a68bd641d5b168614eb077008, type: 3}
 --- !u!1 &966457130436029723
 GameObject:
   m_ObjectHideFlags: 0
@@ -3614,8 +3577,6 @@ GameObject:
   - component: {fileID: 3467334084171979611}
   - component: {fileID: 1498954112605507187}
   - component: {fileID: 6676561285015302225}
-  - component: {fileID: 919132149363698698}
-  - component: {fileID: 919132149363698697}
   m_Layer: 0
   m_Name: NewWamV
   m_TagString: Untagged
@@ -3939,12 +3900,11 @@ MonoBehaviour:
   propellerRotationMinimizer: 0.01
   hasRudder: 1
   holdingRudder: 0
-  rotationText: {fileID: 742690712}
   forceText: {fileID: 1496605455}
-  currentAngleText: {fileID: 522553070}
-  currentForceText: {fileID: 1061759492}
+  rotationText: {fileID: 742690712}
   currentSpinText: {fileID: 1258863808}
-  returnSpeed: 2
+  currentAngleText: {fileID: 522553070}
+  currentThrustText: {fileID: 1061759492}
 --- !u!54 &6763025679057149964
 Rigidbody:
   m_ObjectHideFlags: 0
