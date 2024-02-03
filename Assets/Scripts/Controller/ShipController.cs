@@ -7,7 +7,7 @@ using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-// TODO: Spin propeller based on force
+// TODO: More realistic propeller rotation
 // TODO: Add a swirly water effect behind the propeller + white lines rotating around the propeller
 
 public class ShipController : MonoBehaviour
@@ -163,19 +163,13 @@ public class ShipController : MonoBehaviour
     }
     
     
+    /// Rotate the propeller based on the current thrust and time
     private void RotatePropeller(Transform joint)
     {
-        // Determine the amount to rotate this frame based on thrust and time
         float rotationThisFrame = currentThrust * rotationMultiplier * Time.deltaTime;
         rotationThisFrame *= propellerRotationCoefficient;
-
-        // Get the current rotation
         Quaternion currentRotation = joint.localRotation;
-
-        // Calculate the new rotation by adding the rotationThisFrame to the current z-axis rotation
         Quaternion newRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentRotation.eulerAngles.y, currentRotation.eulerAngles.z + rotationThisFrame);
-
-        // Apply the new rotation to the joint
         joint.localRotation = newRotation;
         currentSpin = rotationThisFrame;
     }
@@ -193,13 +187,8 @@ public class ShipController : MonoBehaviour
     /// Normalize an angle to [0, 360) degrees
     private float NormalizeAngle(float angle)
     {
-        // while (angle < 0.0f) angle += 360.0f;
-        // while (angle >= 360.0f) angle -= 360.0f;
-        angle = angle % 360;
-        if (angle < 0)
-        {
-            angle += 360;
-        }
+        while (angle < 0.0f) angle += 360.0f;
+        while (angle >= 360.0f) angle -= 360.0f;
         return angle;
     }
 
