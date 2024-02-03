@@ -6,7 +6,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-//  TODO: Add a camera follow mode with curve back to default if moved
+// TODO: Add a camera follow mode with curve back to default if moved
 // TODO: Add a camera zoom mode
 
 public class CameraController : MonoBehaviour

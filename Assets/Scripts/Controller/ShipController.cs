@@ -25,7 +25,7 @@ public class ShipController : MonoBehaviour
     public TextMeshProUGUI currentThrustText;
     
     private List<EnginePropellerPair> enginePropellerPairs = new List<EnginePropellerPair>();
-    private GameObject savedPropulsionRoot;
+    private Transform savedPropulsionRoot;
     private InputActions inputActions;
     private float returnSpeed = 10f;
     private Vector2 rotateValue;
@@ -66,9 +66,9 @@ public class ShipController : MonoBehaviour
     {
         savedInitialPosition = transform.position;
         savedInitialRotation = transform.rotation;
-        savedPropulsionRoot = GameObject.Find("Propulsion");
+        savedPropulsionRoot = transform.Find("Propulsion");
         parentRigidbody = GetComponent<Rigidbody>();
-        SearchAndAssignChild(savedPropulsionRoot);
+        SearchAndAssignChild(savedPropulsionRoot.GameObject());
         print(enginePropellerPairs.Count); // Debugging
     }
 
@@ -227,5 +227,4 @@ public class ShipController : MonoBehaviour
     {
         inputActions.Disable();
     }
-    
 }
