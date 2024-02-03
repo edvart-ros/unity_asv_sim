@@ -14,8 +14,6 @@ public class VoxelizeMeshEditor : Editor
             {
                 script.Test();
             }
-            
-            
 
         }
     }

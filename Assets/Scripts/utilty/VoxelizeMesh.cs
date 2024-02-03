@@ -11,7 +11,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 [ExecuteInEditMode]
 public class VoxelizeMesh : MonoBehaviour
 {
-    public VoxelizedBuoyancy voxelizedBuoyancy;
+    //public VoxelizedBuoyancy voxelizedBuoyancy;
     
     public Mesh meshToVoxelize;
     public Mesh otherMeshToVoxelize;
