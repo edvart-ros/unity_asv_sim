@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-public class foam_regulator : MonoBehaviour
+public class FoamRegulator : MonoBehaviour
 {
     public GameObject targetObject;
     public float maxVelocity;
