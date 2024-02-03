@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEditor;
-
+    
 [CustomEditor(typeof(VoxelizeMesh))]
 public class VoxelizeMeshEditor : Editor
 {
