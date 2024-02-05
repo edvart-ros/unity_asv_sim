@@ -7,7 +7,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
-// TODO: Add a spring arm to the camera
+// TODO: Add toggle follow mode button
 // TODO: Add a camera zoom mode
 
 public class CameraController : MonoBehaviour
@@ -43,9 +43,6 @@ public class CameraController : MonoBehaviour
             FreeAim();
         else if (cameraFollow) 
             FollowTarget(); 
-        
-        // Update the camera's position to follow the ship
-        //transform.position = followTarget.position - cameraOffset;
         AdjustCameraPosition();
     }
     
@@ -76,29 +73,31 @@ public class CameraController : MonoBehaviour
     }
     
     
+    /// Move the camera pivot to the followTarget origin.
+    /// If there is a collider between the camera and the target, adjust the camera position to avoid clipping
     private void AdjustCameraPosition()
     {
-        Vector3 cameraPosition = cameraTransform.position;
+        Vector3 idealCameraPoint = followTarget.position + transform.localRotation * defaultCameraPosition;
         Vector3 pivotPosition = followTarget.position + pivotOffset;
-        transform.position = pivotPosition;
-        Vector3 rayDirection = cameraPosition - pivotPosition;
-        Debug.DrawLine(pivotPosition, cameraPosition, Color.green);
+        Debug.DrawLine(pivotPosition,idealCameraPoint, Color.green);
+        transform.position = pivotPosition; 
+        Vector3 rayDirection = idealCameraPoint - pivotPosition;
         RaycastHit hit;
+        // What not to collide with
         LayerMask exclusionMask = ~collisionLayerMask;
+        
         if (Physics.Raycast(pivotPosition, rayDirection.normalized, out hit, rayDirection.magnitude + 2f,exclusionMask))
         {
-            //Vector3 offset =  followTarget.position + hit.point;
+            // Shift the hitpoint along the ray by a small amount to avoid z-fighting
             hit.point -= rayDirection.normalized * 0.25f;
             Debug.DrawLine(pivotPosition,  hit.point, Color.cyan);
             Debug.DrawRay(hit.point,Vector3.up*10f, Color.magenta);
             cameraTransform.position = hit.point;
-            // If there's a collision, position the camera at the hit point, slightly offset to avoid z-fighting
-            //cameraTransform.position = hit.point - rayDirection.normalized * 0.5f; // Adjust the 0.5f offset as needed
-            print("Collision detected.");
+            //print("Collision detected.");
         }
         else
         {
-            // No collision, position the camera at the desired offset
+            // No collision, position the camera at the default offset
             cameraTransform.localPosition = defaultCameraPosition;
         }
     }
