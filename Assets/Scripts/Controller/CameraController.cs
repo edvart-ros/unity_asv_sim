@@ -5,20 +5,24 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
-// TODO: Add a camera follow mode with curve back to default if moved
+// TODO: Add a spring arm to the camera
 // TODO: Add a camera zoom mode
 
 public class CameraController : MonoBehaviour
 {
-    public Vector3 cameraOffset = new Vector3(0, 0, 0);
+    public Vector3 pivotOffset = new Vector3(0, 0, 0);
     public Transform followTarget; // Reference to the ship's transform
     public float rotationSpeed = 100.0f; // Speed of camera rotation
     public bool enableMousePan = true;
     public bool cameraFollow = false;
+    public LayerMask collisionLayerMask;
     
     private InputActions inputActions;
     private Vector2 panInput;
+    private Transform cameraTransform;
+    private Vector3 defaultCameraPosition;
 
     
     private void Awake()
@@ -28,8 +32,10 @@ public class CameraController : MonoBehaviour
         inputActions.Camera.Pan.canceled += ctx => panInput = Vector2.zero;
         //inputActions.Debug.ToggleFollowMode.performed += _ => ToggleFollowMode();
         if (!enableMousePan) DisableMouseInput();
+        cameraTransform = transform.Find("Camera");
+        defaultCameraPosition = cameraTransform.localPosition;
     }
-
+    
     
     void Update()
     {
@@ -39,27 +45,22 @@ public class CameraController : MonoBehaviour
             FollowTarget(); 
         
         // Update the camera's position to follow the ship
-        transform.position = followTarget.position - cameraOffset;
+        //transform.position = followTarget.position - cameraOffset;
+        AdjustCameraPosition();
     }
     
     
     /// Free camera rotation
     private void FreeAim()
     {
-        // Calculate the new rotation as a Quaternion
-        float horizontalInput = panInput.x;
-        float verticalInput = panInput.y;
-
-        Quaternion horizontalRotation = Quaternion.Euler(0, horizontalInput * rotationSpeed * Time.deltaTime, 0);
-
-        // Calculate and clamp the x rotation separately
-        float xRotation = transform.localEulerAngles.x - verticalInput * rotationSpeed * Time.deltaTime;
-        xRotation = Mathf.Clamp(xRotation, 1, 70);
+        Quaternion horizontalRotation = Quaternion.Euler(0, panInput.x * rotationSpeed * Time.deltaTime, 0);
+        float verticalRotation = transform.localEulerAngles.x - panInput.y * rotationSpeed * Time.deltaTime;
+        verticalRotation = Mathf.Clamp(verticalRotation, 1, 70);
 
         // Apply the rotation to the camera's transform
         Quaternion currentRotation = transform.localRotation;
         currentRotation *= horizontalRotation;
-        currentRotation.eulerAngles = new Vector3(xRotation, currentRotation.eulerAngles.y, 0);
+        currentRotation.eulerAngles = new Vector3(verticalRotation, currentRotation.eulerAngles.y, 0);
 
         // Apply the rotation to the camera's transform
         transform.localRotation = currentRotation;
@@ -69,22 +70,44 @@ public class CameraController : MonoBehaviour
     /// Follow camera mode
     private void FollowTarget()
     {
-        // Calculate the target rotation based on the followTarget's forward direction
         Quaternion targetRotation = Quaternion.Euler(10f, followTarget.eulerAngles.y, 0);
         // Smoothly interpolate the camera's rotation towards the target rotation
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * 0.02f* rotationSpeed);
     }
     
     
+    private void AdjustCameraPosition()
+    {
+        Vector3 cameraPosition = cameraTransform.position;
+        Vector3 pivotPosition = followTarget.position + pivotOffset;
+        transform.position = pivotPosition;
+        Vector3 rayDirection = cameraPosition - pivotPosition;
+        Debug.DrawLine(pivotPosition, cameraPosition, Color.green);
+        RaycastHit hit;
+        LayerMask exclusionMask = ~collisionLayerMask;
+        if (Physics.Raycast(pivotPosition, rayDirection.normalized, out hit, rayDirection.magnitude + 2f,exclusionMask))
+        {
+            //Vector3 offset =  followTarget.position + hit.point;
+            hit.point -= rayDirection.normalized * 0.25f;
+            Debug.DrawLine(pivotPosition,  hit.point, Color.cyan);
+            Debug.DrawRay(hit.point,Vector3.up*10f, Color.magenta);
+            cameraTransform.position = hit.point;
+            // If there's a collision, position the camera at the hit point, slightly offset to avoid z-fighting
+            //cameraTransform.position = hit.point - rayDirection.normalized * 0.5f; // Adjust the 0.5f offset as needed
+            print("Collision detected.");
+        }
+        else
+        {
+            // No collision, position the camera at the desired offset
+            cameraTransform.localPosition = defaultCameraPosition;
+        }
+    }
+    
+    
     private void DisableMouseInput()
     {
-        // Get all mouse devices
         var mouseDevices = InputSystem.devices.Where(device => device is Mouse);
-
-        foreach (var mouse in mouseDevices)
-        {
-            InputSystem.DisableDevice(mouse);
-        }
+        foreach (var mouse in mouseDevices) {InputSystem.DisableDevice(mouse);} 
     }
     
     
