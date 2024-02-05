@@ -49,6 +49,10 @@ public class Buoyancy : MonoBehaviour
 
     private void OnDestroy()
     {
-        //patch.DisposeRoutine();
+        if (patch != null)
+        {
+            patch.Dispose();
+            print("Patch disposed");
+        }
     }
 }
