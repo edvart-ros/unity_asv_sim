@@ -64,31 +64,12 @@ public class Submersion : MonoBehaviour
     }
 
 
-    // to visualize center of pressure positions
-    /* 
+
+
+/*
     private void OnDrawGizmos() {
-        float[] areas = submerged.triangleAreas;
-        float[] centerHeights = submerged.FaceCenterHeightsAboveWater;
-        Vector3[] pressureCenters = submerged.pressureCenters;
-        int[] tris = submerged.mesh.triangles;
-        Vector3[] verts = submerged.mesh.vertices;
-
-        for (int i = 0; i < tris.Length - 2; i += 3) {
-            Vector3[] tri = new Vector3[]
-            {
-            transform.TransformPoint(verts[tris[i]]),
-            transform.TransformPoint(verts[tris[i + 1]]),
-            transform.TransformPoint(verts[tris[i + 2]])
-            };
-
-            Utils.DebugDrawTriangle(tri, Color.green);
-
-            Gizmos.color = Color.green;
-            Gizmos.DrawSphere(pressureCenters[i / 3], 0.01f);
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere((tri[0] + tri[1] + tri[2])/3.0f, 0.01f); 
-        }
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(submerged.centroid, 0.2f);
     }
-    */
+*/
 }

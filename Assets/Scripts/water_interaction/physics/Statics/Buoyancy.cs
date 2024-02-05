@@ -4,6 +4,7 @@ using System;
 using WaterInteraction;
 using Unity.Collections;
 using UnityEditor.Search;
+using Unity.VisualScripting;
 
 public class Buoyancy : MonoBehaviour
 {
@@ -27,7 +28,7 @@ public class Buoyancy : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         submerged = GetComponent<Submersion>().submerged;
         if (buoyancyForceActive){
-            ApplyBuoyancy();
+            ApplyBuoyancyVolume();
         }
     }
 
@@ -59,6 +60,14 @@ public class Buoyancy : MonoBehaviour
         // Apply the total force and torque to the rigidbody
         rigidBody.AddForce(totalBuoyancyForce);
         rigidBody.AddTorque(totalTorque);
+    }
+
+    private void ApplyBuoyancyVolume() {
+        Vector3 buoyancyCenter = submerged.centroid;
+        float displacedVolume = submerged.volume;
+        float F = Constants.rho*Constants.g*displacedVolume;
+        Vector3 FVec = new Vector3(0f, F, 0f);
+        rigidBody.AddForceAtPosition(FVec, buoyancyCenter);
     }
 
 
