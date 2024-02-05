@@ -16,7 +16,11 @@ Logs/*
 .vs/*
 .vsconfig
 
+# Our custom ignores
 .DS_Store
+.idea/
+.vscode/
+.vs/
 
 
 
