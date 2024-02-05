@@ -231,7 +231,7 @@ public class BuoyancyCP : MonoBehaviour
 
 
     private void OnDestroy()
-        {
-            // patch.DisposeRoutine();
-        }
+    {
+        patch.Dispose();
+    }
 }
