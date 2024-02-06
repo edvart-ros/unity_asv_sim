@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
-using System;
 using WaterInteraction;
 using Unity.Collections;
 
@@ -22,7 +21,7 @@ public class Submersion : MonoBehaviour
     {
         Vector3 gridOrigin = new Vector3(-patchSize/2, 0, patchSize/2);
         patch = new Patch(targetSurface, patchSize, patchResolution, gridOrigin);
-        submerged = new Submerged(simplifiedMesh); // set up submersion by providing the simplified hull mesh
+        submerged = new Submerged(simplifiedMesh, debug:true); // set up submersion by providing the simplified hull mesh
         patch.Update(transform); // updates the patch to follow the boat and queried water height
     }
 
@@ -69,7 +68,11 @@ public class Submersion : MonoBehaviour
 
     private void OnDrawGizmos() {
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(submerged.centroid, 0.2f);
+        Vector3[] centroids = submerged.centroids;
+        foreach (var c in centroids) Gizmos.DrawSphere(c, 0.01f);
+        Gizmos.color = Color.green;
+        Gizmos.DrawCube(submerged.centroid, 0.03f*Vector3.one);
+        
     }
 
 }
