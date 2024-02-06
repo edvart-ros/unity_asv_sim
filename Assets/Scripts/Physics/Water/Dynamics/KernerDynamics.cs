@@ -49,7 +49,6 @@ public class KernerDynamics : MonoBehaviour
         {
             float Cfr = submerged.GetResistanceCoefficient(rigidBody.velocity.magnitude, hullZMin, hullZMax);
             ApplyViscousResistance(Cfr);
-            Debug.Log(Cfr);
         }
         if (pressureDragActive)
         {
@@ -69,7 +68,7 @@ public class KernerDynamics : MonoBehaviour
         Vector3 vCurrent = new Vector3(1.0f, 0.0f, 0.0f);
         for (int i = 0; i < submerged.FaceCentersWorld.Length; i++)
         {
-            n = submerged.FaceNormalsWorld[i].normalized;
+            n = transform.InverseTransformDirection(submerged.FaceNormalsL[i]).normalized;
             Ci = submerged.FaceCentersWorld[i];
             GCi = Ci - G;
             vi = vG + Vector3.Cross(omegaG, GCi); // - vCurrent;
@@ -106,8 +105,8 @@ public class KernerDynamics : MonoBehaviour
         for (int i = 0; i < triangles.Length - 2; i += 3)
         {
             (v0, v1, v2) = (vertices[triangles[i]], vertices[triangles[i + 1]], vertices[triangles[i + 2]]);
-            ni = submerged.FaceNormalsWorld[i / 3].normalized;
-            Ci = submerged.FaceCentersWorld[i / 3];
+            ni = transform.InverseTransformDirection(submerged.FaceNormalsL[i/3]).normalized;
+            Ci = transform.TransformPoint((v0+v1+v2)/3);
             Si = (0.5f) * Vector3.Cross((v1 - v0), (v2 - v0)).magnitude;
 
             GCi = Ci - G;
