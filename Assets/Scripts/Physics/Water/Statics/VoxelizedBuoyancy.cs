@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 public class VoxelizedBuoyancy : MonoBehaviour
 {
+    private List<Vector3> pointsInsideMesh = new List<Vector3>();
+    private string path = "Assets/Data/localPointsData.json";
     private List<Vector3> globalPositions = new List<Vector3>();
     private List<Vector3> relativePositions = new List<Vector3>();
     private Vector3 parentPosition;
@@ -15,11 +16,6 @@ public class VoxelizedBuoyancy : MonoBehaviour
     
     private Rigidbody rb;
     
-    public void Initialize()
-    {
-        voxelVolume = voxelSize * voxelSize * voxelSize;
-        
-    }
     
     // TODO: See following list:
     // 1. Read points from file
@@ -38,37 +34,36 @@ public class VoxelizedBuoyancy : MonoBehaviour
     
     
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
+        voxelVolume = voxelSize * voxelSize * voxelSize;
         // Populate local list with saved points
-        relativePositions = LoadPoints("Assets/pointsData.txt");
+        relativePositions = LoadPoints();
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-    
-    public List<Vector3> LoadPoints(string path)
-    {
-        if (File.Exists(path))
-        {
-            BinaryFormatter formatter = new BinaryFormatter();
-            using (FileStream stream = new FileStream(path, FileMode.Open))
-            {
-                return formatter.Deserialize(stream) as List<Vector3>;
-            }
-        }
-        else
-        {
-            Debug.LogError("Save file not found in " + path);
-            return null;
-        }
-    }
     
     private void FixedUpdate()
     {
-        
+        //Debug.Log("update");
+        //Debug.Log(pointsInsideMesh.Count);
+        foreach (var point in pointsInsideMesh)
+        {
+            //Debug.Log(transform.TransformPoint(point).y);
+            //if (transform.TransformPoint(point).y <= 0)
+            {
+                //Debug.Log("Called buoyancy");
+                //rb.AddForceAtPosition(997 * voxelSize * voxelSize * voxelSize * Vector3.up, transform.TransformPoint(point));
+
+
+
+            }
+        }
+    }
+    
+    
+    private List<Vector3> LoadPoints()
+    {
+        string json = File.ReadAllText(path);
+        return JsonUtility.FromJson<List<Vector3>>(json);
     }
 }
