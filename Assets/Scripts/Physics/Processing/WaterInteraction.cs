@@ -15,9 +15,7 @@ namespace WaterInteraction
         public const float rho = 0.5f*997;
         public const float waterViscosity = 1.0016f;
     }
-    
-    
-    public class Patch : IDisposable{
+    public class Patch{
 
         public WaterSurface water;
         public float sideLength;
@@ -49,7 +47,6 @@ namespace WaterInteraction
         NativeArray<int> stepCountBuffer;
 
 
-        // TODO: This creates memory leaks! Fix!
         public void Initialize(){
             cellSize = sideLength / gridFidelity;
             baseGridMesh = ConstructWaterGridMesh();
@@ -105,7 +102,6 @@ namespace WaterInteraction
             return meshOut;
         }
 
-        
         public (int, int) PointToCell(Vector3 point)
         {
             Vector3 adjustedPoint = point - gridOrigin;
@@ -126,7 +122,6 @@ namespace WaterInteraction
             return;
         }
 
-        
         public void GetPatchRightTriangleVertices(ref Vector3[] inVerts, int i, int j){
             int n = gridFidelity + 1;
             Vector3 topLeftVertex = patchVertices[i*n + j];
@@ -138,7 +133,6 @@ namespace WaterInteraction
             return;
         }
 
-        
         public float GetHeightAboveTriangle(Vector3 point, Vector3[] triangle){
             Vector3 AB = triangle[1]-triangle[0];
             Vector3 AC = triangle[2]-triangle[0];
@@ -147,7 +141,6 @@ namespace WaterInteraction
             return (point.y - (d - abc.x*point.x - abc.z*point.z)/(abc.y));
         }
 
-        
         public (Vector3[], float[]) SortVerticesAgainstWaterHeight(Vector3[] vertices, float[] heights) {
             void Swap<T>(ref T a, ref T b) {
                 T temp = a;
@@ -173,7 +166,9 @@ namespace WaterInteraction
             return (vertices, heights);
         }
 
-        
+
+
+
         private float CalculateMeshArea(Mesh mesh){
             int[] triangles = mesh.triangles;
             Vector3[] vertices = mesh.vertices;
@@ -186,8 +181,6 @@ namespace WaterInteraction
             }
             return totalArea;
         }
-        
-        
         private float[] CalculateTriangleAreas(Mesh mesh){
             int[] triangles = mesh.triangles;
             Vector3[] vertices = mesh.vertices;
@@ -255,32 +248,17 @@ namespace WaterInteraction
             return;
         }
 
-        
-        // TODO: Call this from the destructor, where the water patch is used
-        /// Manual memory management; Dispose the native arrays
         public void DisposeRoutine(){
-            if (targetPositionBuffer.IsCreated) targetPositionBuffer.Dispose();
-            if (errorBuffer.IsCreated) errorBuffer.Dispose();
-            if (candidatePositionBuffer.IsCreated) candidatePositionBuffer.Dispose();
-            if (projectedPositionWSBuffer.IsCreated) projectedPositionWSBuffer.Dispose();
-            if (directionBuffer.IsCreated) directionBuffer.Dispose();
-            if (stepCountBuffer.IsCreated) stepCountBuffer.Dispose();
+            targetPositionBuffer.Dispose();
+            errorBuffer.Dispose();
+            candidatePositionBuffer.Dispose();
+            projectedPositionWSBuffer.Dispose();
+            directionBuffer.Dispose();
+            stepCountBuffer.Dispose();
         }
 
-        
-        void OnDestroy()
-        {
-            DisposeRoutine();
-        }
-        
-        
-        public void Dispose()
-        {
-            DisposeRoutine();
-        }
+
     }
-    
-    
     public class Submerged{
         public Mesh hullMesh;
         public Mesh mesh = new Mesh();
