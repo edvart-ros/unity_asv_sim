@@ -3,165 +3,102 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
-// Packages for saving data to a file
+// Package for saving data to file
 using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 
 
 [ExecuteInEditMode]
 public class VoxelizeMesh : MonoBehaviour
 {
-    //public VoxelizedBuoyancy voxelizedBuoyancy;
-    
-    public Mesh meshToVoxelize;
-    public Mesh otherMeshToVoxelize;
-    public int voxelSize = 6; // Size of the voxels
-    public float yOffset = 0f;
+    [Tooltip("The layer with the colliders. You usually only want the object to voxelize in this layer.")]
+    public LayerMask colliderLayer;
+    [Tooltip("This field is required. Usually, the mesh of the object you want to voxelize.")]
+    public Mesh boundsTarget;
+    public int voxelSize = 6;
     private List<Vector3> pointsInsideMesh = new List<Vector3>();
-    public LayerMask meshLayer;
-    public List<Vector3> pointsData;
-
-    private Rigidbody rb;
-
-    public void Test()
-    {
-        rb = GetComponentInParent<Rigidbody>();
-        yOffset = voxelSize / 2f;// Probably redundant. Use halfWidth instead
-        // Clear the pointsInsideMesh list
-        pointsInsideMesh.Clear();
-        print("Running Test");
-        Bounds bounds = otherMeshToVoxelize.bounds;
-        Vector3 start = transform.position - bounds.extents;
-        Vector3 center = transform.position; // Center of the bounding box
-        float halfWidth = bounds.extents.x; // Half the width of the bounding box
-        
-        // Loop starting from the center and moving outwards in the positive x direction
-        for (float x = center.x; x <= center.x + halfWidth; x += voxelSize)
-        {
-            for (float y = start.y + yOffset; y <= start.y + yOffset + bounds.size.y; y += voxelSize)
-            {
-                for (float z = start.z; z <= start.z + bounds.size.z; z += voxelSize)
-                {
-                    Vector3 point = new Vector3(x, y, z);
-                    // Add your logic here for working with the point
-                    if (IsInsideMesh(point))
-                    {
-                        //Debug.Log(point);
-                        pointsInsideMesh.Add(point);
-
-                    }
-                }
-            }
-        }
-
-        // Loop starting from the center and moving outwards in the negative x direction
-        for (float x = center.x - voxelSize; x >= center.x - halfWidth; x -= voxelSize)
-        {
-            for (float y = start.y + yOffset; y <= start.y + yOffset + bounds.size.y; y += voxelSize)
-            {
-                for (float z = start.z; z <= start.z + bounds.size.z; z += voxelSize)
-                {
-                    Vector3 point = new Vector3(x, y, z);
-                    // Add your logic here for working with the point
-                    if (IsInsideMesh(point))
-                    {
-                        //Debug.Log(point);
-                        pointsInsideMesh.Add(point);
-
-                    }
-                }
-            }
-        }
-
-        // Write the number of points in the list to a file
-        
-        // TODO: This saving might not work.
-        SavePoints(pointsInsideMesh, "Assets/pointsData.txt");
-        print("No. of points in list: " + pointsInsideMesh.Count);
-        pointsData = pointsInsideMesh;
-    }
-
-
-    private void Start()
-    {
-        Test();
-        Debug.Log("start");
-        Debug.Log(pointsInsideMesh.Count);
-    }
-
+    private string path = "Assets/localPointsData.json";
     
-    private void FixedUpdate()
+    
+    /// Voxelize the mesh by evenly distributing a point cloud.
+    /// Iterates over these points to determine which are inside.
+    /// Saves the points to a file.
+    public void DeterminePoints()
     {
-        //Debug.Log("update");
-        //Debug.Log(pointsInsideMesh.Count);
-        foreach (var point in pointsInsideMesh)
+        print("Determining Points");
+        pointsInsideMesh.Clear();
+        Bounds bounds;
+        if (boundsTarget) bounds = boundsTarget.bounds;
+        else
         {
-            //Debug.Log(transform.TransformPoint(point).y);
-            if (transform.TransformPoint(point).y <= 0)
-            {
-                //Debug.Log("Called buoyancy");
-                //rb.AddForceAtPosition(997 * voxelSize * voxelSize * voxelSize * Vector3.up, transform.TransformPoint(point));
+            print("Error: Bounds target is required");
+            return;
+        }
+        
+        int totalPoints = 0;
+        Vector3 center = bounds.center;
+        Vector3 extents = bounds.extents;
+        
+        
+        // Calculate starting points for each axis to ensure the middle line goes through the points
+        Vector3 start = new Vector3(
+            center.x - Mathf.Floor(extents.x / voxelSize) * voxelSize,
+            center.y - Mathf.Floor(extents.y / voxelSize) * voxelSize,
+            center.z - Mathf.Floor(extents.z / voxelSize) * voxelSize);
 
-
-
+        // Loop for each axis starting from the calculated start point and moving outwards
+        for (float x = start.x; x <= center.x + extents.x; x += voxelSize)
+        { for (float y = start.y; y <= center.y + extents.y; y += voxelSize)
+            { for (float z = start.z; z <= center.z + extents.z; z += voxelSize)
+                {
+                    Vector3 point = new Vector3(x, y, z);
+                    if (IsInsideMesh(point)) pointsInsideMesh.Add(point);
+                    totalPoints++;
+                }
             }
         }
-    }
-
-
-    bool IsInsideMesh(Vector3 point)
-    {
-        Bounds bounds = otherMeshToVoxelize.bounds;
-        Ray ray = new Ray(point, bounds.center - point);//
-        RaycastHit hit;
-        RaycastHit[] hits;
         
-        // Draw raycasts
+        print("Number of points inside mesh: " + pointsInsideMesh.Count +" out of " + totalPoints);
+        //ConvertPointsToLocalSpaceAndSave();
+    }
+    
+    
+    private bool IsInsideMesh(Vector3 point)
+    {
+        Ray ray = new Ray(point, boundsTarget.bounds.center - point);
         Debug.DrawRay(ray.origin, ray.direction * 3, Color.yellow, 2f);
-
-        hits = Physics.RaycastAll(ray.origin, ray.direction, 100f, meshLayer);
-            
-        //if (hits.Length % 2 == 0) // Even number of hits
-        {
-            //print("Even hit");
-            //return false;
-        }
-        if (Physics.Raycast(ray, out hit, 100f, meshLayer)) // Even number of hits
-        {
-            print("Hit");
-            return false;
-        }
-        // Add more logic here
-
-        print("Odd hit");
+        bool hitDetected = Physics.Raycast(ray, 100f, colliderLayer);
+        
+        if (hitDetected) return false;
         return true;
     }
-
     
-    public void SavePoints(List<Vector3> pointsList, string path)
+    
+    private void ConvertPointsToLocalSpaceAndSave()
     {
-        BinaryFormatter formatter = new BinaryFormatter();
-        using (FileStream stream = new FileStream(path, FileMode.Create))
+        List<Vector3> localPoints = new List<Vector3>();
+
+        foreach (Vector3 point in pointsInsideMesh)
         {
-            formatter.Serialize(stream, pointsList);
+            Vector3 localPoint = transform.InverseTransformPoint(point);
+            localPoints.Add(localPoint);
         }
+
+        string json = JsonUtility.ToJson(localPoints);
+        File.WriteAllText(path, json);
     }
     
     
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
-        if (otherMeshToVoxelize != null)
+        if (!boundsTarget) return;
+        Bounds bounds = boundsTarget.bounds;
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position, bounds.size);
+        
+        Gizmos.color = Color.green;
+        foreach (Vector3 point in pointsInsideMesh)
         {
-            Bounds bounds = otherMeshToVoxelize.bounds;
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireCube(transform.position, bounds.size);
-
-            Gizmos.color = Color.green;
-            foreach (Vector3 point in pointsInsideMesh)
-            {
-                //Debug.Log(point);
-                Gizmos.DrawWireCube(point, Vector3.one * voxelSize); // Draw a cube at each point
-            }
+            Gizmos.DrawWireCube(point, Vector3.one * voxelSize); 
         }
     }
 }
