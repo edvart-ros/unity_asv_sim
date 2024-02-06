@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
-    
+
+
 [CustomEditor(typeof(VoxelizeMesh))]
 public class VoxelizeMeshEditor : Editor
 {
@@ -14,7 +15,6 @@ public class VoxelizeMeshEditor : Editor
             {
                 script.DeterminePoints();
             }
-
         }
     }
 }
