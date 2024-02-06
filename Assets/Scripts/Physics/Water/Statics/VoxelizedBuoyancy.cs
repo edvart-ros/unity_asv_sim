@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
 using System.IO;
+using UnityEditor.Playables;
+
 
 public class VoxelizedBuoyancy : MonoBehaviour
 {
@@ -11,8 +13,8 @@ public class VoxelizedBuoyancy : MonoBehaviour
     private List<Vector3> globalPositions = new List<Vector3>();
     private List<Vector3> relativePositions = new List<Vector3>();
     private Vector3 parentPosition;
-    private int voxelSize = 6;
-    private int voxelVolume = 1;
+    private int voxelVolume;
+    private Transform parentTransform;
     
     private Rigidbody rb;
     
@@ -28,27 +30,21 @@ public class VoxelizedBuoyancy : MonoBehaviour
     // which is constant for each point, so it is just the number of points * volume * gravity
     
     
-    
-    
-    
-    
-    
-    // Start is called before the first frame update
     void Awake()
     {
-        voxelVolume = voxelSize * voxelSize * voxelSize;
-        // Populate local list with saved points
-        relativePositions = LoadPoints();
+        // Populate local list and int with saved information
+        Vector3ListWrapper wrapper = LoadPoints();
+        pointsInsideMesh = wrapper.localPoints;
+        voxelVolume = wrapper.volume;
     }
 
     
     private void FixedUpdate()
     {
-        //Debug.Log("update");
-        //Debug.Log(pointsInsideMesh.Count);
-        foreach (var point in pointsInsideMesh)
+        UpdateGlobalPosition();
+        foreach (var point in globalPositions)
         {
-            //Debug.Log(transform.TransformPoint(point).y);
+            //TODO: Add a check to see if the point is above or below the water surface
             //if (transform.TransformPoint(point).y <= 0)
             {
                 //Debug.Log("Called buoyancy");
@@ -59,11 +55,35 @@ public class VoxelizedBuoyancy : MonoBehaviour
             }
         }
     }
+
+
+    private void UpdateGlobalPosition()
+    {
+        if (!transform.hasChanged) return;
+        globalPositions.Clear();
+        foreach (Vector3 point in pointsInsideMesh)
+        {
+            globalPositions.Add(transform.TransformPoint(point));
+        }
+        // Reset the hasChanged flag
+        transform.hasChanged = false;
+    }
     
     
-    private List<Vector3> LoadPoints()
+    private Vector3ListWrapper LoadPoints()
     {
         string json = File.ReadAllText(path);
-        return JsonUtility.FromJson<List<Vector3>>(json);
+        return JsonUtility.FromJson<Vector3ListWrapper>(json);
+    }
+    
+    
+    private void OnDrawGizmos()
+    {
+        if (globalPositions.Count == 0) return;
+        Gizmos.color = Color.magenta;
+        foreach (Vector3 point in globalPositions)
+        {
+            Gizmos.DrawSphere(point, 1); 
+        }
     }
 }
