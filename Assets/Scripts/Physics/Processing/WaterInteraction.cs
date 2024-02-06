@@ -5,9 +5,6 @@ using System.Collections.Generic;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
-using Unity.VisualScripting;
-using UnityEngine.UIElements;
-using UnityEngine.Rendering;
 
 namespace WaterInteraction {
     public static class Constants {
@@ -292,7 +289,8 @@ namespace WaterInteraction {
         private int L;
         public float volume = 0f;
         public Vector3 centroid = Vector3.zero;
-        public Submerged(Mesh simplifiedHullMesh) {
+        public Vector3[] centroids = new Vector3[0];
+        public Submerged(Mesh simplifiedHullMesh, bool debug=false) {
             hullMesh = simplifiedHullMesh;
             L = hullMesh.vertices.Length;
         }
@@ -397,6 +395,8 @@ namespace WaterInteraction {
         public (float vol, Vector3 volCenter) GetSubmergedVolume(Vector3[] verts, int[] tris, Vector3[]  normals, float[] heights, Transform t){
             float totalVol = 0f;
             Vector3 volCenterSum = Vector3.zero;
+            List<Vector3> _centroids = new List<Vector3>();
+            
             for (int i = 0; i < tris.Length-2; i+=3){
                 float depth = -heights[i/3];
                 Vector3[] tri = new Vector3[]
@@ -417,10 +417,12 @@ namespace WaterInteraction {
                 
                 volCenterSum += triPointingDown ? centroid*vol : -centroid*vol;
                 totalVol += triPointingDown ? vol : -vol;
+                _centroids.Add(centroid);
             }
             if (totalVol == 0f){
                 return (0f, Vector3.zero);
             }
+            centroids = _centroids.ToArray();
             return (totalVol, volCenterSum/totalVol);
         }
 
