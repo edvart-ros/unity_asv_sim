@@ -59,4 +59,14 @@ public class Submersion : MonoBehaviour
             Utils.DebugDrawTriangle(tri, Color.green);
         }
     }
+
+
+
+
+/*
+    private void OnDrawGizmos() {
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(submerged.centroid, 0.2f);
+    }
+*/
 }
