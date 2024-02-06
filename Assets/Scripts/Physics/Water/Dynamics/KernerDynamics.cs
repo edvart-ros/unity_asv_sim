@@ -106,8 +106,8 @@ public class KernerDynamics : MonoBehaviour
         for (int i = 0; i < triangles.Length - 2; i += 3)
         {
             (v0, v1, v2) = (vertices[triangles[i]], vertices[triangles[i + 1]], vertices[triangles[i + 2]]);
-            ni = transform.InverseTransformDirection(submerged.FaceNormalsL[i/3]).normalized;
-            Ci = transform.TransformPoint((v0+v1+v2)/3);
+            ni = submerged.FaceNormalsWorld[i / 3].normalized;
+            Ci = submerged.FaceCentersWorld[i / 3];
             Si = (0.5f) * Vector3.Cross((v1 - v0), (v2 - v0)).magnitude;
 
             GCi = Ci - G;
