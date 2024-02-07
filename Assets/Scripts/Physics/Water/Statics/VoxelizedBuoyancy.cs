@@ -12,6 +12,9 @@ using UnityEditor.Playables;
 // there seems to be about a .5 or .4 difference in mass to maintain the same waterline,
 // from 6 voxels to 3 voxels (15000 to 8500)
 // TODO: Investigate difference in mass contribution from Kerner model 5 000 000 to voxel model 15 000
+// TODO: Consider factoring in Depth of the point to buoyancy force
+
+// TODO: ADD support for water patch
 
 
 public class VoxelizedBuoyancy : MonoBehaviour
