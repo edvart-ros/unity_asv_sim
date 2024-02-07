@@ -45,8 +45,6 @@ public class Submersion : MonoBehaviour
         }
     }
     private void DebugSubmerged() {
-        float[] centerHeights = submerged.FaceCenterHeightsAboveWater;
-        Vector3[] pressureCenters = submerged.pressureCenters;
         int[] tris = submerged.mesh.triangles;
         Vector3[] verts = submerged.mesh.vertices;
 
@@ -65,14 +63,13 @@ public class Submersion : MonoBehaviour
 
 
 
-
+/*
     private void OnDrawGizmos() {
         Gizmos.color = Color.red;
         Vector3[] centroids = submerged.centroids;
         foreach (var c in centroids) Gizmos.DrawSphere(c, 0.01f);
-        Gizmos.color = Color.green;
-        Gizmos.DrawCube(submerged.centroid, 0.03f*Vector3.one);
-        
+        Gizmos.color = Color.magenta;
+        Gizmos.DrawCube(submerged.centroid, 0.1f*Vector3.one);
     }
-
+*/
 }

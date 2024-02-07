@@ -289,7 +289,10 @@ namespace WaterInteraction {
         private int L;
         public float volume = 0f;
         public Vector3 centroid = Vector3.zero;
-        public Vector3[] centroids = new Vector3[0];
+        public Vector3 centroidUp = Vector3.zero;
+        public Vector3 centroidDown = Vector3.zero; 
+        public Vector3[] centroidsUp = new Vector3[0];
+        public Vector3[] centroidsDown = new Vector3[0];
         public Submerged(Mesh simplifiedHullMesh, bool debug=false) {
             hullMesh = simplifiedHullMesh;
             L = hullMesh.vertices.Length;
@@ -356,6 +359,7 @@ namespace WaterInteraction {
                             Vector3 J_H = sortedVertsL[0] + LJ_H;
                             Vector3 J_M = sortedVertsL[0] + LJ_M;
                             Vector3 normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[0], J_H, J_M).magnitude;
+                            Debug.DrawLine(t.TransformPoint(J_H), t.TransformPoint(J_M), Color.red);
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[0], J_H, J_M, triangleNormal);
 
                             break;
@@ -377,6 +381,9 @@ namespace WaterInteraction {
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[1], I_M, sortedVertsL[0], triangleNormal);
                             normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[0], I_M, I_L).magnitude;
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[0], I_M, I_L, triangleNormal);
+                            Debug.DrawLine(t.TransformPoint(I_M), t.TransformPoint(I_L), Color.red);
+                            //Debug.DrawLine(t.TransformPoint(J_H), t.TransformPoint(J_M), Color.red);
+
 
                             break;
                         }
@@ -393,9 +400,13 @@ namespace WaterInteraction {
         }
 
         public (float vol, Vector3 volCenter) GetSubmergedVolume(Vector3[] verts, int[] tris, Vector3[]  normals, float[] heights, Transform t){
-            float totalVol = 0f;
-            Vector3 volCenterSum = Vector3.zero;
-            List<Vector3> _centroids = new List<Vector3>();
+            float totalVolDown = 0f;
+            float totalVolUp = 0f;
+            Vector3 volCenterSumDown = Vector3.zero;
+            Vector3 volCenterSumUp = Vector3.zero;
+            
+            List<Vector3> _centroidsDown = new List<Vector3>();
+            List<Vector3> _centroidsUp = new List<Vector3>();
             
             for (int i = 0; i < tris.Length-2; i+=3){
                 float depth = -heights[i/3];
@@ -415,15 +426,27 @@ namespace WaterInteraction {
                 float vol = projectedArea*depth;
                 Vector3 centroid = (tri[0] + tri[1] + tri[2]) / 3.0f + new Vector3(0f, depth*0.5f, 0);
                 
-                volCenterSum += triPointingDown ? centroid*vol : -centroid*vol;
-                totalVol += triPointingDown ? vol : -vol;
-                _centroids.Add(centroid);
+                if (triPointingDown) {
+                    volCenterSumDown += centroid*vol;
+                    totalVolDown += vol;
+                    _centroidsDown.Add(centroid);
+                }
+                else {
+                    volCenterSumUp += centroid*vol;
+                    totalVolUp += vol;
+                    _centroidsUp.Add(centroid);
+                }
             }
-            if (totalVol == 0f){
-                return (0f, Vector3.zero);
-            }
-            centroids = _centroids.ToArray();
-            return (totalVol, volCenterSum/totalVol);
+            centroidsUp = _centroidsUp.ToArray();
+            centroidsDown = _centroidsDown.ToArray();
+
+            centroidUp = volCenterSumUp/totalVolUp;
+            centroidDown = volCenterSumDown/totalVolDown;
+            Debug.Log(totalVolDown-totalVolUp);
+            Vector3 c = (centroidDown * totalVolDown - centroidUp * totalVolUp) / (totalVolDown - totalVolUp);
+
+
+            return (totalVolDown-totalVolUp, c);
         }
 
         public (Vector3[], int[], Vector3[]) SplitTrianglesHorizontally(Vector3[] verts, int[] tris, Vector3[] normals, Transform t) {
