@@ -146,12 +146,7 @@ namespace WaterInteraction {
             (int iCell, int jCell) = PointToCell(point);
             float xInCell = (point.x - gridOrigin.x) - cellSize * jCell;
             float zInCell = (point.z - gridOrigin.z) - (cellSize * (-iCell));
-            if (xInCell >= -zInCell) {
-                return GetPatchRightTriangleVertices(iCell, jCell);
-            }
-            else {
-                return GetPatchLeftTriangleVertices(iCell, jCell);
-            }
+            return (xInCell >= -zInCell) ? GetPatchRightTriangleVertices(iCell, jCell) : GetPatchLeftTriangleVertices(iCell, jCell);
         }
 
         public float GetPatchRelativeHeight(Vector3 point) {
@@ -321,12 +316,12 @@ namespace WaterInteraction {
             List<Vector3> vertsOut = new List<Vector3>();
             List<Vector3> normalsOut = new List<Vector3>();
 
+            Vector3[] vertsL = new Vector3[3];
+            Vector3[] normalsL = new Vector3[3];
+            Vector3[] vertsW = new Vector3[3];
+            float[] vertHeights = new float[3];
             // loop through input triangles
             for (int i = 0; i < bodyTris.Length - 2; i += 3) {
-                Vector3[] vertsL = new Vector3[3];
-                Vector3[] normalsL = new Vector3[3];
-                Vector3[] vertsW = new Vector3[3];
-                float[] vertHeights = new float[3];
 
                 int submCount = 0;
 
@@ -359,7 +354,6 @@ namespace WaterInteraction {
                             Vector3 J_H = sortedVertsL[0] + LJ_H;
                             Vector3 J_M = sortedVertsL[0] + LJ_M;
                             Vector3 normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[0], J_H, J_M).magnitude;
-                            Debug.DrawLine(t.TransformPoint(J_H), t.TransformPoint(J_M), Color.red);
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[0], J_H, J_M, triangleNormal);
 
                             break;
@@ -381,9 +375,6 @@ namespace WaterInteraction {
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[1], I_M, sortedVertsL[0], triangleNormal);
                             normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[0], I_M, I_L).magnitude;
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[0], I_M, I_L, triangleNormal);
-                            Debug.DrawLine(t.TransformPoint(I_M), t.TransformPoint(I_L), Color.red);
-                            //Debug.DrawLine(t.TransformPoint(J_H), t.TransformPoint(J_M), Color.red);
-
 
                             break;
                         }
@@ -408,7 +399,7 @@ namespace WaterInteraction {
             List<Vector3> _centroidsDown = new List<Vector3>();
             List<Vector3> _centroidsUp = new List<Vector3>();
             
-            for (int i = 0; i < tris.Length-2; i+=3){
+            for (int i = 0; i < tris.Length; i+=3){
                 float depth = -heights[i/3];
                 Vector3[] tri = new Vector3[]
                 {
@@ -437,16 +428,16 @@ namespace WaterInteraction {
                     _centroidsUp.Add(centroid);
                 }
             }
+            float totalVol = totalVolDown-totalVolUp;
+            if (totalVol == 0f) return (0f, Vector3.zero);
+            
             centroidsUp = _centroidsUp.ToArray();
             centroidsDown = _centroidsDown.ToArray();
 
-            centroidUp = volCenterSumUp/totalVolUp;
-            centroidDown = volCenterSumDown/totalVolDown;
-            Debug.Log(totalVolDown-totalVolUp);
-            Vector3 c = (centroidDown * totalVolDown - centroidUp * totalVolUp) / (totalVolDown - totalVolUp);
-
-
-            return (totalVolDown-totalVolUp, c);
+            centroidUp =    (totalVolUp == 0f)? Vector3.zero : volCenterSumUp/totalVolUp;
+            centroidDown =  (totalVolDown == 0f)? Vector3.zero : volCenterSumDown/totalVolDown;
+            Vector3 c = (centroidDown * totalVolDown - centroidUp * totalVolUp) / (totalVol);
+            return (totalVol, c);
         }
 
         public (Vector3[], int[], Vector3[]) SplitTrianglesHorizontally(Vector3[] verts, int[] tris, Vector3[] normals, Transform t) {

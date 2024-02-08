@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using WaterInteraction;
 using Unity.Collections;
+using UnityEditor.Callbacks;
 
 public class Submersion : MonoBehaviour
 {
@@ -32,6 +33,8 @@ public class Submersion : MonoBehaviour
         submerged.Update(patch, transform);
         if (drawPatch) DebugPatch();
         if (drawSubmerged) DebugSubmerged();
+        //Debug.Log("Local: " + transform.InverseTransformPoint(submerged.centroid));
+        //Debug.Log("World: " + submerged.centroid);
     }
     
     private void DebugPatch()
@@ -63,13 +66,22 @@ public class Submersion : MonoBehaviour
 
 
 
-/*
+
     private void OnDrawGizmos() {
+        //Gizmos.color = Color.magenta;
+        //Gizmos.DrawCube(submerged.centroid, 0.28f*Vector3.one);
+        /*
         Gizmos.color = Color.red;
-        Vector3[] centroids = submerged.centroids;
+        Vector3[] centroids = submerged.centroidsUp;
         foreach (var c in centroids) Gizmos.DrawSphere(c, 0.01f);
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawCube(submerged.centroid, 0.1f*Vector3.one);
+        Gizmos.DrawCube(submerged.centroidUp, 0.2f*Vector3.one);   
+        
+        Gizmos.color = Color.green;
+        centroids = submerged.centroidsDown;
+        foreach (var c in centroids) Gizmos.DrawSphere(c, 0.01f);
+        Gizmos.DrawCube(submerged.centroidDown, 0.2f*Vector3.one);
+        */
+
     }
-*/
+
 }
