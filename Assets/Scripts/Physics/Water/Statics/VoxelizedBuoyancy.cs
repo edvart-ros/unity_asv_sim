@@ -2,12 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Robotics.ROSTCPConnector.ROSGeometry;
 using UnityEngine;
+using TMPro;
 using System.IO;
 using UnityEditor.Playables;
 
 
+//TODO: Investigate bug where the smaller voxels cause the ship to lay lower in the water
+// It obviously has something to do with the amount of points, and difference between that is not accounted for
+// there seems to be about a .5 or .4 difference in mass to maintain the same waterline,
+// from 6 voxels to 3 voxels (15000 to 8500)
+// TODO: Investigate difference in mass contribution from Kerner model 5 000 000 to voxel model 15 000
+// TODO: Consider factoring in Depth of the point to buoyancy force
+
+// TODO: ADD support for water patch
+
+
 public class VoxelizedBuoyancy : MonoBehaviour
 {
+    public Transform planeTransform;
+    
+    public TextMeshProUGUI buoyancyText;
+    
     private List<Vector3> pointsInsideMesh = new List<Vector3>();
     private string path = "Assets/Data/localPointsData.json";
     private List<Vector3> globalPositions = new List<Vector3>();
@@ -15,19 +30,9 @@ public class VoxelizedBuoyancy : MonoBehaviour
     private Vector3 parentPosition;
     private int voxelVolume;
     private Transform parentTransform;
+    private float actualForce;
     
-    private Rigidbody rb;
-    
-    
-    // TODO: See following list:
-    // 1. Read points from file
-    // 2. Convert points from local to global coordinates
-    // 3. Iterate over the points, finding the distance from water surface.
-    // If above water, discard and continue
-    // If below water, add to list of points to be used for buoyancy calculation
-    // 4. Determine the centre of mass of the points
-    // 5. Apply force to this point based on the amount of points total and the volume
-    // which is constant for each point, so it is just the number of points * volume * gravity
+    private Rigidbody shipRigidbody;
     
     
     void Awake()
@@ -36,27 +41,65 @@ public class VoxelizedBuoyancy : MonoBehaviour
         Vector3ListWrapper wrapper = LoadPoints();
         pointsInsideMesh = wrapper.localPoints;
         voxelVolume = wrapper.volume;
+        shipRigidbody = GetComponent<Rigidbody>();
     }
 
     
     private void FixedUpdate()
     {
         UpdateGlobalPosition();
-        foreach (var point in globalPositions)
-        {
-            //TODO: Add a check to see if the point is above or below the water surface
-            //if (transform.TransformPoint(point).y <= 0)
-            {
-                //Debug.Log("Called buoyancy");
-                //rb.AddForceAtPosition(997 * voxelSize * voxelSize * voxelSize * Vector3.up, transform.TransformPoint(point));
-
-
-
-            }
-        }
+        ApplyForce(CalculateCenterOfMass(GetPointsUnderPlane()));
+        
+        buoyancyText.text = "Buoyancy Force: " + actualForce.ToString("F2");
     }
 
 
+    private List<Vector3> GetPointsUnderPlane()
+    {
+        // Create a Plane object using the position and up vector of the planeTransform
+        Plane plane = new Plane(planeTransform.up, planeTransform.position);
+        
+        List<Vector3> pointsUnderPlane = new List<Vector3>();
+
+        foreach (var point in globalPositions)
+        {
+            if (!plane.GetSide(point))
+            {
+                pointsUnderPlane.Add(point);
+            }
+        }
+
+        return pointsUnderPlane;
+    }
+    
+    
+    private (Vector3, int) CalculateCenterOfMass(List<Vector3> points)
+    {
+        Vector3 sum = Vector3.zero;
+        foreach (var point in points)
+        {
+            sum += point;
+        }
+        return (sum / points.Count, points.Count);
+    }
+
+
+    private void ApplyForce((Vector3 centerOfMass, int numberOfPoints) data)
+    {
+        float force = CalculateForce(data.numberOfPoints, voxelVolume, 9.81f);
+        shipRigidbody.AddForceAtPosition(force*Vector3.up, data.Item1);
+        Debug.DrawRay(data.Item1,force*Vector3.up, Color.red);
+    }
+
+
+    private float CalculateForce(int numberOfPoints, float volume, float gravity)
+    {
+        float force = numberOfPoints * volume * gravity;
+        actualForce = force;
+        return force;
+    }
+    
+    
     private void UpdateGlobalPosition()
     {
         if (!transform.hasChanged) return;
