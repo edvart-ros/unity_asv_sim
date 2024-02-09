@@ -14,7 +14,8 @@ public class VoxelizeMesh : MonoBehaviour
     [Tooltip("This field is required. Usually, the mesh of the object you want to voxelize.")]
     public Mesh boundsTarget;
 
-    public int voxelSize = 6;
+    public float voxelSize = 6;
+    
     private List<Vector3> pointsInsideMesh = new List<Vector3>();
     private string path = "Assets/Data/localPointsData.json";
 
@@ -109,5 +110,5 @@ public class VoxelizeMesh : MonoBehaviour
 public class Vector3ListWrapper
 {
     public List<Vector3> localPoints = new List<Vector3>();
-    public int volume;
+    public float volume;
 }
