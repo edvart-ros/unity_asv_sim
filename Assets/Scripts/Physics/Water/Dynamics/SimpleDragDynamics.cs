@@ -1,67 +1,53 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleDragDynamics : MonoBehaviour
+[RequireComponent(typeof(Rigidbody))]
+public class AdvancedDrag : MonoBehaviour
 {
+    public Vector3 linearCoefficients = new Vector3(1f, 1f, 1f);
+    public Vector3 quadraticCoefficients = new Vector3(1f, 1f, 1f);
+    public Vector3 cubicCoefficients = new Vector3(1f, 1f, 1f);
+
+    public Vector3 angularLinearCoefficients = new Vector3(1f, 1f, 1f);
+    public Vector3 angularQuadraticCoefficients = new Vector3(1f, 1f, 1f);
+    public Vector3 angularCubicCoefficients = new Vector3(1f, 1f, 1f);
+
     private Rigidbody rb;
-    public float Xu, Xuu, Xuuu;
-    public float Yv, Yvv, Yvvv, Yr;
-    public float Zw, Zww;
-    public float Kp, Kpp;
-    public float Mq, Mqq;
-    public float Nr, Nrr, Nrrr, Nv;
-    private float u, v, w, p, q, r;
 
-    private Vector3 vel;
-    private Vector3 angVel;
-    private float dt;
-    private float m;
-
-    
-    private Vector3 localVel;
-    
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        dt = Time.fixedDeltaTime;
-        m = rb.mass;
     }
 
-    // Update is called once per frame
-    void FixedUpdate()
+    private void FixedUpdate()
     {
-        vel = rb.velocity;
-        angVel = rb.angularVelocity;
-        localVel = transform.InverseTransformDirection(vel);
-
-        u = localVel.z;
-        v = -localVel.x;
-        w = localVel.y;
-        p = -angVel.z;
-        q = angVel.x;
-        r = -angVel.y;
-
-        ApplyDampingForce();
+        ApplyDrag();
     }
 
-    void ApplyDampingForce()
+    void ApplyDrag()
     {
-        float FwMax = Mathf.Abs(m * w);
+        // Translational drag
+        Vector3 velocity = transform.InverseTransformDirection(rb.velocity);
+        Vector3 dragForce = CalculateDragForce(velocity, linearCoefficients, quadraticCoefficients, cubicCoefficients);
+        rb.AddRelativeForce(-dragForce, ForceMode.Force);
 
-        float Fu = -(Xu * u + Xuu * Math.Abs(u) * u + Xuuu * u * u * u);
-        float Fv = -(Yv * v + Yr * r + Yvv * Math.Abs(v) * v + Yvvv * v * v * v);
-        float Fw = -(Zw * w + Zww * Math.Abs(w) * w);
-        Fw = Mathf.Clamp(Fw, -FwMax, FwMax);
+        // Rotational drag
+        Vector3 angularVelocity = transform.InverseTransformDirection(rb.angularVelocity);
+        Vector3 angularDragTorque = CalculateDragForce(angularVelocity, angularLinearCoefficients, angularQuadraticCoefficients, angularCubicCoefficients);
+        rb.AddTorque(transform.TransformDirection(-angularDragTorque), ForceMode.Force);
+    }
 
-        float Tp = -(Kp * p + Kpp * Math.Abs(p) * p);
-        float Tq = -(Mq * q + Mqq * Math.Abs(q) * q);
-        float Tr = -(Nv * r + Nr * r + Nrr * Math.Abs(r) * r + Nrrr * r * r * r);
-        Vector3 F = transform.TransformDirection(new Vector3(-Fv, Fw, Fu));
-        rb.AddForce(F);
-        Debug.DrawRay(transform.position, F);
-        rb.AddTorque(new Vector3(Tq, -Tr, -Tp));
+    Vector3 CalculateDragForce(Vector3 velocity, Vector3 linear, Vector3 quadratic, Vector3 cubic)
+    {
+        Vector3 force = Vector3.zero;
+        force.x = CalculateDragForAxis(velocity.x, linear.x, quadratic.x, cubic.x);
+        force.y = CalculateDragForAxis(velocity.y, linear.y, quadratic.y, cubic.y);
+        force.z = CalculateDragForAxis(velocity.z, linear.z, quadratic.z, cubic.z);
+        return force;
+    }
+
+    float CalculateDragForAxis(float speed, float linear, float quadratic, float cubic)
+    {
+        return linear * speed + quadratic * speed*Math.Abs(speed) + cubic * Mathf.Pow(speed, 3);
     }
 }
