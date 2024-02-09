@@ -1,10 +1,9 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Robotics.ROSTCPConnector.ROSGeometry;
-using UnityEngine;
-using TMPro;
-using System.IO;
 using UnityEditor.Playables;
+using System.Collections;
+using UnityEngine;
+using System.IO;
+using TMPro;
 
 
 //TODO: Investigate bug where the smaller voxels cause the ship to lay lower in the water
@@ -28,10 +27,15 @@ public class VoxelizedBuoyancy : MonoBehaviour
     private List<Vector3> globalPositions = new List<Vector3>();
     private List<Vector3> relativePositions = new List<Vector3>();
     private Vector3 parentPosition;
+
     private int voxelVolume;
     private Transform parentTransform;
     private float actualForce;
-    
+
+    private float actualForce;
+    private float voxelVolume;
+
+
     private Rigidbody shipRigidbody;
     
     
@@ -48,7 +52,7 @@ public class VoxelizedBuoyancy : MonoBehaviour
     private void FixedUpdate()
     {
         UpdateGlobalPosition();
-        ApplyForce(CalculateCenterOfMass(GetPointsUnderPlane()));
+        ApplyForce(CalculateCenterOfPoints(GetPointsUnderPlane()));
         
         buoyancyText.text = "Buoyancy Force: " + actualForce.ToString("F2");
     }
@@ -63,17 +67,14 @@ public class VoxelizedBuoyancy : MonoBehaviour
 
         foreach (var point in globalPositions)
         {
-            if (!plane.GetSide(point))
-            {
-                pointsUnderPlane.Add(point);
-            }
+            if (!plane.GetSide(point)) pointsUnderPlane.Add(point);
         }
 
         return pointsUnderPlane;
     }
     
     
-    private (Vector3, int) CalculateCenterOfMass(List<Vector3> points)
+    private (Vector3, int) CalculateCenterOfPoints(List<Vector3> points)
     {
         Vector3 sum = Vector3.zero;
         foreach (var point in points)
@@ -87,16 +88,15 @@ public class VoxelizedBuoyancy : MonoBehaviour
     private void ApplyForce((Vector3 centerOfMass, int numberOfPoints) data)
     {
         float force = CalculateForce(data.numberOfPoints, voxelVolume, 9.81f);
-        shipRigidbody.AddForceAtPosition(force*Vector3.up, data.Item1);
-        Debug.DrawRay(data.Item1,force*Vector3.up, Color.red);
+        shipRigidbody.AddForceAtPosition(force*Vector3.up, data.centerOfMass);
+        Debug.DrawRay(data.centerOfMass,force*Vector3.up, Color.red);
     }
 
 
     private float CalculateForce(int numberOfPoints, float volume, float gravity)
     {
-        float force = numberOfPoints * volume * gravity;
-        actualForce = force;
-        return force;
+        return actualForce = numberOfPoints * volume * gravity;
+        //return actualForce;
     }
     
     
