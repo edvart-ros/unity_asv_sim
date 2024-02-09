@@ -49,8 +49,8 @@ public class Submersion : MonoBehaviour
         }
     }
     private void DebugSubmerged() {
-        int[] tris = submerged.mesh.triangles;
-        Vector3[] verts = submerged.mesh.vertices;
+        int[] tris = submerged.newSubmergedMesh.triangles;
+        Vector3[] verts = submerged.newSubmergedMesh.vertices;
 
         for (int i = 0; i < tris.Length - 2; i += 3) {
             Vector3[] tri = new Vector3[]
