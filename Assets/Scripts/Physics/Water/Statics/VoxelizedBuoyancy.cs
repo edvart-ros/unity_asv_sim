@@ -28,9 +28,7 @@ public class VoxelizedBuoyancy : MonoBehaviour
     private List<Vector3> relativePositions = new List<Vector3>();
     private Vector3 parentPosition;
 
-    private int voxelVolume;
     private Transform parentTransform;
-    private float actualForce;
 
     private float actualForce;
     private float voxelVolume;
