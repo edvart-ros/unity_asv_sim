@@ -1,5 +1,17 @@
 {
   "dependencies": {
+    "com.cesium.unity": {
+      "version": "1.7.1",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {
+        "com.unity.mathematics": "1.2.0",
+        "com.unity.test-framework": "1.1.31",
+        "com.unity.shadergraph": "12.1.6",
+        "com.unity.inputsystem": "1.4.2"
+      },
+      "url": "https://unity.pkg.cesium.com"
+    },
     "com.unity.burst": {
       "version": "1.8.7",
       "depth": 1,
