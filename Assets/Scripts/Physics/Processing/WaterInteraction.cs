@@ -281,6 +281,8 @@ namespace WaterInteraction {
         public Vector3[] FaceCentersWorld = new Vector3[0];
         public float[] FaceCenterHeightsAboveWater = new float[0];
         public Vector3[] pressureCenters = new Vector3[0];
+        public Vector3[] waterLineVerts = new Vector3[0];
+        public bool debugWaterLine = false;
         private int L;
         public float volume = 0f;
         public Vector3 centroid = Vector3.zero;
@@ -299,10 +301,11 @@ namespace WaterInteraction {
             Vector3[] hullVerts = hullMesh.vertices;
             int[] hullTris = hullMesh.triangles;
             Vector3[] hullVertNormals = hullMesh.normals;
-            (Vector3[] subVerts, int[] subTris, Vector3[] subNormals) = GetSubmergedTriangles(patch, t, hullVerts, hullTris, hullVertNormals);
+            (Vector3[] subVerts, int[] subTris, Vector3[] subNormals, Vector3[] intersectionVerts) = GetSubmergedTriangles(patch, t, hullVerts, hullTris, hullVertNormals);
             mesh.vertices = subVerts;
             mesh.triangles = subTris;
             FaceNormalsL = subNormals;
+            waterLineVerts = intersectionVerts;
             triangleAreas = GetTriangleAreas(subVerts);
             FaceCenterHeightsAboveWater = GetTriangleCenterHeights(patch, t, subVerts, subTris);
             (volume, centroid) = GetSubmergedVolume(subVerts, subTris, subNormals, FaceCenterHeightsAboveWater, t);
@@ -311,9 +314,10 @@ namespace WaterInteraction {
 
 
 
-        public (Vector3[], int[], Vector3[]) GetSubmergedTriangles(Patch patch, Transform t, Vector3[] bodyVerts, int[] bodyTris, Vector3[] bodyVertNormals) {
+        public (Vector3[], int[], Vector3[], Vector3[]) GetSubmergedTriangles(Patch patch, Transform t, Vector3[] bodyVerts, int[] bodyTris, Vector3[] bodyVertNormals) {
             List<int> trisOut = new List<int>();
             List<Vector3> vertsOut = new List<Vector3>();
+            List<Vector3> intersectionVerts = new List<Vector3>();
             List<Vector3> normalsOut = new List<Vector3>();
 
             Vector3[] vertsL = new Vector3[3];
@@ -355,6 +359,8 @@ namespace WaterInteraction {
                             Vector3 J_M = sortedVertsL[0] + LJ_M;
                             Vector3 normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[0], J_H, J_M).magnitude;
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[0], J_H, J_M, triangleNormal);
+                            intersectionVerts.Add(J_H);
+                            intersectionVerts.Add(J_M);
 
                             break;
                         }
@@ -375,7 +381,8 @@ namespace WaterInteraction {
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[1], I_M, sortedVertsL[0], triangleNormal);
                             normal = triangleNormal * Utils.GetFaceNormal(sortedVertsL[0], I_M, I_L).magnitude;
                             AppendTriangle(ref vertsOut, ref trisOut, ref normalsOut, sortedVertsL[0], I_M, I_L, triangleNormal);
-
+                            intersectionVerts.Add(I_M);
+                            intersectionVerts.Add(I_L);
                             break;
                         }
                     case 3: {
@@ -387,7 +394,7 @@ namespace WaterInteraction {
 
                 }
             }
-            return (vertsOut.ToArray(), trisOut.ToArray(), normalsOut.ToArray());
+            return (vertsOut.ToArray(), trisOut.ToArray(), normalsOut.ToArray(), intersectionVerts.ToArray());
         }
 
         public (float vol, Vector3 volCenter) GetSubmergedVolume(Vector3[] verts, int[] tris, Vector3[]  normals, float[] heights, Transform t){

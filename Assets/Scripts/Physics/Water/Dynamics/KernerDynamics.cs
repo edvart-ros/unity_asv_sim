@@ -17,7 +17,14 @@ public class KernerDynamics : MonoBehaviour
     [Range(0.01f, 5.0f)]
     public float pressureDragVelocityRef = 1.0f;
     [Range(0.1f, 4.0f)]
-    public float pressureDragFalloffPower = 1.0f;
+    public float pressureDragFalloffPower = 1.0f;    
+
+    [Range(0.0f, 1000.0f)]
+    public float suctionDragLinearCoefficient = 100;
+    [Range(0.0f, 1000.0f)]
+    public float suctionDragQuadraticCoefficient = 30.0f;
+    [Range(0.1f, 4.0f)]
+    public float suctionDragFalloffPower = 1.0f;
 
 
     private Submerged submerged;
@@ -50,7 +57,13 @@ public class KernerDynamics : MonoBehaviour
         }
         if (pressureDragActive)
         {
-            ApplyPressureDrag(pressureDragLinearCoefficient, pressureDragQuadraticCoefficient, pressureDragVelocityRef, pressureDragFalloffPower);
+            ApplyPressureDrag(pressureDragLinearCoefficient, 
+                              pressureDragQuadraticCoefficient, 
+                              suctionDragLinearCoefficient,
+                              suctionDragQuadraticCoefficient,
+                              pressureDragVelocityRef, 
+                              pressureDragFalloffPower,
+                              suctionDragFalloffPower);
         }
 
     }
@@ -91,7 +104,7 @@ public class KernerDynamics : MonoBehaviour
         return;
     }
 
-    private void ApplyPressureDrag(float Cpd1, float Cpd2, float vRef, float fp)
+    private void ApplyPressureDrag(float Cpd1, float Cpd2, float Csd1, float Csd2, float vRef, float fp, float fd)
     {
         Vector3[] vertices = submerged.mesh.vertices;
         int[] triangles = submerged.mesh.triangles;
@@ -120,19 +133,21 @@ public class KernerDynamics : MonoBehaviour
             if (cosThetai <= 0.0f)
             {
                 Fpd = (Cpd1 * (viMag / vRef) + Cpd2 * ((viMag * viMag) / (viMag * viMag))) * Si * Mathf.Pow(Mathf.Abs(cosThetai), fp) * ni;
+                if (debugPressureDrag) Debug.DrawRay(Ci, Fpd, Color.red);
+
             }
             else
             {
-                Fpd = -(Cpd1 * (viMag / vRef) + Cpd2 * ((viMag * viMag) / (vRef * vRef))) * Si * Mathf.Pow(cosThetai, fp) * ni;
+                Fpd = -(Csd1 * (viMag / vRef) + Csd2 * ((viMag * viMag) / (vRef * vRef))) * Si * Mathf.Pow(cosThetai, fp) * ni;
+                if (debugPressureDrag) Debug.DrawRay(Ci, Fpd, Color.green);
             }
             rigidBody.AddForceAtPosition(Fpd, Ci);
+            /*
             if (debugPressureDrag)
             {
                 Debug.DrawRay(Ci, Fpd, Color.white);
             }
-        }
-        if (debugPressureDrag) {
-            // Debug.DrawRay(transform.position, totalPressureForce/100, Color.green);
+            */
         }
         return;
     }
