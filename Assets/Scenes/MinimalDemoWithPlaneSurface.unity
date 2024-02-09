@@ -2779,7 +2779,7 @@ MonoBehaviour:
     m_Bits: 128
   boundsTarget: {fileID: -5847032084009076690, guid: 42be4fd4fd9f7425abe82ff7413eb9aa,
     type: 3}
-  voxelSize: 3
+  voxelSize: 5
 --- !u!64 &1945039439
 MeshCollider:
   m_ObjectHideFlags: 0
