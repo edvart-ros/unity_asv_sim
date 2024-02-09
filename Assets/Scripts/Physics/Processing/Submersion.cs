@@ -13,6 +13,7 @@ public class Submersion : MonoBehaviour
     public bool drawPatch;
     public bool drawSubmerged;
     private Patch patch;
+    public bool drawWaterLine;
 
     [ReadOnly]
     public Submerged submerged;
@@ -33,8 +34,8 @@ public class Submersion : MonoBehaviour
         submerged.Update(patch, transform);
         if (drawPatch) DebugPatch();
         if (drawSubmerged) DebugSubmerged();
-        //Debug.Log("Local: " + transform.InverseTransformPoint(submerged.centroid));
-        //Debug.Log("World: " + submerged.centroid);
+        if (drawWaterLine) DebugWaterLine();
+
     }
     
     private void DebugPatch()
@@ -60,6 +61,14 @@ public class Submersion : MonoBehaviour
             };
 
             Utils.DebugDrawTriangle(tri, Color.green);
+        }
+    }
+
+    private void DebugWaterLine(){
+        Vector3[] verts = submerged.waterLineVerts;
+        for (int i = 0; i < verts.Length-1; i+=2
+        ){
+            Debug.DrawLine(transform.TransformPoint(verts[i]), transform.TransformPoint(verts[i+1]), Color.magenta);
         }
     }
 
