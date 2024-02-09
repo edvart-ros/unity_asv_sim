@@ -71,7 +71,7 @@ namespace WaterInteraction
             SubmergedData submergedData = new SubmergedData();
             submergedData.SubmersionTransform = submersionTransform;
 
-            GetSubmergedTriangles(submergedData, patch, hullMesh.vertices, hullMesh.triangles, hullMesh.normals);
+            ProduceSubmergedTriangles(submergedData, patch, hullMesh.vertices, hullMesh.triangles, hullMesh.normals);
 
             newSubmergedMesh.vertices = submergedData.SubmergedVertices; 
             newSubmergedMesh.triangles = submergedData.SubmergedTriangles;
@@ -79,9 +79,10 @@ namespace WaterInteraction
             faceNormalsLocal = submergedData.SubmergedNormals;
             waterLineVerts = submergedData.IntersectionVertices.ToArray();
             
+            // TODO: Consider setting globals in function, no return
             triangleAreas               = GetTriangleAreas(submergedData);
             faceCenterHeightsAboveWater = GetTriangleCenterHeights(submergedData, patch);
-            (volume, centroid)          = GetSubmergedVolume(submergedData, faceCenterHeightsAboveWater); // TODO: Consider setting globals in function, no return
+            (volume, centroid)          = GetSubmergedVolume(submergedData, faceCenterHeightsAboveWater); 
             faceCentersWorld            = GetFaceCenters(submergedData);
         }
 
@@ -89,7 +90,7 @@ namespace WaterInteraction
         // Called in Update
         /// Returns the arrays of vertices, triangles and normals of the submerged mesh.
         /// It also splits the triangles depending on how many vertices are submerged.
-        public void GetSubmergedTriangles
+        public void ProduceSubmergedTriangles
             (SubmergedData data, Patch patch,  Vector3[] bodyVertices, int[] bodyTriangles, Vector3[] bodyVertNormals) 
         {
             MeshData meshData = new MeshData();
@@ -126,61 +127,53 @@ namespace WaterInteraction
                         break;
                     }
                     case 1: 
-                    { // TODO: Continue from here
+                    {
                         (Vector3[] localVerticesSorted, float[] sortedHeights) = SortVerticesAgainstFloats(verticesLocal, vertexHeights);
-                        Vector3 highestMinusLowest = localVerticesSorted[2] - localVerticesSorted[0]; 
-                        Vector3 middleMinusLowest  = localVerticesSorted[1] - localVerticesSorted[0]; 
+                        Vector3 highestMinusLowestPoint  = localVerticesSorted[2] - localVerticesSorted[0]; 
+                        Vector3 highestMinusMiddlePoint  = localVerticesSorted[1] - localVerticesSorted[0]; 
 
                         float heightRatioLowToMid  = -sortedHeights[0] / (sortedHeights[1] - sortedHeights[0]); 
                         float heightRatioLowToHigh = -sortedHeights[0] / (sortedHeights[2] - sortedHeights[0]);
-                        Vector3 LJ_H = heightRatioLowToHigh * highestMinusLowest; // TODO: Rename 
-                        Vector3 LJ_M = heightRatioLowToMid * middleMinusLowest;
+                        
+                        Vector3 intersectPointLowToHigh = heightRatioLowToHigh * highestMinusLowestPoint;
+                        Vector3 intersectPointLowToMid  = heightRatioLowToMid * highestMinusMiddlePoint;
 
-                        Vector3 J_H = localVerticesSorted[0] + LJ_H;
-                        Vector3 J_M = localVerticesSorted[0] + LJ_M;
-                        Vector3 normal = triangleNormal * Utils.GetFaceNormal(localVerticesSorted[0], J_H, J_M).magnitude;
-                        AppendTriangle(meshData, localVerticesSorted[0], J_H, J_M, triangleNormal);
+                        Vector3 newEdgeLowToHigh = localVerticesSorted[0] + intersectPointLowToHigh;
+                        Vector3 newEdgeLowToMid  = localVerticesSorted[0] + intersectPointLowToMid;
+                        
+                        Vector3 normal = triangleNormal * Utils.GetFaceNormal(localVerticesSorted[0], newEdgeLowToHigh, newEdgeLowToMid).magnitude;
+                        AppendTriangle(meshData, localVerticesSorted[0], newEdgeLowToHigh, newEdgeLowToMid, triangleNormal);
 
-                        data.IntersectionVertices.Add(J_H);
-                        data.IntersectionVertices.Add(J_M);
+                        data.IntersectionVertices.Add(newEdgeLowToHigh);
+                        data.IntersectionVertices.Add(newEdgeLowToMid);
                         break;
                     }
                     case 2: 
                     {
                         (Vector3[] localVerticesSorted, float[] sortedHeights) = SortVerticesAgainstFloats(verticesLocal, vertexHeights);
 
-                        Vector3 heightDifferenceLowToHigh = localVerticesSorted[2] - localVerticesSorted[0];
-                        Vector3 heightDifferenceMidToHigh = localVerticesSorted[2] - localVerticesSorted[1];
+                        Vector3 highestMinusLowestPoint = localVerticesSorted[2] - localVerticesSorted[0];
+                        Vector3 highestMinusMiddlePoint = localVerticesSorted[2] - localVerticesSorted[1];
 
-                        float heightRatioMidToHigh = -sortedHeights[1] / (sortedHeights[2] - sortedHeights[1]);
-                        float heightRatioLowToHigh = -sortedHeights[0] / (sortedHeights[2] - sortedHeights[0]);
+                        float heightRatioHighToMid = -sortedHeights[1] / (sortedHeights[2] - sortedHeights[1]);
+                        float heightRatioHighToLow = -sortedHeights[0] / (sortedHeights[2] - sortedHeights[0]);
         
-                        Vector3 LI_L = heightRatioLowToHigh * heightDifferenceLowToHigh; // TODO: Rename. InterpolatedLengthLowToHigh?
-                        Vector3 LI_M = heightRatioMidToHigh * heightDifferenceMidToHigh;
+                        Vector3 intersectPointHighToLow = heightRatioHighToLow * highestMinusLowestPoint;
+                        Vector3 intersectPointHighToMid = heightRatioHighToMid * highestMinusMiddlePoint;
 
-                        Vector3 I_L = localVerticesSorted[0] + LI_L;
-                        Vector3 I_M = localVerticesSorted[1] + LI_M;
-                        Vector3 normal = 
-                            triangleNormal * Utils.GetFaceNormal(localVerticesSorted[1], I_M, localVerticesSorted[0]).magnitude;// TODO: Remove, not used
+                        Vector3 newEdgeHighToLow = localVerticesSorted[0] + intersectPointHighToLow;
+                        Vector3 newEdgeHighToMid = localVerticesSorted[1] + intersectPointHighToMid;
         
-                        AppendTriangle(meshData, localVerticesSorted[1], I_M, localVerticesSorted[0], triangleNormal);
-        
-                        normal = triangleNormal * Utils.GetFaceNormal(localVerticesSorted[0], I_M, I_L).magnitude; // TODO: Remove, not used
-        
-                        AppendTriangle(meshData, localVerticesSorted[0], I_M, I_L, triangleNormal);
+                        AppendTriangle(meshData, localVerticesSorted[1], newEdgeHighToMid, localVerticesSorted[0], triangleNormal);
+                        AppendTriangle(meshData, localVerticesSorted[0], newEdgeHighToMid, newEdgeHighToLow, triangleNormal);
 
-                        data.IntersectionVertices.Add(I_M);
-                        data.IntersectionVertices.Add(I_L);
+                        data.IntersectionVertices.Add(newEdgeHighToMid);
+                        data.IntersectionVertices.Add(newEdgeHighToLow);
                         break;
                     }
                     case 3: 
                     {
-                        Vector3 normal = 
-                            triangleNormal * 
-                            Utils.GetFaceNormal(verticesLocal[0], verticesLocal[1], verticesLocal[2]).magnitude;// TODO: Remove, not used
-        
                         AppendTriangle(meshData, verticesLocal[0], verticesLocal[1], verticesLocal[2], triangleNormal);
-        
                         break;
                     }
                 }
@@ -188,7 +181,6 @@ namespace WaterInteraction
             data.SubmergedVertices = meshData.Vertices.ToArray();
             data.SubmergedTriangles = meshData.Triangles.ToArray();
             data.SubmergedNormals = meshData.Normals.ToArray();
-            //return (meshData.Vertices.ToArray(), meshData.Triangles.ToArray(), meshData.Normals.ToArray());
         }
 
 
@@ -250,8 +242,7 @@ namespace WaterInteraction
                     submersionTransform.TransformPoint(vertices[triangles[i + 2]])
                 };
                 
-                // Determine if face is pointing up (negative contribution) or down (positive contribution) //TODO: MOVE DOWN
-                bool trianglePointingDown = submersionTransform.TransformDirection(normals[i/3]).y < 0;
+                
                 
                 // Triangle edges projected on horizontal plane (?)
                 Vector3 edgeAtoB = pointsWorldSpace[1]-pointsWorldSpace[0]; edgeAtoB.y = 0f;
@@ -264,6 +255,8 @@ namespace WaterInteraction
                 Vector3 centroid = (pointsWorldSpace[0] + pointsWorldSpace[1] + pointsWorldSpace[2]) / 3.0f;//+new Vector3(0f, depth*0.5f, 0)
                 centroid += new Vector3(0f, depth * 0.5f, 0);
                 
+                // Determine if face is pointing up (negative contribution) or down (positive contribution) //TODO: MOVE DOWN
+                bool trianglePointingDown = submersionTransform.TransformDirection(normals[i/3]).y < 0;
                 if (trianglePointingDown) 
                 {
                     sumVolumeCenterDown += centroid*volume;
@@ -280,13 +273,13 @@ namespace WaterInteraction
             
             float totalVolume = totalVolumeDown-totalVolumeUp;
             
-            if (Math.Abs(totalVolume) < 0.00001f) return (0f, Vector3.zero); //TODO: I have changed these to a comparison with a small number
+            if (Math.Abs(totalVolume) < 0.00001f) return (0f, Vector3.zero); //Changed these to a comparison with a small number
 
-            centroidsUp = currentCentroidsUp.ToArray();
+            centroidsUp   = currentCentroidsUp.ToArray();
             centroidsDown = currentCentroidsDown.ToArray();
 
-            centroidUp =    (Math.Abs(totalVolumeUp) < 0.00001f)   ? Vector3.zero : sumVolumeCenterUp/totalVolumeUp;
-            centroidDown =  (Math.Abs(totalVolumeDown) < 0.00001f) ? Vector3.zero : sumVolumeCenterDown/totalVolumeDown;
+            centroidUp   = (Math.Abs(totalVolumeUp) < 0.00001f)   ? Vector3.zero : sumVolumeCenterUp/totalVolumeUp;
+            centroidDown = (Math.Abs(totalVolumeDown) < 0.00001f) ? Vector3.zero : sumVolumeCenterDown/totalVolumeDown;
             
             Vector3 center = (centroidDown * totalVolumeDown - centroidUp * totalVolumeUp) / (totalVolume);
             return (totalVolume, center);
@@ -329,55 +322,6 @@ namespace WaterInteraction
         }
         
         
-        // TODO: Check if this is used
-        /// Splits the triangle into two triangles along the horizontal plane.
-        /// Results in the waterline of the ship.
-        private (Vector3[], Vector3[]) SplitSubmergedTriangleHorizontally(Vector3[] tri) 
-        {
-            float[] vertexHeights = new float[3] { tri[0].y, tri[1].y, tri[2].y };
-            (Vector3[] sortedVerticesWorld, float[] sortedHeights) = SortVerticesAgainstFloats(tri, vertexHeights);
-            (Vector3 L, Vector3 M, Vector3 H) = (sortedVerticesWorld[0], sortedVerticesWorld[1], sortedVerticesWorld[2]);
-
-            // Initialize the points for the new triangles
-            Vector3 D; 
-            Vector3[] upperTriangle;
-            Vector3[] lowerTriangle;
-
-            // Check for vertical alignment of L and H
-            if (Math.Abs(H.x - L.x) < 1e-6 && Math.Abs(H.z - L.z) < 1e-6) 
-            {
-                // If LH is approximately vertical
-                D = new Vector3(L.x, M.y, L.z);
-
-                upperTriangle = new Vector3[] { H, M, D };
-                lowerTriangle = new Vector3[] { L, D, M };
-            }
-            else 
-            {
-                // General case
-                // Calculate the slope for the LH line segment
-                float dx = H.x - L.x;
-                float dz = H.z - L.z;
-                float dy = H.y - L.y;
-                if (dy == 0) {
-                    dy = 1e-12f;
-                }
-                float mX = dx / dy;
-                float mZ = dz / dy;
-
-                // Calculate the x and z coordinates of D
-                float x = L.x + mX * (M.y - L.y);
-                float z = L.z + mZ * (M.y - L.y);
-                D = new Vector3(x, M.y, z);
-
-                upperTriangle = new Vector3[] { H, M, D };
-                lowerTriangle = new Vector3[] { L, D, M };
-            }
-
-            return (upperTriangle, lowerTriangle);
-        }
-        
-
         /// Calculates the resistance coefficient of the submerged hull. 
         public float GetResistanceCoefficient(float speed, float hullZmin, float hullZmax) 
         {
@@ -418,48 +362,9 @@ namespace WaterInteraction
         }
 
         
-        // TODO: Not used
-        private Vector3 CalculateBuoyancyCenterTopTriangle(Patch patch, Vector3[] triVerts) 
-        {
-            // takes in a triangle in world coordinates (with a horizontal base) and calculates its center of pressure/buoyancy
-            Vector3 A = triVerts[0];
-            Vector3 B = triVerts[1];
-            Vector3 C = triVerts[2];
-
-            float y0 = -patch.GetPatchRelativeHeight(A);
-            float h = A.y - B.y; 
-            float tc = (4.0f * y0 + 3.0f * h) / (6.0f * y0 + 4.0f * h);
-
-            //if ((6 * y0 + 4 * h) == 0) {
-            //    tc = 0.75f;
-            //}
-            //tc = 0.75f;
-
-            Vector3 centerBuoyancy = A + tc * ((B + C) / 2.0f - A);
-            return centerBuoyancy;
-        }
-
-
-        // TODO: Not used
-        private Vector3 CalculateBuoyancyCenterBottomTriangle(Patch patch, Vector3[] triVerts) 
-        {
-            Vector3 A = triVerts[0];
-            Vector3 B = triVerts[1];
-            Vector3 C = triVerts[2];
-
-            float y0 = -patch.GetPatchRelativeHeight(B);
-            float h = B.y-A.y;
-            float tc = (2.0f * y0 + h) / (6.0f * y0 + 2.0f * h);
-            //tc = 0.5f;
-            Vector3 centerBuoyancy = A + tc * ((B + C) / 2.0f - A);
-            return centerBuoyancy;
-        }
-
-
-        // Moved from Patch.cs, not used elsewhere
-        /// Sorts the vertices of a triangle by their heights
-        /// Indexed from 0 to 2, low to high
-        /// Called in GetSubmergedTriangles
+        /// Sorts the vertices of a triangle by their heights.
+        /// Indexed from 0 to 2, low to high.
+        /// Called in GetSubmergedTriangles.
         private static (Vector3[], float[]) SortVerticesAgainstFloats(Vector3[] vertices, float[] heights) 
         {
             if (heights[0] > heights[1]) 
@@ -492,4 +397,14 @@ namespace WaterInteraction
         }
     }
 }
+
+
+// Old variable names with new:
+// LJ_H = intersectPointLowToHigh
+// LJ_M = intersectPointLowToMid
+// J_H = newEdgeLowToHigh
+// J_M = newEdgeLowToMid
+
+// LI_L = interpolatedLengthLowToHigh
+// LI_M = interpolatedLengthMidToHigh
 
