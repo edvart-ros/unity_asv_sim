@@ -6,6 +6,7 @@ public class Buoyancy : MonoBehaviour
 {
     public bool buoyancyForceActive = true;
     public bool debugBuoyancy;
+    
     private Submerged submerged;
     private Rigidbody rigidBody;
 
