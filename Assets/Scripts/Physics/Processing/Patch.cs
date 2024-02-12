@@ -183,19 +183,19 @@ namespace WaterInteraction
         /// Run over each point in physics mesh. Called from Submerged.cs/GetSubmergedTriangles()
         public float GetPatchRelativeHeight(Vector3 point) 
         {
-            Vector3[] patchVertices = GetPatchTriangleVerticesWorld(point);
+            (Vector3, Vector3, Vector3) patchVertices = GetPatchTriangleVerticesWorld(point);
             return GetHeightAboveTriangle(point, patchVertices);
         }
         
         
         /// For the points of the submerged mesh, returns the height above the water surface. 
-        private float GetHeightAboveTriangle(Vector3 point, Vector3[] triangle) 
+        private float GetHeightAboveTriangle(Vector3 point, (Vector3, Vector3, Vector3) triangle) 
         {
-            Vector3 edgeAtoB = triangle[1] - triangle[0];
-            Vector3 edgeAtoC = triangle[2] - triangle[0];
+            Vector3 edgeAtoB = triangle.Item2 - triangle.Item1;
+            Vector3 edgeAtoC = triangle.Item3 - triangle.Item1;
             Vector3 triangleNormal = Vector3.Cross(edgeAtoB, edgeAtoC); 
             // The plane equation
-            float distance = Vector3.Dot(triangleNormal, triangle[0]); 
+            float distance = Vector3.Dot(triangleNormal, triangle.Item1); 
             //if (abc.y == 0.0f) - Old line
             if (Math.Abs(triangleNormal.y) < 0.00001f) 
                 Console.WriteLine("Division by zero when calculating height of point above triangle plane!");
@@ -209,7 +209,7 @@ namespace WaterInteraction
         
         
         /// Returns the world space vertices of the triangle in which the point lies.
-        private Vector3[] GetPatchTriangleVerticesWorld(Vector3 point) 
+        private (Vector3, Vector3, Vector3) GetPatchTriangleVerticesWorld(Vector3 point) 
         {
             (int rowCell, int columnCell) = PointToCell(point);
             float xInCell = (point.x - gridOrigin.x) - cellSize * columnCell;
@@ -231,7 +231,7 @@ namespace WaterInteraction
         
         /// Returns the vertices of the triangle in the patch grid at the specified row and column indices.
         /// Depending on the value of the left parameter, the left or right triangle is returned.
-        private Vector3[] GetPatchTriangleVertices(int rowIndex, int columnIndex, bool left)
+        private (Vector3, Vector3, Vector3) GetPatchTriangleVertices(int rowIndex, int columnIndex, bool left)
         {
             int numberOfVertices = gridFidelity + 1; 
             Vector3 topLeftVertex = patchVertices[rowIndex * numberOfVertices + columnIndex];
@@ -240,12 +240,12 @@ namespace WaterInteraction
             if (left)
             {
                 Vector3 bottomLeftVertex = patchVertices[(rowIndex + 1) * numberOfVertices + columnIndex];
-                return new Vector3[] { topLeftVertex, bottomLeftVertex, bottomRightVertex }; // Left triangle
+                return (topLeftVertex, bottomLeftVertex, bottomRightVertex); // Left triangle
             }
             else
             {
                 Vector3 topRightVertex = patchVertices[rowIndex * numberOfVertices + (columnIndex + 1)];
-                return new Vector3[] { topLeftVertex, bottomRightVertex, topRightVertex }; // Right triangle
+                return (topLeftVertex, bottomRightVertex, topRightVertex); // Right triangle
             }
         }
         
