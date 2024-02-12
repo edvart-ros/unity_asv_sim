@@ -4,6 +4,7 @@ using Unity.Robotics.Core;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 using System;
+using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 
 public class RosCamera : MonoBehaviour
 {
@@ -16,6 +17,9 @@ public class RosCamera : MonoBehaviour
     private Camera sensorCamera;
     private Texture2D camText;
     private float timeSincePublish;
+    private HeaderMsg headerMsg = new HeaderMsg();
+    private CompressedImageMsg msg;
+    private Rect rectangle;
 
     void Start()
     {
@@ -23,6 +27,9 @@ public class RosCamera : MonoBehaviour
         sensorCamera = gameObject.GetComponent<Camera>();
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<CompressedImageMsg>(topicName);
+        headerMsg.frame_id = frameId;
+        // Create or reuse Texture2D in RGB format
+        rectangle = new Rect(0, 0, sensorCamera.targetTexture.width, sensorCamera.targetTexture.height);
     }
 
     void Update()
@@ -32,7 +39,6 @@ public class RosCamera : MonoBehaviour
         if (timeSincePublish > 1.0f / Hz)
         {
             SendImageCompressed();
-            //SendImage();
             timeSincePublish = 0.0f;
         }
     }
@@ -43,22 +49,21 @@ public class RosCamera : MonoBehaviour
         RenderTexture.active = sensorCamera.targetTexture;
         sensorCamera.Render();
 
-        // Create or reuse Texture2D in RGB format
         if (camText == null || camText.width != sensorCamera.targetTexture.width || camText.height != sensorCamera.targetTexture.height)
         {
             camText = new Texture2D(sensorCamera.targetTexture.width, sensorCamera.targetTexture.height, TextureFormat.RGB24, false);
         }
-        camText.ReadPixels(new Rect(0, 0, sensorCamera.targetTexture.width, sensorCamera.targetTexture.height), 0, 0);
+        camText.ReadPixels(rectangle, 0, 0);
         camText.Apply();
         RenderTexture.active = oldRT;
 
-        byte[] imageBytes = camText.EncodeToJPG(100);
-        var message = new CompressedImageMsg(new HeaderMsg() { frame_id = frameId }, "jpeg", imageBytes);
         var publishTime = Clock.Now;
         var sec = publishTime;
-        var nanosec = ((publishTime - Math.Floor(publishTime)) * Clock.k_NanoSecondsInSeconds);
-        message.header.stamp.sec = (int)sec;
-        message.header.stamp.nanosec = (uint)nanosec;
-        ros.Publish(topicName, message);
+        var nanosec = (publishTime - Math.Floor(publishTime)) * Clock.k_NanoSecondsInSeconds;
+        headerMsg.stamp.sec = (int)sec;
+        headerMsg.stamp.nanosec = (uint)nanosec;
+
+        msg = camText.ToCompressedImageMsg_JPG(headerMsg);
+        ros.Publish(topicName, msg);
     }
 }

@@ -665,13 +665,13 @@ MonoBehaviour:
   pressureDragActive: 1
   debugPressureDrag: 0
   debugResist: 0
-  pressureDragLinearCoefficient: 100
-  pressureDragQuadraticCoefficient: 30
+  pressureDragLinearCoefficient: 196
+  pressureDragQuadraticCoefficient: 162
   pressureDragVelocityRef: 1
-  pressureDragFalloffPower: 1
-  suctionDragLinearCoefficient: 100
-  suctionDragQuadraticCoefficient: 30
-  suctionDragFalloffPower: 1
+  pressureDragFalloffPower: 0.8
+  suctionDragLinearCoefficient: 150
+  suctionDragQuadraticCoefficient: 81
+  suctionDragFalloffPower: 0.89
   hullZMin: -2.5
   hullZMax: 2.9
 --- !u!114 &500926863
@@ -1652,7 +1652,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1038373559
 Transform:
   m_ObjectHideFlags: 0
@@ -2183,7 +2183,6 @@ GameObject:
   - component: {fileID: 1925310818}
   - component: {fileID: 1925310817}
   - component: {fileID: 1925310816}
-  - component: {fileID: 1925310815}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
@@ -2206,26 +2205,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1866018307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1925310815
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925310813}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 02aaa02f4b20edc40a68e63aef6d7315, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ImagetopicName: wamv/image/compressed
-  cameraInfoTopicName: wamv/camera_info
-  ImageCamera: {fileID: 1925310818}
-  FrameId: camera_link
-  resolutionWidth: 640
-  resolutionHeight: 480
-  qualityLevel: 50
-  publishMessageFrequency: 0.005
 --- !u!114 &1925310816
 MonoBehaviour:
   m_ObjectHideFlags: 0
