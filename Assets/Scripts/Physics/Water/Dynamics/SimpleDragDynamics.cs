@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class AdvancedDrag : MonoBehaviour
+public class SimpleDrag : MonoBehaviour
 {
     public Vector3 linearCoefficients = new Vector3(1f, 1f, 1f);
     public Vector3 quadraticCoefficients = new Vector3(1f, 1f, 1f);
