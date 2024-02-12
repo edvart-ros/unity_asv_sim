@@ -37,7 +37,6 @@ namespace WaterInteraction
         public Vector3[] faceCentersWorld = new Vector3[0];
         public Vector3[] faceNormalsLocal = new Vector3[0]; // Used in KernerDynamics
         public Vector3[] pressureCenters = new Vector3[0];
-        public Vector3[] centroids = new Vector3[0];
         public Vector3[] waterLineVerts = new Vector3[0];
         public Mesh newSubmergedMesh = new Mesh();
 
@@ -52,8 +51,6 @@ namespace WaterInteraction
         public Vector3 centroid = Vector3.zero;
         public Vector3 centroidUp = Vector3.zero;
         public Vector3 centroidDown = Vector3.zero; 
-        public Vector3[] centroidsUp = new Vector3[0]; 
-        public Vector3[] centroidsDown = new Vector3[0]; 
 
 
         // Called from Submersion.cs
@@ -94,14 +91,14 @@ namespace WaterInteraction
             (SubmergedData data, Patch patch,  Vector3[] bodyVertices, int[] bodyTriangles, Vector3[] bodyVertNormals) 
         {
             MeshData meshData = new MeshData();
+            Vector3[] verticesLocal = new Vector3[3];
+            Vector3[] verticesWorld = new Vector3[3];
+            Vector3[] normalsLocal = new Vector3[3];
+            float[] vertexHeights = new float[3];
 
             // Loop through input triangles
             for (int i = 0; i < bodyTriangles.Length - 2; i += 3) 
             {
-                Vector3[] verticesLocal = new Vector3[3];
-                Vector3[] verticesWorld = new Vector3[3];
-                Vector3[] normalsLocal = new Vector3[3];
-                float[] vertexHeights = new float[3];
 
                 int submergedCount = 0;
 
@@ -229,19 +226,14 @@ namespace WaterInteraction
             Vector3 sumVolumeCenterDown = Vector3.zero;
             Vector3 sumVolumeCenterUp = Vector3.zero;
 
-            List<Vector3> currentCentroidsDown = new List<Vector3>();
-            List<Vector3> currentCentroidsUp = new List<Vector3>();
-
+            Vector3[] pointsWorldSpace = new Vector3[3];
+            
             for (int i = 0; i < triangles.Length; i += 3)
             {
                 float depth = -heights[i/3];
-                Vector3[] pointsWorldSpace = new Vector3[] 
-                {
-                    submersionTransform.TransformPoint(vertices[triangles[i]]),
-                    submersionTransform.TransformPoint(vertices[triangles[i + 1]]),
-                    submersionTransform.TransformPoint(vertices[triangles[i + 2]])
-                };
-                
+                pointsWorldSpace[0] = submersionTransform.TransformPoint(vertices[triangles[i]]);
+                pointsWorldSpace[1] = submersionTransform.TransformPoint(vertices[triangles[i+1]]);
+                pointsWorldSpace[2] = submersionTransform.TransformPoint(vertices[triangles[i+2]]);
                 
                 
                 // Triangle edges projected on horizontal plane (?)
@@ -253,7 +245,7 @@ namespace WaterInteraction
                 float volume = projectedArea*depth;
                 
                 Vector3 centroid = (pointsWorldSpace[0] + pointsWorldSpace[1] + pointsWorldSpace[2]) / 3.0f;//+new Vector3(0f, depth*0.5f, 0)
-                centroid += new Vector3(0f, depth * 0.5f, 0);
+                centroid.y += depth * 0.5f;
                 
                 // Determine if face is pointing up (negative contribution) or down (positive contribution) //TODO: MOVE DOWN
                 bool trianglePointingDown = submersionTransform.TransformDirection(normals[i/3]).y < 0;
@@ -261,22 +253,17 @@ namespace WaterInteraction
                 {
                     sumVolumeCenterDown += centroid*volume;
                     totalVolumeDown += volume;
-                    currentCentroidsDown.Add(centroid);
                 }
                 else 
                 {
                     sumVolumeCenterUp += centroid*volume;
                     totalVolumeUp += volume;
-                    currentCentroidsUp.Add(centroid);
                 }
             }
             
             float totalVolume = totalVolumeDown-totalVolumeUp;
             
             if (Math.Abs(totalVolume) < 0.00001f) return (0f, Vector3.zero); //Changed these to a comparison with a small number
-
-            centroidsUp   = currentCentroidsUp.ToArray();
-            centroidsDown = currentCentroidsDown.ToArray();
 
             centroidUp   = (Math.Abs(totalVolumeUp) < 0.00001f)   ? Vector3.zero : sumVolumeCenterUp/totalVolumeUp;
             centroidDown = (Math.Abs(totalVolumeDown) < 0.00001f) ? Vector3.zero : sumVolumeCenterDown/totalVolumeDown;
