@@ -310,11 +310,9 @@ namespace WaterInteraction
         
         
         /// Calculates the resistance coefficient of the submerged hull. 
-        public float GetResistanceCoefficient(float speed, float hullZmin, float hullZmax) 
+        public float GetResistanceCoefficient(float speed, float hullZmin, float hullZmax, int[] triangles, Vector3[] vertices) 
         {
-            float submergedArea = Utils.CalculateMeshArea(newSubmergedMesh);
-            Vector3[] vertices = newSubmergedMesh.vertices;
-            int[] triangles = newSubmergedMesh.triangles;
+            float submergedArea = Utils.CalculateMeshArea(triangles, vertices);
             float Rn = CalculateReynoldsNumber(speed, Math.Abs(hullZmax - hullZmin));
 
             float onePlusK = 0;

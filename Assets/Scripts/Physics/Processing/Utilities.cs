@@ -58,10 +58,8 @@ namespace WaterInteraction
         }
         
         
-        public static float CalculateMeshArea(Mesh mesh) 
+        public static float CalculateMeshArea(int[] triangles, Vector3[] vertices) 
         {
-            int[] triangles = mesh.triangles;
-            Vector3[] vertices = mesh.vertices;
             float totalArea = 0.0f;
             for (int i = 0; i < triangles.Length - 2; i += 3) 
             {
@@ -74,10 +72,8 @@ namespace WaterInteraction
         }
 
         
-        public static float[] CalculateTriangleAreas(Mesh mesh) 
+        public static float[] CalculateTriangleAreas(int[] triangles, Vector3[] vertices) 
         {
-            int[] triangles = mesh.triangles;
-            Vector3[] vertices = mesh.vertices;
             int triangleCount = triangles.Length / 3;
             float[] triangleAreas = new float[triangleCount];
 

@@ -31,6 +31,8 @@ public class KernerDynamics : MonoBehaviour
     private float[] submergedFaceAreas;
     private Buoyancy buoyancy;
     private Rigidbody rigidBody;
+    private int[] submergedMeshTriangles;
+    private Vector3[] submergedMeshVertices;
 
 
     public float hullZMin = -2.5f;
@@ -47,12 +49,14 @@ public class KernerDynamics : MonoBehaviour
     {
         rigidBody = GetComponent<Rigidbody>();
         submerged = GetComponent<Submersion>().submerged;
+        submergedMeshTriangles = submerged.newSubmergedMesh.triangles;
+        submergedMeshVertices = submerged.newSubmergedMesh.vertices;
 
-        submergedFaceAreas = Utils.CalculateTriangleAreas(submerged.newSubmergedMesh);
+        submergedFaceAreas = Utils.CalculateTriangleAreas(submergedMeshTriangles, submergedMeshVertices);
 
         if (viscousResistActive)
         {
-            float Cfr = submerged.GetResistanceCoefficient(rigidBody.velocity.magnitude, hullZMin, hullZMax);
+            float Cfr = submerged.GetResistanceCoefficient(rigidBody.velocity.magnitude, hullZMin, hullZMax, submergedMeshTriangles, submergedMeshVertices);
             ApplyViscousResistance(Cfr);
         }
         if (pressureDragActive)
@@ -70,8 +74,6 @@ public class KernerDynamics : MonoBehaviour
 
     private void ApplyViscousResistance(float Cfr, float density = Constants.waterDensity)
     {
-        Vector3[] vertices = submerged.newSubmergedMesh.vertices;
-        int[] triangles = submerged.newSubmergedMesh.triangles;
         Vector3 vG = rigidBody.velocity;
         Vector3 omegaG = rigidBody.angularVelocity;
         Vector3 G = rigidBody.position;
@@ -106,8 +108,8 @@ public class KernerDynamics : MonoBehaviour
 
     private void ApplyPressureDrag(float Cpd1, float Cpd2, float Csd1, float Csd2, float vRef, float fp, float fd)
     {
-        Vector3[] vertices = submerged.newSubmergedMesh.vertices;
-        int[] triangles = submerged.newSubmergedMesh.triangles;
+        Vector3[] vertices = submergedMeshVertices;
+        int[] triangles = submergedMeshTriangles;
         Vector3 vG = rigidBody.velocity;
         Vector3 omegaG = rigidBody.angularVelocity;
         Vector3 G = rigidBody.position;
