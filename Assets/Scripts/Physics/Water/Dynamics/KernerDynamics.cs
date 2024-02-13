@@ -10,6 +10,8 @@ public class KernerDynamics : MonoBehaviour
     public bool debugPressureDrag;
     public bool debugResist;
 
+    [Range(0.5f, 5.0f)]
+    public float viscousForceScale = 1f;
     [Range(0.0f, 1000.0f)]
     public float pressureDragLinearCoefficient = 100;
     [Range(0.0f, 1000.0f)]
@@ -57,6 +59,7 @@ public class KernerDynamics : MonoBehaviour
         if (viscousResistActive)
         {
             float Cfr = submerged.GetResistanceCoefficient(rigidBody.velocity.magnitude, hullZMin, hullZMax, submergedMeshTriangles, submergedMeshVertices);
+            Cfr = Mathf.Clamp(Cfr, 0.001f, 5.0f);
             ApplyViscousResistance(Cfr);
         }
         if (pressureDragActive)
@@ -94,7 +97,7 @@ public class KernerDynamics : MonoBehaviour
             }
             vfi = vi.magnitude * ufi;
             Fvi = (0.5f) * density * Cfr * submergedFaceAreas[i] * vfi.magnitude * vfi;
-            rigidBody.AddForceAtPosition(Fvi, Ci);
+            rigidBody.AddForceAtPosition(Fvi*viscousForceScale, Ci);
             if (debugResist)
             {
                 Debug.DrawRay(Ci, Fvi, Color.red);

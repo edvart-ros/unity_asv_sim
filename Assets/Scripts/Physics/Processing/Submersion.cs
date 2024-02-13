@@ -78,19 +78,7 @@ public class Submersion : MonoBehaviour
 
     private void OnDrawGizmos() {
         //Gizmos.color = Color.magenta;
-        //Gizmos.DrawCube(submerged.centroid, 0.28f*Vector3.one);
-        /*
-        Gizmos.color = Color.red;
-        Vector3[] centroids = submerged.centroidsUp;
-        foreach (var c in centroids) Gizmos.DrawSphere(c, 0.01f);
-        Gizmos.DrawCube(submerged.centroidUp, 0.2f*Vector3.one);   
-        
-        Gizmos.color = Color.green;
-        centroids = submerged.centroidsDown;
-        foreach (var c in centroids) Gizmos.DrawSphere(c, 0.01f);
-        Gizmos.DrawCube(submerged.centroidDown, 0.2f*Vector3.one);
-        */
-
+        //Gizmos.DrawSphere(submerged.centroid, 4f);
     }
 
 }
