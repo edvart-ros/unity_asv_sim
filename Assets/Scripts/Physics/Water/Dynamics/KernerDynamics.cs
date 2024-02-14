@@ -51,10 +51,9 @@ public class KernerDynamics : MonoBehaviour
     {
         rigidBody = GetComponent<Rigidbody>();
         submerged = GetComponent<Submersion>().submerged;
-        submergedMeshTriangles = submerged.newSubmergedMesh.triangles;
-        submergedMeshVertices = submerged.newSubmergedMesh.vertices;
-
-        submergedFaceAreas = Utils.CalculateTriangleAreas(submergedMeshTriangles, submergedMeshVertices);
+        submergedMeshTriangles = submerged.submergedData.SubmergedTriangles;
+        submergedMeshVertices = submerged.submergedData.SubmergedVertices;
+        submergedFaceAreas = Utils.CalculateTriangleAreas(submerged.submergedData);
 
         if (viscousResistActive)
         {
@@ -82,10 +81,11 @@ public class KernerDynamics : MonoBehaviour
         Vector3 G = rigidBody.position;
         Vector3 n, Ci, GCi, vi, viTan, ufi, vfi, Fvi;
         Vector3 vCurrent = new Vector3(1.0f, 0.0f, 0.0f);
-        for (int i = 0; i < submerged.faceCentersWorld.Length; i++)
+        Transform t = submerged.submergedData.SubmersionTransform;
+        for (int i = 0; i < submerged.submergedData.maxTriangleIndex/3; i++)
         {
-            n = transform.InverseTransformDirection(submerged.faceNormalsLocal[i]).normalized;
-            Ci = submerged.faceCentersWorld[i];
+            n = t.InverseTransformDirection(submerged.submergedData.faceNormalsLocal[i]).normalized;
+            Ci = submerged.submergedData.faceCentersWorld[i];
             GCi = Ci - G;
             vi = vG + Vector3.Cross(omegaG, GCi); // - vCurrent;
 
@@ -117,12 +117,13 @@ public class KernerDynamics : MonoBehaviour
         Vector3 omegaG = rigidBody.angularVelocity;
         Vector3 G = rigidBody.position;
         Vector3 Fpd, v0, v1, v2, ni, Ci, GCi, vi, ui;
+        Transform t = submerged.submergedData.SubmersionTransform;
         float Si, cosThetai, viMag;
-        for (int i = 0; i < triangles.Length - 2; i += 3)
+        for (int i = 0; i < submerged.submergedData.maxTriangleIndex - 2; i += 3)
         {
             (v0, v1, v2) = (vertices[triangles[i]], vertices[triangles[i + 1]], vertices[triangles[i + 2]]);
-            ni = transform.InverseTransformDirection(submerged.faceNormalsLocal[i/3]).normalized;
-            Ci = transform.TransformPoint((v0+v1+v2)/3);
+            ni = t.InverseTransformDirection(submerged.submergedData.faceNormalsLocal[i/3]).normalized;
+            Ci = t.TransformPoint((v0+v1+v2)/3);
             Si = (0.5f) * Vector3.Cross((v1 - v0), (v2 - v0)).magnitude;
 
             GCi = Ci - G;
@@ -138,21 +139,13 @@ public class KernerDynamics : MonoBehaviour
             if (cosThetai <= 0.0f)
             {
                 Fpd = (Cpd1 * (viMag / vRef) + Cpd2 * ((viMag * viMag) / (viMag * viMag))) * Si * Mathf.Pow(Mathf.Abs(cosThetai), fp) * ni;
-                if (debugPressureDrag) Debug.DrawRay(Ci, Fpd, Color.red);
-
             }
             else
             {
                 Fpd = -(Csd1 * (viMag / vRef) + Csd2 * ((viMag * viMag) / (vRef * vRef))) * Si * Mathf.Pow(cosThetai, fp) * ni;
-                if (debugPressureDrag) Debug.DrawRay(Ci, Fpd, Color.green);
             }
             rigidBody.AddForceAtPosition(Fpd, Ci);
-            /*
-            if (debugPressureDrag)
-            {
-                Debug.DrawRay(Ci, Fpd, Color.white);
-            }
-            */
+            if (debugPressureDrag) Debug.DrawRay(Ci, Fpd, Color.white);
         }
         return;
     }

@@ -72,15 +72,15 @@ namespace WaterInteraction
         }
 
         
-        public static float[] CalculateTriangleAreas(int[] triangles, Vector3[] vertices) 
+        public static float[] CalculateTriangleAreas(SubmergedData data) 
         {
-            int triangleCount = triangles.Length / 3;
-            float[] triangleAreas = new float[triangleCount];
+            int triangleCount = data.maxTriangleIndex / 3;
+            float[] triangleAreas = data.triangleAreas;
 
-            for (int i = 0; i < triangles.Length; i += 3) 
+            for (int i = 0; i < data.maxTriangleIndex; i += 3) 
             {
-                Vector3 v1 = vertices[triangles[i + 1]] - vertices[triangles[i]];
-                Vector3 v2 = vertices[triangles[i + 2]] - vertices[triangles[i]];
+                Vector3 v1 = data.SubmergedVertices[data.SubmergedTriangles[i + 1]] - data.SubmergedVertices[data.SubmergedTriangles[i]];
+                Vector3 v2 = data.SubmergedVertices[data.SubmergedTriangles[i + 2]] - data.SubmergedVertices[data.SubmergedTriangles[i]];
                 float area = 0.5f * Vector3.Cross(v1, v2).magnitude;
                 triangleAreas[i / 3] = area;
             }
