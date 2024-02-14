@@ -13,6 +13,7 @@ namespace WaterInteraction
     {
         // Used in Submersion.cs
         public Vector3[] patchVertices; 
+        public int[] patchTriangles;
         public Mesh baseGridMesh;
         // Water height querying (burst)
         // Input job parameters
@@ -31,6 +32,8 @@ namespace WaterInteraction
         private float sideLength;
         private int gridFidelity;
         private float cellSize;
+        private Vector3[] baseGridMeshVertices;
+        private int[] baseGridMeshTriangles;
 
 
         /// Populate patch variables and do initialize step
@@ -49,6 +52,10 @@ namespace WaterInteraction
         {
             cellSize = sideLength / gridFidelity;
             baseGridMesh = ConstructWaterGridMesh();
+            baseGridMeshVertices = baseGridMesh.vertices;
+            baseGridMeshTriangles = baseGridMesh.triangles;
+            patchVertices = baseGridMesh.vertices;
+            patchTriangles = baseGridMesh.triangles;
             numberOfGridPoints = baseGridMesh.vertices.Length; 
             // Allocate the buffers
             projectedPositionWorldSpaceBuffer = new NativeArray<float3>(numberOfGridPoints, Allocator.Persistent);
@@ -65,28 +72,23 @@ namespace WaterInteraction
         {
             SetGridOrigin(transform);
             
-            Vector3[] vertices = baseGridMesh.vertices;
-            
             WaterSimSearchData simData = new WaterSimSearchData();
             if (!water.FillWaterSearchData(ref simData)) 
             {
-                patchVertices = vertices;
                 return;
             }
             
-            ExecuteWaterSimulationSearchJob(simData, vertices);
-            
             // Update vertex positions
-            for (var i = 0; i < vertices.Length; i++) 
+            for (var i = 0; i < patchVertices.Length; i++) 
             {
-                targetPositionBuffer[i] = transform.position + vertices[i];
                 float waterHeight = projectedPositionWorldSpaceBuffer[i].y;
-                vertices[i].x += transform.position.x;
-                vertices[i].z += transform.position.z;
-                vertices[i].y = waterHeight;
+                patchVertices[i].x = baseGridMeshVertices[i].x + transform.position.x;
+                patchVertices[i].z = baseGridMeshVertices[i].z + transform.position.z;
+                patchVertices[i].y = waterHeight;
+                targetPositionBuffer[i] = patchVertices[i];
             }
-            
-            patchVertices = vertices;
+
+            ExecuteWaterSimulationSearchJob(simData, patchVertices);
             return;
         }
         

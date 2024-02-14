@@ -1,9 +1,5 @@
-using UnityEngine.Rendering.HighDefinition;
 using System.Collections.Generic;
-using Unity.Mathematics;
-using Unity.Collections;
 using UnityEngine;
-using Unity.Jobs;
 using System;
 
 // TODO: Investigate if transforms could be optimized by using a single transform for all submerged objects
@@ -12,75 +8,81 @@ namespace WaterInteraction
 {
     /// Lists previously in GetSubmergedTriangles.
     /// Class holding the vertices, triangles and normals of the submerged mesh.
-    public class MeshData 
-    {
-        public List<Vector3> Vertices { get; set; } = new List<Vector3>();
-        public List<int> Triangles { get; set; } = new List<int>();
-        public List<Vector3> Normals { get; set; } = new List<Vector3>();
-    }
 
     
     public class SubmergedData
     {
-        public Vector3[] SubmergedVertices { get; set; }
-        public int[] SubmergedTriangles { get; set; }
-        public Vector3[] SubmergedNormals { get; set; }
-        public Transform SubmersionTransform { get; set; }
-        public List<Vector3> IntersectionVertices { get; set; } = new List<Vector3>();
+        public Vector3[] SubmergedVertices;
+        public int[] SubmergedTriangles;
+        public Vector3[] SubmergedNormals;
+        public Transform SubmersionTransform;
+
+        //public Vector3[] waterLineVerts { get; set; }
+        public Vector3[] faceNormalsLocal;
+        public Vector3[] faceCentersWorld;
+        public float[] faceCenterHeightsAboveWater;
+        public float[] triangleAreas;
+        public Vector3 centroid;
+        public float volume;
+        public int maxTriangleIndex;
+        public SubmergedData(int maxNumTriangles){
+            SubmergedVertices = new Vector3[maxNumTriangles];
+            SubmergedTriangles = new int[maxNumTriangles];
+            SubmergedNormals = new Vector3[maxNumTriangles/3];
+            //waterLineVerts = new Vector3[maxNumTriangles];
+            faceNormalsLocal = new Vector3[maxNumTriangles/3];
+            faceCentersWorld = new Vector3[maxNumTriangles/3];
+            faceCenterHeightsAboveWater = new float[maxNumTriangles/3];
+            triangleAreas = new float[maxNumTriangles/3];
+            centroid = new Vector3();
+            volume = new float();
+            maxTriangleIndex = 0;
+        }
+    
     }
     
     
     public class Submerged 
     {
         // OK Public
-        public float[] faceCenterHeightsAboveWater = new float[0];
-        public Vector3[] faceCentersWorld = new Vector3[0];
-        public Vector3[] faceNormalsLocal = new Vector3[0]; // Used in KernerDynamics
-        public Vector3[] pressureCenters = new Vector3[0];
-        public Vector3[] waterLineVerts = new Vector3[0];
-        public Mesh newSubmergedMesh = new Mesh();
-
-        public float volume = 0f;
+        
+        public SubmergedData submergedData;
 
         // OK Private
-        private int numberOfHullVertices;
-        private float[] triangleAreas;
         public Mesh hullMesh;
+        // caching input mesh data (these shouldnt change at runtime)
+        private Vector3[] hullMeshVertices, hullMeshNormals;
+        private int[] hullMeshTriangles;
 
         // Only submergedVolume uses these
-        public Vector3 centroid = Vector3.zero;
-        public Vector3 centroidUp = Vector3.zero;
-        public Vector3 centroidDown = Vector3.zero; 
-
 
         // Called from Submersion.cs
         /// Populates global variables with the submerged mesh and its properties
         public Submerged(Mesh simplifiedHullMesh, bool debug=false) 
         {
             hullMesh = simplifiedHullMesh;
-            numberOfHullVertices = hullMesh.vertices.Length;
+            hullMeshVertices = simplifiedHullMesh.vertices;
+            hullMeshNormals = simplifiedHullMesh.normals;
+            hullMeshTriangles = simplifiedHullMesh.triangles;
+            
+            submergedData = new SubmergedData(simplifiedHullMesh.triangles.Length*2);
         }
 
 
         public void Update(Patch patch, Transform submersionTransform) 
         {
-            newSubmergedMesh.Clear();
-            SubmergedData submergedData = new SubmergedData();
+            submergedData.maxTriangleIndex = 0;
             submergedData.SubmersionTransform = submersionTransform;
 
-            ProduceSubmergedTriangles(submergedData, patch, hullMesh.vertices, hullMesh.triangles, hullMesh.normals);
+            ProduceSubmergedTriangles(submergedData, patch, hullMeshVertices, hullMeshTriangles, hullMeshNormals);
 
-            newSubmergedMesh.vertices = submergedData.SubmergedVertices; 
-            newSubmergedMesh.triangles = submergedData.SubmergedTriangles;
-
-            faceNormalsLocal = submergedData.SubmergedNormals;
-            waterLineVerts = submergedData.IntersectionVertices.ToArray();
+            submergedData.faceNormalsLocal = submergedData.SubmergedNormals;
             
             // TODO: Consider setting globals in function, no return
-            triangleAreas               = GetTriangleAreas(submergedData);
-            faceCenterHeightsAboveWater = GetTriangleCenterHeights(submergedData, patch);
-            (volume, centroid)          = GetSubmergedVolume(submergedData, faceCenterHeightsAboveWater); 
-            faceCentersWorld            = GetFaceCenters(submergedData);
+            submergedData.triangleAreas               = GetTriangleAreas(submergedData);
+            submergedData.faceCenterHeightsAboveWater = GetTriangleCenterHeights(submergedData, patch);
+            (submergedData.volume, submergedData.centroid)          = GetSubmergedVolume(submergedData, submergedData.faceCenterHeightsAboveWater); 
+            GetFaceCenters(submergedData);
         }
 
 
@@ -90,7 +92,6 @@ namespace WaterInteraction
         public void ProduceSubmergedTriangles
             (SubmergedData data, Patch patch,  Vector3[] bodyVertices, int[] bodyTriangles, Vector3[] bodyVertNormals) 
         {
-            MeshData meshData = new MeshData();
             Vector3[] verticesLocal = new Vector3[3];
             Vector3[] verticesWorld = new Vector3[3];
             Vector3[] normalsLocal = new Vector3[3];
@@ -139,10 +140,7 @@ namespace WaterInteraction
                         Vector3 newEdgeLowToMid  = localVerticesSorted[0] + intersectPointLowToMid;
                         
                         Vector3 normal = triangleNormal * Utils.GetFaceNormal(localVerticesSorted[0], newEdgeLowToHigh, newEdgeLowToMid).magnitude;
-                        AppendTriangle(meshData, localVerticesSorted[0], newEdgeLowToHigh, newEdgeLowToMid, triangleNormal);
-
-                        data.IntersectionVertices.Add(newEdgeLowToHigh);
-                        data.IntersectionVertices.Add(newEdgeLowToMid);
+                        AppendTriangle(data, localVerticesSorted[0], newEdgeLowToHigh, newEdgeLowToMid, triangleNormal);
                         break;
                     }
                     case 2: 
@@ -161,23 +159,17 @@ namespace WaterInteraction
                         Vector3 newEdgeHighToLow = localVerticesSorted[0] + intersectPointHighToLow;
                         Vector3 newEdgeHighToMid = localVerticesSorted[1] + intersectPointHighToMid;
         
-                        AppendTriangle(meshData, localVerticesSorted[1], newEdgeHighToMid, localVerticesSorted[0], triangleNormal);
-                        AppendTriangle(meshData, localVerticesSorted[0], newEdgeHighToMid, newEdgeHighToLow, triangleNormal);
-
-                        data.IntersectionVertices.Add(newEdgeHighToMid);
-                        data.IntersectionVertices.Add(newEdgeHighToLow);
+                        AppendTriangle(data, localVerticesSorted[1], newEdgeHighToMid, localVerticesSorted[0], triangleNormal);
+                        AppendTriangle(data, localVerticesSorted[0], newEdgeHighToMid, newEdgeHighToLow, triangleNormal);
                         break;
                     }
                     case 3: 
                     {
-                        AppendTriangle(meshData, verticesLocal[0], verticesLocal[1], verticesLocal[2], triangleNormal);
+                        AppendTriangle(data, verticesLocal[0], verticesLocal[1], verticesLocal[2], triangleNormal);
                         break;
                     }
                 }
             }
-            data.SubmergedVertices = meshData.Vertices.ToArray();
-            data.SubmergedTriangles = meshData.Triangles.ToArray();
-            data.SubmergedNormals = meshData.Normals.ToArray();
         }
 
 
@@ -186,8 +178,8 @@ namespace WaterInteraction
         public float[] GetTriangleAreas(SubmergedData data)
         {
             Vector3[] vertices = data.SubmergedVertices;
-            float[] areas = new float[vertices.Length/3];
-            for (int i = 0; i < vertices.Length - 2; i += 3) 
+            float[] areas = data.triangleAreas;
+            for (int i = 0; i < data.maxTriangleIndex - 2; i += 3) 
             {
                 Vector3 normal = Utils.GetFaceNormal(vertices[i], vertices[i+1], vertices[i+2]); 
                 areas[i / 3] = normal.magnitude;
@@ -198,16 +190,18 @@ namespace WaterInteraction
 
         /// Called in GetSubmergedTriangles
         /// Updates the vertices, triangles and normals of the submerged mesh.
-        public void AppendTriangle(MeshData meshData, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 triNormal)
+        public void AppendTriangle(SubmergedData data, Vector3 v1, Vector3 v2, Vector3 v3, Vector3 triNormal)
         {
-            int count = meshData.Vertices.Count;
-            meshData.Vertices.Add(v1);
-            meshData.Vertices.Add(v2);
-            meshData.Vertices.Add(v3);
-            meshData.Triangles.Add(count);
-            meshData.Triangles.Add(count + 1);
-            meshData.Triangles.Add(count + 2);
-            meshData.Normals.Add(triNormal);
+            int currentIndex = data.maxTriangleIndex;
+            data.SubmergedTriangles[currentIndex] = currentIndex;
+            data.SubmergedTriangles[currentIndex+1] = currentIndex+1;
+            data.SubmergedTriangles[currentIndex+2] = currentIndex+2;
+
+            data.SubmergedVertices[currentIndex] = v1;
+            data.SubmergedVertices[currentIndex+1] = v2;
+            data.SubmergedVertices[currentIndex+2] = v3;
+            data.faceNormalsLocal[currentIndex/3] = triNormal;
+            data.maxTriangleIndex = currentIndex + 3;
         }
 
 
@@ -228,7 +222,7 @@ namespace WaterInteraction
 
             Vector3[] pointsWorldSpace = new Vector3[3];
             
-            for (int i = 0; i < triangles.Length; i += 3)
+            for (int i = 0; i < submergedData.maxTriangleIndex; i += 3)
             {
                 float depth = -heights[i/3];
                 pointsWorldSpace[0] = submersionTransform.TransformPoint(vertices[triangles[i]]);
@@ -265,8 +259,8 @@ namespace WaterInteraction
             
             if (Math.Abs(totalVolume) < 0.00001f) return (0f, Vector3.zero); //Changed these to a comparison with a small number
 
-            centroidUp   = (Math.Abs(totalVolumeUp) < 0.00001f)   ? Vector3.zero : sumVolumeCenterUp/totalVolumeUp;
-            centroidDown = (Math.Abs(totalVolumeDown) < 0.00001f) ? Vector3.zero : sumVolumeCenterDown/totalVolumeDown;
+            Vector3 centroidUp   = (Math.Abs(totalVolumeUp) < 0.00001f)   ? Vector3.zero : sumVolumeCenterUp/totalVolumeUp;
+            Vector3 centroidDown = (Math.Abs(totalVolumeDown) < 0.00001f) ? Vector3.zero : sumVolumeCenterDown/totalVolumeDown;
             
             Vector3 center = (centroidDown * totalVolumeDown - centroidUp * totalVolumeUp) / (totalVolume);
             return (totalVolume, center);
@@ -280,9 +274,9 @@ namespace WaterInteraction
             Transform transform = data.SubmersionTransform;
             Vector3[] vertices = data.SubmergedVertices;
             int[] triangles = data.SubmergedTriangles;
-            float[] heights = new float[vertices.Length / 3];
+            float[] heights = submergedData.faceCenterHeightsAboveWater;
             
-            for (int i = 0; i < triangles.Length - 2; i += 3) 
+            for (int i = 0; i < data.maxTriangleIndex - 2; i += 3) 
             {
                 Vector3 centerVert = (vertices[triangles[i]] + vertices[triangles[i+1]] + vertices[triangles[i+2]])/3.0f;
                 heights[i/3] = patch.GetPatchRelativeHeight(transform.TransformPoint(centerVert));
@@ -297,10 +291,9 @@ namespace WaterInteraction
             Transform transform = data.SubmersionTransform;
             Vector3[] vertices = data.SubmergedVertices;
             int[] triangles = data.SubmergedTriangles;
-            int numberOfFaces = triangles.Length/3;
-            Vector3[] centers = new Vector3[numberOfFaces];
+            Vector3[] centers = submergedData.faceCentersWorld;
             
-            for (int i = 0; i < triangles.Length - 2; i += 3) 
+            for (int i = 0; i < data.maxTriangleIndex - 2; i += 3) 
             {
                 Vector3 centerLocal = (vertices[triangles[i]] + vertices[triangles[i+1]] + vertices[triangles[i+2]])/3.0f;
                 centers[i/3] = transform.TransformPoint(centerLocal);
