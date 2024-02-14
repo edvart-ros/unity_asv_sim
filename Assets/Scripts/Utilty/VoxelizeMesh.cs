@@ -89,7 +89,46 @@ public class VoxelizeMesh : MonoBehaviour
         File.WriteAllText(path, json);
     }
 
+    
+    /// Run over each point inside mesh and determine how many neighbors.
+    private void FindFaces()
+    {
+        Vector3[] directions = new Vector3[]
+        {
+            new Vector3(voxelSize, 0, 0), // Right
+            new Vector3(-voxelSize, 0, 0), // Left
+            new Vector3(0, voxelSize, 0), // Up
+            new Vector3(0, -voxelSize, 0), // Down
+            new Vector3(0, 0, voxelSize), // Forward
+            new Vector3(0, 0, -voxelSize) // Backward
+        };
+        
+        Dictionary<Vector3, List<Vector3>> pointNeighborsDirections = new Dictionary<Vector3, List<Vector3>>();
 
+        foreach (Vector3 point in pointsInsideMesh)
+        {
+            List<Vector3> neighborDirections = new List<Vector3>();
+
+            foreach (Vector3 direction in directions)
+            {
+                Vector3 neighbor = point + direction;
+                // Check if the neighbor is inside the mesh
+                if (IsInsideMesh(neighbor))
+                {
+                    // Add the direction to the list if the neighbor is inside the mesh
+                    neighborDirections.Add(direction);
+                }
+            }
+
+            // Store the directions to neighbors for the current point
+            if (neighborDirections.Count > 0)
+            {
+                pointNeighborsDirections[point] = neighborDirections;
+            }
+        }
+    }
+    
+    
     private void OnDrawGizmos()
     {
         if (!boundsTarget) return;

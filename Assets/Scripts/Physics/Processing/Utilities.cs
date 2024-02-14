@@ -23,7 +23,7 @@ namespace WaterInteraction
     public static class Constants 
     {
         public const float gravity = 9.80665f;
-        public const float waterDensity = 0.5f * 997;
+        public const float waterDensity = 997;
         public const float waterViscosity = 1.0016f;
     }
     
@@ -85,6 +85,18 @@ namespace WaterInteraction
                 triangleAreas[i / 3] = area;
             }
             return triangleAreas;
+        }
+        
+        
+        public static void DrawPatch(Patch patch)
+        {
+            int[] triangles = patch.baseGridMesh.triangles;
+            Vector3[] vertices = patch.patchVertices;
+            for (var i = 0; i < triangles.Length; i += 3)
+            {
+                Vector3[] tri = new Vector3[] { vertices[triangles[i]], vertices[triangles[i + 1]], vertices[triangles[i + 2]] };
+                Utils.DebugDrawTriangle(tri, Color.red);
+            }
         }
     }
 }
