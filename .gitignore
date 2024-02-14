@@ -98,3 +98,5 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 /Logs/shadercompiler-UnityShaderCompiler.exe-0.log
+UserSettings/EditorUserSettings.asset
+UserSettings/Layouts/default-2023.dwlt
