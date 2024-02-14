@@ -58,29 +58,15 @@ namespace WaterInteraction
         }
         
         
-        public static float CalculateMeshArea(int[] triangles, Vector3[] vertices) 
-        {
-            float totalArea = 0.0f;
-            for (int i = 0; i < triangles.Length - 2; i += 3) 
-            {
-                Vector3 v1 = vertices[triangles[i + 1]] - vertices[triangles[i]];
-                Vector3 v2 = vertices[triangles[i + 2]] - vertices[triangles[i]];
-                Vector3 cross = Vector3.Cross(v1, v2);
-                totalArea += 0.5f * cross.magnitude;
-            }
-            return totalArea;
-        }
-
-        
-        public static float[] CalculateTriangleAreas(SubmergedData data) 
+        public static float[] CalculateTriangleAreas(Data data) 
         {
             int triangleCount = data.maxTriangleIndex / 3;
             float[] triangleAreas = data.triangleAreas;
 
             for (int i = 0; i < data.maxTriangleIndex; i += 3) 
             {
-                Vector3 v1 = data.SubmergedVertices[data.SubmergedTriangles[i + 1]] - data.SubmergedVertices[data.SubmergedTriangles[i]];
-                Vector3 v2 = data.SubmergedVertices[data.SubmergedTriangles[i + 2]] - data.SubmergedVertices[data.SubmergedTriangles[i]];
+                Vector3 v1 = data.vertices[data.triangles[i + 1]] - data.vertices[data.triangles[i]];
+                Vector3 v2 = data.vertices[data.triangles[i + 2]] - data.vertices[data.triangles[i]];
                 float area = 0.5f * Vector3.Cross(v1, v2).magnitude;
                 triangleAreas[i / 3] = area;
             }
