@@ -8,6 +8,10 @@ using System.IO;
 using WaterInteraction;
 using TMPro;
 
+// TODO: Implement damping, critical damping
+
+
+
 
 namespace Physics.Water.Dynamics
 {
