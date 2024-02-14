@@ -66,10 +66,11 @@ public class ShipController : MonoBehaviour
     {
         savedInitialPosition = transform.position;
         savedInitialRotation = transform.rotation;
-        savedPropulsionRoot = transform.Find("Propulsion");
+        savedPropulsionRoot = transform.Find("PropulsionOutboard") != null ? 
+            transform.Find("PropulsionOutboard") : transform.Find("PropulsionRudder");        
         parentRigidbody = GetComponent<Rigidbody>();
         SearchAndAssignChild(savedPropulsionRoot.GameObject());
-        print(enginePropellerPairs.Count); // Debugging
+        print("Number of EnginePropeller pairs" + enginePropellerPairs.Count); // Debugging
     }
 
     
@@ -119,9 +120,19 @@ public class ShipController : MonoBehaviour
     {
         foreach (Transform engineJoint in firstTargetChild.transform)
         {
-            Transform propellerJoint = engineJoint.Find("PropellerJoint");
-            if (propellerJoint != null)
-                enginePropellerPairs.Add(new EnginePropellerPair(engineJoint, propellerJoint));
+            if (firstTargetChild.name == "PropulsionOutboard")
+            {
+                Transform propellerJoint = engineJoint.Find("PropellerJoint");
+                if (propellerJoint != null)
+                    enginePropellerPairs.Add(new EnginePropellerPair(engineJoint, propellerJoint));
+            }
+            else if (firstTargetChild.name == "PropulsionRudder")
+            {
+                Transform propellerJoint = firstTargetChild.transform.Find("PropellerJoint");
+                if (propellerJoint != null)
+                    enginePropellerPairs.Add(new EnginePropellerPair(engineJoint, propellerJoint));
+            }
+            else print("No propulsion object found.");
         }
     }
     
@@ -130,7 +141,7 @@ public class ShipController : MonoBehaviour
     private void ApplyForce(float force, float angle, Vector3 position)
     {
         float finalForce = force * forceMultiplier;
-        finalForce = Mathf.Clamp(finalForce, -500f, 2750f);
+        finalForce = Mathf.Clamp(finalForce, -500f, 1000000f);
         Quaternion rotation = Quaternion.Euler(0, angle, 0);
         Vector3 direction = rotation * transform.forward;
         currentThrust = finalForce;
