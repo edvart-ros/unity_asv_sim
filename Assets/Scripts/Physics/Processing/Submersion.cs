@@ -49,10 +49,10 @@ public class Submersion : MonoBehaviour
         }
     }
     private void DebugSubmerged() {
-        int[] tris = submerged.submergedData.SubmergedTriangles;
-        Vector3[] verts = submerged.submergedData.SubmergedVertices;
+        int[] tris = submerged.data.triangles;
+        Vector3[] verts = submerged.data.vertices;
 
-        for (int i = 0; i < submerged.submergedData.maxTriangleIndex - 2; i += 3) {
+        for (int i = 0; i < submerged.data.maxTriangleIndex - 2; i += 3) {
             Vector3[] tri = new Vector3[]
             {
             transform.TransformPoint(verts[tris[i]]),
