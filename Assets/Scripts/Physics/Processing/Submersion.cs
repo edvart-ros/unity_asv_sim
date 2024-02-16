@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 using WaterInteraction;
 using Unity.Collections;
-using UnityEditor.Callbacks;
+using System.IO;
 
 public class Submersion : MonoBehaviour
 {
@@ -12,6 +12,9 @@ public class Submersion : MonoBehaviour
     public int patchResolution = 4;
     public bool drawPatch;
     public bool drawSubmerged;
+    public bool logData;
+    public float displacedVolume;
+    private string filePath;
     private Patch patch;
     //public bool drawWaterLine;
 
@@ -25,6 +28,15 @@ public class Submersion : MonoBehaviour
         patch = new Patch(targetSurface, patchSize, patchResolution, gridOrigin);
         submerged = new Submerged(simplifiedMesh, debug:true); // set up submersion by providing the simplified hull mesh
         patch.Update(transform); // updates the patch to follow the boat and queried water height
+
+        filePath = Application.persistentDataPath + "/CoarseDataOnlyFullySubmergedTriangles.csv";
+
+        // Check if the file does not exist to write the header
+        if (!File.Exists(filePath) && logData)
+        {
+            WriteToFile("depth,volume");
+            GetComponent<Rigidbody>().velocity = new Vector3(0f, -0.1f, 0f);
+        }
     }
 
     // Update is called once per frame
@@ -34,8 +46,21 @@ public class Submersion : MonoBehaviour
         submerged.Update(patch, transform);
         if (drawPatch) DebugPatch();
         if (drawSubmerged) DebugSubmerged();
-        //if (drawWaterLine) DebugWaterLine();
+        displacedVolume = submerged.data.volume;
+        if (logData) LogData(-(transform.position.y-0.5f), displacedVolume);
+    }
+    private void LogData(float x, float y)
+    {
+        string data = $"{x},{y}";
+        WriteToFile(data);
+    }
 
+    private void WriteToFile(string data)
+    {
+        using (StreamWriter sw = File.AppendText(filePath))
+        {
+            sw.WriteLine(data);
+        }
     }
     
     private void DebugPatch()
