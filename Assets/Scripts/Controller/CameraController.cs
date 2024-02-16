@@ -23,6 +23,9 @@ public class CameraController : MonoBehaviour
     private Vector2 panInput;
     private Transform cameraTransform;
     private Vector3 defaultCameraPosition;
+    
+    private float delayBeforeFollow = 1.0f; // 2 seconds delay before returning to follow mode
+    private float timer = 0f; // Timer to keep track of input delay
 
     
     private void Awake()
@@ -39,9 +42,17 @@ public class CameraController : MonoBehaviour
     
     void Update()
     {
-        if (panInput != Vector2.zero) 
+        if (panInput != Vector2.zero)
+        {
             FreeAim();
-        else if (cameraFollow) 
+            timer = delayBeforeFollow;
+        }
+        else if (timer > 0)
+        {
+            // If no input and timer is running, countdown
+            timer -= Time.deltaTime;
+        }
+        if (cameraFollow && timer <= 0)
             FollowTarget(); 
         AdjustCameraPosition();
     }
