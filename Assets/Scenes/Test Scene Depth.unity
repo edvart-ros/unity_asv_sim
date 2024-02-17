@@ -805,7 +805,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &500926862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -813,7 +813,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 500926861}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e61530b3acc0db14caa17a0ea97cdf80, type: 3}
   m_Name: 
@@ -823,12 +823,12 @@ MonoBehaviour:
   debugPressureDrag: 0
   debugResist: 0
   viscousForceScale: 1
-  pressureDragLinearCoefficient: 196
-  pressureDragQuadraticCoefficient: 162
+  pressureDragLinearCoefficient: 310
+  pressureDragQuadraticCoefficient: 376
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 0.8
-  suctionDragLinearCoefficient: 150
-  suctionDragQuadraticCoefficient: 81
+  suctionDragLinearCoefficient: 409
+  suctionDragQuadraticCoefficient: 434
   suctionDragFalloffPower: 0.89
   hullZMin: -2.5
   hullZMax: 2.9
@@ -839,7 +839,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 500926861}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1708da91d5bb00a4383848e791ae536b, type: 3}
   m_Name: 
@@ -963,7 +963,7 @@ Rigidbody:
   m_ImplicitCom: 0
   m_ImplicitTensor: 0
   m_UseGravity: 1
-  m_IsKinematic: 1
+  m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -2341,13 +2341,14 @@ GameObject:
   - component: {fileID: 1925310818}
   - component: {fileID: 1925310817}
   - component: {fileID: 1925310816}
+  - component: {fileID: 1925310819}
   m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1925310814
 Transform:
   m_ObjectHideFlags: 0
@@ -2562,6 +2563,22 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1925310819
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1925310813}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 760503290fcf4b14496695479586f03d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  topicName: camera/image
+  frameId: camera_link
+  publish: 1
+  Hz: 0
 --- !u!1 &1939057058
 GameObject:
   m_ObjectHideFlags: 0

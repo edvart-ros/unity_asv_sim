@@ -122,7 +122,6 @@ namespace WaterInteraction
                     }
                     case 1: 
                     {
-                        break;
                         (Vector3[] localVerticesSorted, float[] sortedHeights) = SortVerticesAgainstFloats(verticesLocal, vertexHeights);
                         Vector3 highestMinusLowestPoint  = localVerticesSorted[2] - localVerticesSorted[0]; 
                         Vector3 highestMinusMiddlePoint  = localVerticesSorted[1] - localVerticesSorted[0]; 
@@ -141,7 +140,6 @@ namespace WaterInteraction
                     }
                     case 2: 
                     {
-                        break;
                         (Vector3[] localVerticesSorted, float[] sortedHeights) = SortVerticesAgainstFloats(verticesLocal, vertexHeights);
 
                         Vector3 highestMinusLowestPoint = localVerticesSorted[2] - localVerticesSorted[0];
