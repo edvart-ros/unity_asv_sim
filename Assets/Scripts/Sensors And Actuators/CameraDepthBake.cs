@@ -40,7 +40,7 @@ class CameraDepthBake : CustomPass
 
         // Depth
         if (depthTexture != null)
-            CustomPassUtils.RenderDepthFromCamera(ctx, bakingCamera, depthTexture, ClearFlag.Depth, bakingCamera.cullingMask, overrideRenderState: overrideDepthTest);
+            CustomPassUtils.RenderDepthFromCamera(ctx, bakingCamera, bakingCamera.cullingMask);
 
         // Normal
         if (normalTexture != null)

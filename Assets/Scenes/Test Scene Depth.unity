@@ -234,13 +234,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 187493585}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.08151763, y: 0.009545782, z: 0.04908727, w: 0.99541664}
-  m_LocalPosition: {x: 0.718, y: 0.366, z: -7.057}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1038373559}
-  m_LocalEulerAnglesHint: {x: 9.285, y: 1.568, z: 5.774}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &187493587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -414,7 +414,7 @@ Camera:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RenderingPath: -1
-  m_TargetTexture: {fileID: 0}
+  m_TargetTexture: {fileID: 8400000, guid: d33415c87b3d5ac4eb2fd138cfd0a98c, type: 2}
   m_TargetDisplay: 0
   m_TargetEye: 3
   m_HDR: 0
@@ -433,13 +433,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 187493585}
   m_Enabled: 0
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52ad03a390e583b4f947552d100dcc0e, type: 3}
+  m_Script: {fileID: 11500000, guid: 322bb92736373db4e805daeb4dfe07c3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  topicName: camera/image
+  depthRenderTexture: {fileID: 8400000, guid: d33415c87b3d5ac4eb2fd138cfd0a98c, type: 2}
+  topicName: camera/depth/image
   frameId: camera_link
   publish: 1
-  Hz: 0
+  Hz: 10
 --- !u!1001 &267225976
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -777,7 +778,7 @@ Transform:
   m_GameObject: {fileID: 414918632}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.092, y: 0.556, z: -0.08}
+  m_LocalPosition: {x: 5.092, y: 0.556, z: 1.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1278,7 +1279,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &563123149
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1362,7 +1363,7 @@ Transform:
   m_GameObject: {fileID: 563123148}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.74, y: 1.73, z: -15.62}
+  m_LocalPosition: {x: -2.784, y: 1.73, z: -4.78}
   m_LocalScale: {x: 3.1478, y: 3.1478, z: 3.1478}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1810,7 +1811,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1038373559
 Transform:
   m_ObjectHideFlags: 0
@@ -1834,19 +1835,19 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1038373558}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 26d6499a6bd256e47b859377446493a1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IsGlobal: 1
+  m_IsGlobal: 0
   fadeRadius: 0
   priority: 0
   customPasses:
   - rid: 7797912668001533952
   injectionPoint: 1
-  m_TargetCamera: {fileID: 0}
-  useTargetCamera: 0
+  m_TargetCamera: {fileID: 187493589}
+  useTargetCamera: 1
   references:
     version: 2
     RefIds:
@@ -1854,9 +1855,9 @@ MonoBehaviour:
       type: {class: CameraDepthBake, ns: , asm: SensorAssembly}
       data:
         m_Name: Custom Pass
-        enabled: 1
+        enabled: 0
         targetColorBuffer: 0
-        targetDepthBuffer: 0
+        targetDepthBuffer: 2
         clearFlags: 0
         passFoldout: 0
         m_Version: 0
@@ -2340,7 +2341,6 @@ GameObject:
   - component: {fileID: 1925310814}
   - component: {fileID: 1925310818}
   - component: {fileID: 1925310817}
-  - component: {fileID: 1925310816}
   - component: {fileID: 1925310819}
   m_Layer: 0
   m_Name: Camera
@@ -2348,7 +2348,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1925310814
 Transform:
   m_ObjectHideFlags: 0
@@ -2364,22 +2364,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1866018307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1925310816
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1925310813}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 52ad03a390e583b4f947552d100dcc0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  topicName: wamv/image/compressed
-  frameId: camera_link
-  publish: 1
-  Hz: 15
 --- !u!114 &1925310817
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2570,7 +2554,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1925310813}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 760503290fcf4b14496695479586f03d, type: 3}
   m_Name: 
@@ -2578,7 +2562,7 @@ MonoBehaviour:
   topicName: camera/image
   frameId: camera_link
   publish: 1
-  Hz: 0
+  Hz: 10
 --- !u!1 &1939057058
 GameObject:
   m_ObjectHideFlags: 0
