@@ -6,14 +6,13 @@ using UnityEngine;
 using System;
 using UnityEngine.Rendering;
 using Unity.Robotics.ROSTCPConnector.MessageGeneration;
-using UnityEngine.Rendering.HighDefinition;
 
 public class RosCameraAsync : MonoBehaviour
 {
     public string topicName = "camera/image";
     public string frameId = "camera_link";
     public bool publish = true;
-    [Range(1.0f, 60.0f)]
+    [Range(1.0f, 40.0f)]
     public float Hz;
     private ROSConnection ros;
     private Camera sensorCamera;
@@ -51,7 +50,7 @@ public class RosCameraAsync : MonoBehaviour
     {
         if (request.hasError)
         {
-            Debug.LogError("Error on GPU readback, not depth");
+            Debug.LogWarning("Failed to read back texture once");
             return;
         }
 

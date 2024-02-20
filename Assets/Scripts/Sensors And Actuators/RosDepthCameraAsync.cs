@@ -5,15 +5,15 @@ using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 using System;
 using UnityEngine.Rendering;
-using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 
 public class RosDepthCameraAsync : MonoBehaviour
 {
+    static byte[] s_ScratchSpace;
     public  RenderTexture depthRenderTexture;
     public string topicName = "camera/depth/image";
     public string frameId = "camera_link";
     public bool publish = true;
-    [Range(1.0f, 60.0f)]
+    [Range(5.0f, 40.0f)]
     public float Hz;
     private ROSConnection ros;
     private float timeSincePublish;
@@ -48,7 +48,7 @@ public class RosDepthCameraAsync : MonoBehaviour
     {
         if (request.hasError)
         {
-            Debug.LogError("Error on GPU readback, depth");
+            Debug.LogError("Failed to read back texture once");
             return;
         }
 
@@ -63,8 +63,7 @@ public class RosDepthCameraAsync : MonoBehaviour
         SendImage();
     }
 
-    void SendImage()
-    {
+    void SendImage(){
         var publishTime = Clock.Now;
         var sec = publishTime;
         var nanosec = (publishTime - Math.Floor(publishTime)) * Clock.k_NanoSecondsInSeconds;
@@ -72,8 +71,44 @@ public class RosDepthCameraAsync : MonoBehaviour
         headerMsg.stamp.nanosec = (uint)nanosec;
         
 
-        msg = depthTex2D.ToImageMsg(headerMsg);
-        msg.encoding = "32FC1";
+        msg = GetDepthImageMsg(depthTex2D, headerMsg);
         ros.Publish(topicName, msg);
     }
+
+
+    ImageMsg GetDepthImageMsg(Texture2D tex, HeaderMsg header){
+        byte[] data = null;
+        string encoding = "32FC1";
+        int step = 4*tex.width;
+
+        var floatData = tex.GetPixelData<float>(0).ToArray();
+        data = new byte[floatData.Length * 4];
+        Buffer.BlockCopy(floatData, 0, data, 0, data.Length);
+        ReverseInBlocks(data, tex.width * 4, tex.height);
+        return new ImageMsg(header, (uint)tex.height, (uint)tex.width, encoding, 0, (uint)step, data);
+    }
+
+    void ReverseInBlocks(byte[] array, int blockSize, int numBlocks)
+        {
+            if (blockSize * numBlocks > array.Length)
+            {
+                Debug.LogError($"Invalid ReverseInBlocks, array length is {array.Length}, should be at least {blockSize * numBlocks}");
+                return;
+            }
+
+            if (s_ScratchSpace == null || s_ScratchSpace.Length < blockSize)
+                s_ScratchSpace = new byte[blockSize];
+
+            int startBlockIndex = 0;
+            int endBlockIndex = ((int)numBlocks - 1) * blockSize;
+
+            while (startBlockIndex < endBlockIndex)
+            {
+                Buffer.BlockCopy(array, startBlockIndex, s_ScratchSpace, 0, blockSize);
+                Buffer.BlockCopy(array, endBlockIndex, array, startBlockIndex, blockSize);
+                Buffer.BlockCopy(s_ScratchSpace, 0, array, endBlockIndex, blockSize);
+                startBlockIndex += blockSize;
+                endBlockIndex -= blockSize;
+            }
+        }
 }
