@@ -11,10 +11,10 @@ public class RosDepthCameraAsync : MonoBehaviour
     static byte[] s_ScratchSpace;
     public  RenderTexture depthRenderTexture;
     public string topicName = "camera/depth/image";
-    public string frameId = "camera_link";
+    public string frameId = "camera_link_optical_frame";
     public bool publish = true;
     [Range(5.0f, 40.0f)]
-    public float Hz;
+    public float Hz = 15.0f;
     private ROSConnection ros;
     private float timeSincePublish;
     private Texture2D depthTex2D;

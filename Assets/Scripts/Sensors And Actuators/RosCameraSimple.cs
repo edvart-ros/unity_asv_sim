@@ -11,7 +11,7 @@ public class RosCameraSimple : MonoBehaviour
     public string topicName = "camera/image";
     public string frameId = "camera_link";
     public bool publish = true;
-    [Range(1.0f, 60.0f)]
+    [Range(5.0f, 60.0f)]
     public float Hz;
     private ROSConnection ros;
     private Camera sensorCamera;
