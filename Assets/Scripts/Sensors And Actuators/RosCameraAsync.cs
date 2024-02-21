@@ -10,10 +10,10 @@ using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 public class RosCameraAsync : MonoBehaviour
 {
     public string topicName = "camera/image";
-    public string frameId = "camera_link";
+    public string frameId = "camera_link_optical_frame";
     public bool publish = true;
-    [Range(1.0f, 40.0f)]
-    public float Hz;
+    [Range(3.0f, 40.0f)]
+    public float Hz = 15.0f;
     private ROSConnection ros;
     private Camera sensorCamera;
     private Texture2D camText;
