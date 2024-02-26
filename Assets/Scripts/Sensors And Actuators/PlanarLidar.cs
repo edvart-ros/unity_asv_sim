@@ -1,8 +1,11 @@
+using System;
 using RosMessageTypes.Sensor;
 using Unity.Collections;
 using Unity.Jobs;
+using Unity.Robotics.Core;
 using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
+
 
 public class PlanarLidar : MonoBehaviour
 {
@@ -13,6 +16,7 @@ public class PlanarLidar : MonoBehaviour
     public float maxRange = 50.0f;
     public float Hz = 5.0f;
     public string topicName = "scan";
+    public string frameId = "lidar_link";
     public bool publishData = true;
     public bool drawRays = false;
     private float scanTime;
@@ -111,6 +115,22 @@ public class PlanarLidar : MonoBehaviour
         }
 
         private LaserScanMsg DistancesToLaserscan(float[] dists){
-            return new LaserScanMsg();
+            LaserScanMsg msg = new LaserScanMsg();
+            msg.header.frame_id = frameId;
+
+            var publishTime = Clock.Now;
+            var sec = publishTime;
+            var nanosec = ((publishTime - Math.Floor(publishTime)) * Clock.k_NanoSecondsInSeconds);
+            msg.header.stamp.sec = (int)sec;
+            msg.header.stamp.nanosec = (uint)nanosec;
+
+            msg.angle_min = minAngleDegrees*Mathf.Deg2Rad;
+            msg.angle_max = maxAngleDegrees*Mathf.Deg2Rad;
+            msg.angle_increment = angleIncrementDegrees*Mathf.Deg2Rad;
+            msg.scan_time = 1f/Hz;
+            msg.range_min = minRange;
+            msg.range_max = maxRange;
+            msg.ranges = dists;
+            return msg;
         }
 }
