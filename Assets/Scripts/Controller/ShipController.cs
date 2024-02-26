@@ -141,7 +141,7 @@ public class ShipController : MonoBehaviour
     private void ApplyForce(float force, float angle, Vector3 position)
     {
         float finalForce = force * forceMultiplier;
-        finalForce = Mathf.Clamp(finalForce, -500f, 1000000f);
+        finalForce = Mathf.Clamp(finalForce, -500f, 50000000f);
         Quaternion rotation = Quaternion.Euler(0, angle, 0);
         Vector3 direction = rotation * transform.forward;
         currentThrust = finalForce;
@@ -178,7 +178,8 @@ public class ShipController : MonoBehaviour
     private void RotatePropeller(Transform joint)
     {
         float rotationThisFrame = currentThrust * rotationMultiplier * Time.deltaTime;
-        rotationThisFrame *= propellerRotationCoefficient;
+        rotationThisFrame = Mathf.Clamp(rotationThisFrame, -1000f, 5000f);
+        
         Quaternion currentRotation = joint.localRotation;
         Quaternion newRotation = Quaternion.Euler(currentRotation.eulerAngles.x, currentRotation.eulerAngles.y, currentRotation.eulerAngles.z + rotationThisFrame);
         joint.localRotation = newRotation;
