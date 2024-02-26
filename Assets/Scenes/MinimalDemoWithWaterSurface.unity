@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 27356.518, g: 27361.22, b: 37091.695, a: 1}
+  m_IndirectSpecularColor: {r: 38272.38, g: 29061.879, b: 27238.316, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -148,7 +148,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 1300000
+  m_Intensity: 730000
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -228,7 +228,7 @@ MonoBehaviour:
   m_PointlightHDType: 0
   m_SpotLightShape: 0
   m_AreaLightShape: 0
-  m_Intensity: 1300000
+  m_Intensity: 730000
   m_EnableSpotReflector: 0
   m_LuxAtDistance: 1
   m_InnerSpotPercent: 0
@@ -2372,7 +2372,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 0
   drawSubmerged: 1
-  drawWaterLine: 1
+  logData: 0
+  displacedVolume: 0
 --- !u!114 &1719318179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2408,6 +2409,7 @@ MonoBehaviour:
   patchResolution: 10
   targetSurface: {fileID: 217986714}
   drawPatch: 1
+  logData: 0
 --- !u!54 &1719318181
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2603,6 +2605,7 @@ MonoBehaviour:
   patchResolution: 10
   targetSurface: {fileID: 217986714}
   drawPatch: 1
+  logData: 0
 --- !u!64 &1742345496
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2692,6 +2695,7 @@ MonoBehaviour:
   pressureDragActive: 1
   debugPressureDrag: 0
   debugResist: 0
+  viscousForceScale: 1
   pressureDragLinearCoefficient: 309
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
@@ -2714,7 +2718,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buoyancyForceActive: 1
-  debugBuoyancy: 0
 --- !u!114 &1742345505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2734,7 +2737,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 1
   drawSubmerged: 1
-  drawWaterLine: 0
+  logData: 0
+  displacedVolume: 0
 --- !u!1 &1774031221
 GameObject:
   m_ObjectHideFlags: 0
@@ -2796,6 +2800,7 @@ MonoBehaviour:
   pressureDragActive: 1
   debugPressureDrag: 0
   debugResist: 0
+  viscousForceScale: 1
   pressureDragLinearCoefficient: 100
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
@@ -2818,7 +2823,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buoyancyForceActive: 1
-  debugBuoyancy: 0
 --- !u!114 &1984874461
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2838,7 +2842,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 1
   drawSubmerged: 1
-  drawWaterLine: 0
+  logData: 0
+  displacedVolume: 0
 --- !u!54 &1984874462
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2884,6 +2889,7 @@ MonoBehaviour:
   patchResolution: 20
   targetSurface: {fileID: 217986714}
   drawPatch: 1
+  logData: 0
 --- !u!114 &1984874467
 MonoBehaviour:
   m_ObjectHideFlags: 0

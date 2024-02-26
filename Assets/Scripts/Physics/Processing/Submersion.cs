@@ -34,7 +34,7 @@ public class Submersion : MonoBehaviour
         // Check if the file does not exist to write the header
         if (!File.Exists(filePath) && logData)
         {
-            WriteToFile("depth,volume");
+            Utils.LogDataToFile(filePath,"depth","volume");
             GetComponent<Rigidbody>().velocity = new Vector3(0f, -0.1f, 0f);
         }
     }
@@ -47,21 +47,12 @@ public class Submersion : MonoBehaviour
         if (drawPatch) DebugPatch();
         if (drawSubmerged) DebugSubmerged();
         displacedVolume = submerged.data.volume;
-        if (logData) LogData(-(transform.position.y-0.5f), displacedVolume);
+        if (logData) Utils.LogDataToFile(filePath, -(transform.position.y-0.5f), displacedVolume);
     }
-    private void LogData(float x, float y)
-    {
-        string data = $"{x},{y}";
-        WriteToFile(data);
-    }
+    
+    
+    
 
-    private void WriteToFile(string data)
-    {
-        using (StreamWriter sw = File.AppendText(filePath))
-        {
-            sw.WriteLine(data);
-        }
-    }
     
     private void DebugPatch()
     {
