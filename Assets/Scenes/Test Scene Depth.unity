@@ -160,7 +160,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 17389881}
-  - component: {fileID: 17389882}
+  - component: {fileID: 17389883}
   m_Layer: 0
   m_Name: Lidar
   m_TagString: Untagged
@@ -183,7 +183,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1866018307}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &17389882
+--- !u!114 &17389883
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -192,20 +192,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 17389880}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08caa5496c70fb54bb823cbb933b2916, type: 3}
+  m_Script: {fileID: 11500000, guid: 360f33ed38c668c49a2b8bc7c68dade4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxRange: 100
-  publishData: 1
-  topicName: points
+  minAngleDegrees: -45
+  maxAngleDegrees: 45
+  angleIncrementDegrees: 1
+  minRange: 0.1
+  maxRange: 50
+  Hz: 5
+  topicName: scan
   frameId: lidar_link
-  numHorizontalBeams: 566
-  hz: 10.3
-  numVerticalBeams: 4
-  minDistance: 0.3
-  horizontalFOV: 6.28
-  verticalFOV: 0.523599
-  noisePercentage: 5.83
+  publishData: 1
   drawRays: 0
 --- !u!1 &187493585
 GameObject:
@@ -1015,8 +1013,7 @@ MonoBehaviour:
   geometryType: 3
   meshRenderers: []
   timeMultiplier: 1
-  cpuSimulation: 1
-  cpuFullResolution: 0
+  scriptInteractions: 1
   cpuEvaluateRipples: 0
   customMaterial: {fileID: 0}
   startSmoothness: 0.95
@@ -1058,7 +1055,6 @@ MonoBehaviour:
   volumeHeight: 0
   volumePrority: 0
   absorptionDistanceMultiplier: 1
-  colorPyramidOffset: 1
   underWaterAmbientProbeContribution: 1
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
@@ -1082,6 +1078,7 @@ MonoBehaviour:
   foamAreaSize: {x: 200, y: 200}
   foamAreaOffset: {x: 0, y: 0}
   foamPersistenceMultiplier: 0.5
+  foamColor: {r: 1, g: 1, b: 1, a: 1}
   foamTextureTiling: 0.15
   foamSmoothness: 1
   simulationFoam: 1
@@ -1408,19 +1405,22 @@ MonoBehaviour:
   m_UseScreenSpaceShadows: 0
   m_InteractsWithSky: 1
   m_AngularDiameter: 0.5
-  m_DiameterMultiplerMode: 1
-  m_DiameterMultiplier: 1
-  m_DiameterOverride: 0.5
-  m_EmissiveLightSource: 1
-  m_FlareSize: 2
-  m_FlareTint: {r: 1, g: 1, b: 1, a: 1}
-  m_FlareFalloff: 4
-  m_AutomaticMoonPhase: 1
-  m_MoonPhase: 0.2
-  m_MoonPhaseRotation: 0
-  m_Earthshine: 1
-  m_SurfaceTexture: {fileID: 0}
-  m_SurfaceTint: {r: 1, g: 1, b: 1, a: 1}
+  diameterMultiplerMode: 1
+  diameterMultiplier: 1
+  diameterOverride: 0.5
+  celestialBodyShadingSource: 1
+  sunLightOverride: {fileID: 0}
+  sunColor: {r: 1, g: 1, b: 1, a: 1}
+  sunIntensity: 130000
+  moonPhase: 0.2
+  moonPhaseRotation: 0
+  earthshine: 1
+  flareSize: 2
+  flareTint: {r: 1, g: 1, b: 1, a: 1}
+  flareFalloff: 4
+  flareMultiplier: 1
+  surfaceTexture: {fileID: 0}
+  surfaceTint: {r: 1, g: 1, b: 1, a: 1}
   m_Distance: 1.5e+11
   m_UseRayTracedShadows: 0
   m_NumRayTracingSamples: 4
@@ -1443,7 +1443,7 @@ MonoBehaviour:
   m_MinFilterSize: 0.1
   m_DirLightPCSSBlockerSampleCount: 24
   m_DirLightPCSSFilterSampleCount: 16
-  m_DirLightPCSSMaxBlockerDistance: 64
+  m_DirLightPCSSMaxPenumbraSize: 0.56
   m_DirLightPCSSMaxSamplingDistance: 0.5
   m_DirLightPCSSMinFilterSizeTexels: 1.5
   m_DirLightPCSSMinFilterMaxAngularDiameter: 10
@@ -2411,6 +2411,53 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ff0f0165066e6464686454f14977e6cd, type: 3}
+--- !u!1 &2025734593
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2025734595}
+  - component: {fileID: 2025734594}
+  m_Layer: 0
+  m_Name: Clock
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2025734594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025734593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b545c2eb8688a341876de20411f6598, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _topicName: clock
+  sec: 0
+  nanosec: 0
+--- !u!4 &2025734595
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2025734593}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2069282301
 GameObject:
   m_ObjectHideFlags: 0
@@ -2763,3 +2810,4 @@ SceneRoots:
   - {fileID: 1329485584}
   - {fileID: 500926869}
   - {fileID: 1219168612}
+  - {fileID: 2025734595}
