@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEditor;
 
+
 [CustomEditor(typeof(VoxelizeMesh))]
 public class VoxelizeMeshEditor : Editor
 {
@@ -12,11 +13,8 @@ public class VoxelizeMeshEditor : Editor
         {
             foreach (VoxelizeMesh script in targets) // 'targets' is an array of all selected objects that this editor can edit.
             {
-                script.Test();
+                script.DeterminePoints();
             }
-            
-            
-
         }
     }
 }
