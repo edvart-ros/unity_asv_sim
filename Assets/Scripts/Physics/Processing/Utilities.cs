@@ -5,6 +5,7 @@ using Unity.Collections;
 using UnityEngine;
 using Unity.Jobs;
 using System;
+using System.IO;
 
 
 namespace WaterInteraction
@@ -82,6 +83,18 @@ namespace WaterInteraction
             {
                 Vector3[] tri = new Vector3[] { vertices[triangles[i]], vertices[triangles[i + 1]], vertices[triangles[i + 2]] };
                 Utils.DebugDrawTriangle(tri, Color.red);
+            }
+        }
+        
+        
+        /// Using generics to log data to a csv file. First parameter is file path,
+        /// second and third are the data to be logged.
+        public static void LogDataToFile<T1, T2>(string filePath, T1 x, T2 y)
+        {
+            string data = $"{x},{y}";
+            using (StreamWriter sw = File.AppendText(filePath))
+            {
+                sw.WriteLine(data);
             }
         }
     }
