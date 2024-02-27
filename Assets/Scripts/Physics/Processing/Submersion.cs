@@ -13,7 +13,7 @@ public class Submersion : MonoBehaviour
     public bool drawPatch;
     public bool drawSubmerged;
     public bool logData;
-    public float displacedVolume;
+    private float displacedVolume;
     private string filePath;
     private Patch patch;
     //public bool drawWaterLine;

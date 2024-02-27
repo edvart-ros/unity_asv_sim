@@ -58,7 +58,6 @@ public class KernerDynamics : MonoBehaviour
         if (viscousResistActive)
         {
             float Cfr = submerged.GetResistanceCoefficient(rigidBody.velocity.magnitude, hullZMin, hullZMax, submerged.data);
-            Cfr = Mathf.Clamp(Cfr, 0.001f, 5.0f);
             ApplyViscousResistance(Cfr);
         }
         if (pressureDragActive) 

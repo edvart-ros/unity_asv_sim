@@ -30,9 +30,11 @@ public class Buoyancy : MonoBehaviour
     {
         Vector3 buoyancyCenter = submerged.data.centroid;
         float displacedVolume = submerged.data.volume;
+        Debug.Log(displacedVolume);
         float buoyancyForce = Constants.waterDensity*Constants.gravity*displacedVolume;
         Vector3 forceVector = new Vector3(0f, buoyancyForce, 0f);
         rigidBody.AddForceAtPosition(forceVector, buoyancyCenter);
+        Debug.DrawRay(buoyancyCenter, Vector3.up);
     }
 
     

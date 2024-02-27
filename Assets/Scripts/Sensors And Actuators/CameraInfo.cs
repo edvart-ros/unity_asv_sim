@@ -11,7 +11,7 @@ public class CameraInfo : MonoBehaviour
     public string topicName = "camera/info";
     public string frameId = "camera_link_optical_frame";
     public bool publish = true;
-    private float Hz = 15.0f;
+    private float Hz = 5.0f;
     private ROSConnection ros;
     private Camera sensorCamera;
     private float timeSincePublish;
