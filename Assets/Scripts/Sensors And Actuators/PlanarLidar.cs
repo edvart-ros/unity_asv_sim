@@ -41,7 +41,6 @@ public class PlanarLidar : MonoBehaviour
 
 
             scanDirVectors = GenerateScanVectors();
-            Debug.Log(scanDirVectors.Length);
             float[] dists  =  PerformScan(scanDirVectors);
             if (publishData){
                 msg = DistancesToLaserscan(dists);

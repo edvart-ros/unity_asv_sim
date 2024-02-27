@@ -11,7 +11,7 @@ public class Imu : MonoBehaviour
     public string topicName = "imu/raw";
     public string frameId = "imu_link";
     private Rigidbody imuBody;
-    [Range(0.1f, 100.0f)]
+    [Range(20.0f, 300.0f)]
     public float Hz = 50.0f;
     private ImuMsg Msg;
     private float timeSincePublish;
