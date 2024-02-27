@@ -1,12 +1,12 @@
-using System;
 using UnityEngine.Rendering.HighDefinition;
 using System.Collections.Generic;
+using Physics.Water.Dynamics;
 using UnityEditor.Playables;
 using System.Collections;
+using WaterInteraction;
 using UnityEngine;
 using System.IO;
-using Physics.Water.Dynamics;
-using WaterInteraction;
+using System;
 using TMPro;
 
 
@@ -25,25 +25,27 @@ public class VoxelizedBuoyancy : MonoBehaviour
     
     public TextMeshProUGUI buoyancyText;
     
-    private List<Vector3> pointsInsideMesh = new List<Vector3>();
-    private string path = "Assets/Data/localPointsData.json";
-    private List<Vector3> globalVoxelPositions = new List<Vector3>();
-    //private List<Vector3> relativePositions = new List<Vector3>();
-    private Vector3 parentPosition;
-
-    private Transform parentTransform;
-
-    private float actualForce;
-    private float voxelVolume;
-
     // Water querying variables
     [Tooltip("Set to zero to toggle water patch off.")]
     public float patchSize = 10;
     public int patchResolution = 4;
     public WaterSurface targetSurface = null;
-    private Patch patch;
     public bool drawPatch;
     
+    public bool logData;
+    
+    private List<Vector3> pointsInsideMesh = new List<Vector3>();
+    //private string pathToVoxelFile = "Assets/Data/localPointsData.json";
+    private string path = "Assets/Data/";
+    private List<Vector3> globalVoxelPositions = new List<Vector3>();
+    //private List<Vector3> relativePositions = new List<Vector3>();
+    private Vector3 parentPosition;
+    
+    private float actualForce;
+    private float voxelVolume;
+    
+    private Transform parentTransform;
+    private Patch patch;
     private Rigidbody shipRigidbody;
     
     
@@ -65,31 +67,54 @@ public class VoxelizedBuoyancy : MonoBehaviour
             patch = new Patch(targetSurface, patchSize, patchResolution, gridOrigin);
             patch.Update(transform);
         }
+        
+        string localPath = path + "VolumeData-" + transform.name + ".csv";
+        if (!File.Exists(localPath) && logData)
+        {
+            print("Beginning to log data");
+            Utils.LogDataToFile(localPath,"depth","volume");
+        }
+        if(logData) GetComponent<Rigidbody>().velocity = new Vector3(0f, -0.1f, 0f);
     }
 
+    
     private void FixedUpdate()
     {
         UpdateGlobalVoxelPosition();
-        if (planeTransform)
-        {
-            ApplyForce(CalculateCenterOfPoints(GetPointsUnderPlane()));
-        }
-        if (patchSize != 0)
-        {
-            patch.Update(transform);
-            ApplyForce(CalculateCenterOfPoints(GetPointsUnderWaterPatch()));
-            List<Vector3> debugPoints = GetPointsUnderWaterPatch();
-            foreach (var point in debugPoints)
-            {
-                Debug.DrawRay(point, Vector3.up, Color.red);
-            }
-        }
+        if (planeTransform) DoPlaneBuoyancy();
+        if (patchSize != 0) DoPatchBuoyancy();
         
-        if (drawPatch) Utils.DrawPatch(patch);
-        buoyancyText.text = "Buoyancy Force: " + actualForce.ToString("F2");
+        //buoyancyText.text = "Buoyancy Force: " + actualForce.ToString("F2");
     }
 
 
+    private void DoPlaneBuoyancy()
+    {
+        //ApplyForce(CalculateCenterOfPoints(GetPointsUnderPlane()));
+        float displacedVolume = TestVolume(CalculateCenterOfPoints(GetPointsUnderPlane()));
+        string localPath = path + "VolumeData-" + transform.name + ".csv";
+        if (logData)
+        {
+            print("Logging data to file.");
+            Utils.LogDataToFile(localPath, -(transform.position.y - 0.5f), displacedVolume);
+        }
+    }
+    
+    
+    private void DoPatchBuoyancy()
+    {
+        patch.Update(transform);
+        ApplyForce(CalculateCenterOfPoints(GetPointsUnderWaterPatch()));
+        List<Vector3> debugPoints = GetPointsUnderWaterPatch();
+        foreach (var point in debugPoints)
+        {
+            Debug.DrawRay(point, Vector3.up, Color.red);
+        }
+        
+        if (drawPatch) Utils.DrawPatch(patch);
+    }
+    
+    
     /// Returns the list of points under the Plane.
     private List<Vector3> GetPointsUnderPlane()
     {
@@ -161,7 +186,7 @@ public class VoxelizedBuoyancy : MonoBehaviour
     
     private Vector3ListWrapper LoadPoints()
     {
-        string json = File.ReadAllText(path);
+        string json = File.ReadAllText(path + "localPointsData.json");
         return JsonUtility.FromJson<Vector3ListWrapper>(json);
     }
     
@@ -177,6 +202,11 @@ public class VoxelizedBuoyancy : MonoBehaviour
         }
     }
     
+    private float TestVolume((Vector3 centerOfBuoyancy, int numberOfPoints) data)
+    {// Total volume submerged
+        return data.numberOfPoints * voxelVolume;
+    }
+    
     
     private void OnDrawGizmos()
     {
@@ -184,7 +214,7 @@ public class VoxelizedBuoyancy : MonoBehaviour
         Gizmos.color = Color.magenta;
         foreach (Vector3 point in globalVoxelPositions)
         {
-            Gizmos.DrawSphere(point, 1); 
+            //Gizmos.DrawSphere(point, 1); 
         }
     }
 }
