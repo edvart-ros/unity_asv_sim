@@ -79,6 +79,7 @@ public class VoxelizeMesh : MonoBehaviour
     {
         Vector3ListWrapper wrapper = new Vector3ListWrapper();
         wrapper.volume = voxelSize * voxelSize * voxelSize;
+        wrapper.radius = voxelSize / 2;
 
         foreach (Vector3 point in pointsInsideMesh)
         {
@@ -113,4 +114,5 @@ public class Vector3ListWrapper
     public List<Vector3> localPoints = new List<Vector3>();
     //public List<PointData> pointsData = new List<PointData>();
     public float volume;
+    public float radius;
 }
