@@ -545,6 +545,8 @@ MonoBehaviour:
   patchResolution: 4
   drawPatch: 1
   drawSubmerged: 0
+  logData: 0
+  displacedVolume: 0
 --- !u!114 &2344897520733462606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -558,7 +560,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buoyancyForceActive: 1
-  debugBuoyancy: 0
 --- !u!114 &8563668998393776635
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,10 +576,14 @@ MonoBehaviour:
   pressureDragActive: 1
   debugPressureDrag: 0
   debugResist: 0
+  viscousForceScale: 1
   pressureDragLinearCoefficient: 100
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 1
+  suctionDragLinearCoefficient: 100
+  suctionDragQuadraticCoefficient: 30
+  suctionDragFalloffPower: 1
   hullZMin: -2.5
   hullZMax: 2.9
 --- !u!114 &1893877488084198877
@@ -612,7 +617,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4981213606691235542}
   m_Layer: 0
-  m_Name: Propulsion
+  m_Name: PropulsionOutboard
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
