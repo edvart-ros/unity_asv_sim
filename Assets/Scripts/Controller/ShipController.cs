@@ -105,6 +105,28 @@ public class ShipController : MonoBehaviour
     }
     
     
+    /// Find all engine joints as children of the propulsion object and populate the list
+    private void SearchAndAssignChild(GameObject firstTargetChild)
+    {
+        foreach (Transform engineJoint in firstTargetChild.transform)
+        {
+            if (firstTargetChild.name == "PropulsionOutboard")
+            {
+                Transform propellerJoint = engineJoint.Find("PropellerJoint");
+                if (propellerJoint != null)
+                    enginePropellerPairs.Add(new EnginePropellerPair(engineJoint, propellerJoint));
+            }
+            else if (firstTargetChild.name == "PropulsionRudder")
+            {
+                Transform propellerJoint = firstTargetChild.transform.Find("PropellerJoint");
+                if (propellerJoint != null)
+                    enginePropellerPairs.Add(new EnginePropellerPair(engineJoint, propellerJoint));
+            }
+            else print("No propulsion object found.");
+        }
+    }
+    
+    
     /// Iterate over each pair in the enginePropellerPairs list, and apply transformations and force on the joints
     private void WorkOnJoints(float leftStickValue, float netForce)
     {
@@ -125,28 +147,6 @@ public class ShipController : MonoBehaviour
                 ApplyForce(netForce, pair);
                 RotatePropeller(propellerJoint);
             }
-        }
-    }
-    
-    
-    /// Find all engine joints as children of the propulsion object and populate the list
-    private void SearchAndAssignChild(GameObject firstTargetChild)
-    {
-        foreach (Transform engineJoint in firstTargetChild.transform)
-        {
-            if (firstTargetChild.name == "PropulsionOutboard")
-            {
-                Transform propellerJoint = engineJoint.Find("PropellerJoint");
-                if (propellerJoint != null)
-                    enginePropellerPairs.Add(new EnginePropellerPair(engineJoint, propellerJoint));
-            }
-            else if (firstTargetChild.name == "PropulsionRudder")
-            {
-                Transform propellerJoint = firstTargetChild.transform.Find("PropellerJoint");
-                if (propellerJoint != null)
-                    enginePropellerPairs.Add(new EnginePropellerPair(engineJoint, propellerJoint));
-            }
-            else print("No propulsion object found.");
         }
     }
     

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 7602.5557, g: 5176.157, b: 4842.6333, a: 1}
+  m_IndirectSpecularColor: {r: 7626.0693, g: 5185.1143, b: 4828.3677, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -2390,7 +2390,6 @@ MonoBehaviour:
   drawPatch: 0
   drawSubmerged: 1
   logData: 0
-  displacedVolume: 0
 --- !u!114 &1248159297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3692,6 +3691,11 @@ PrefabInstance:
       objectReference: {fileID: 217986714}
     - target: {fileID: 1893877488084198877, guid: e7211fcd2bc884fa6b57d76eda00be8d,
         type: 3}
+      propertyPath: debug
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1893877488084198877, guid: e7211fcd2bc884fa6b57d76eda00be8d,
+        type: 3}
       propertyPath: forceText
       value: 
       objectReference: {fileID: 1496605455}
@@ -3774,6 +3778,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8983156967508131934, guid: e7211fcd2bc884fa6b57d76eda00be8d,
+        type: 3}
+      propertyPath: m_IsKinematic
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
