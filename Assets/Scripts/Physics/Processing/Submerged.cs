@@ -77,7 +77,7 @@ namespace WaterInteraction
             // TODO: Consider setting globals in function, no return
             data.triangleAreas               = GetTriangleAreas(data);
             data.faceCenterHeightsAboveWater = GetTriangleCenterHeights(data, patch);
-            (data.volume, data.centroid)          = GetSubmergedVolume(data, data.faceCenterHeightsAboveWater); 
+            (data.volume, data.centroid)     = GetSubmergedVolume(data, data.faceCenterHeightsAboveWater); 
             GetFaceCenters(data);
         }
 
