@@ -6,10 +6,7 @@ using System;
 
 namespace WaterInteraction
 {
-    /// Lists previously in GetSubmergedTriangles.
-    /// Class holding the vertices, triangles and normals of the submerged mesh.
-
-    
+    /// Class holding the vertices, triangles and normals of the submerged mesh, and more.
     public class Data
     {
         public Vector3[] vertices;
@@ -24,7 +21,9 @@ namespace WaterInteraction
         public Vector3 centroid;
         public float volume;
         public int maxTriangleIndex;
-        public Data(int maxNumTriangles){
+        
+        public Data(int maxNumTriangles)
+        {
             vertices = new Vector3[maxNumTriangles];
             triangles = new int[maxNumTriangles];
             normals = new Vector3[maxNumTriangles/3];
@@ -36,7 +35,6 @@ namespace WaterInteraction
             volume = new float();
             maxTriangleIndex = 0;
         }
-    
     }
     
     
@@ -200,7 +198,6 @@ namespace WaterInteraction
         }
 
 
-        // TODO: This is newest from dev branch
         /// Calculates the difference of volume between the submerged part of hull and any eventual
         /// water above it. Also calculates the center of volume of this submerged part of the hull.
         public (float vol, Vector3 volCenter) GetSubmergedVolume(Data data, float[] heights)
@@ -333,6 +330,7 @@ namespace WaterInteraction
             return totalArea;
         }
 
+        
         // Used in GetResistanceCoefficient
         private float CalculateReynoldsNumber(float velocity, float L, float viscosity = Constants.waterViscosity) 
         {
