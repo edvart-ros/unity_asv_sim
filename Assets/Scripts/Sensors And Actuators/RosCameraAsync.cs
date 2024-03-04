@@ -9,6 +9,7 @@ using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 
 public class RosCameraAsync : MonoBehaviour
 {
+    public  RenderTexture rgbRenderTexture;
     public string topicName = "camera/image";
     public string frameId = "camera_link_optical_frame";
     public bool publish = true;
@@ -16,7 +17,7 @@ public class RosCameraAsync : MonoBehaviour
     public float Hz = 15.0f;
     private ROSConnection ros;
     private Camera sensorCamera;
-    private Texture2D camText;
+    private Texture2D rgbTexture2D;
     private float timeSincePublish;
     private HeaderMsg headerMsg = new HeaderMsg();
     private ImageMsg msg;
@@ -36,7 +37,7 @@ public class RosCameraAsync : MonoBehaviour
         //if (!publish) return;
         if (timeSincePublish > 1.0f / Hz)
         {
-            RequestReadback(sensorCamera.targetTexture);
+            RequestReadback(rgbRenderTexture);
             timeSincePublish = 0.0f;
         }
     }
@@ -54,13 +55,13 @@ public class RosCameraAsync : MonoBehaviour
             return;
         }
 
-        if (camText == null || camText.width != sensorCamera.targetTexture.width || camText.height != sensorCamera.targetTexture.height)
+        if (rgbTexture2D == null || rgbTexture2D.width != sensorCamera.targetTexture.width || rgbTexture2D.height != sensorCamera.targetTexture.height)
         {
-            camText = new Texture2D(sensorCamera.targetTexture.width, sensorCamera.targetTexture.height, TextureFormat.RGB24, false);
+            rgbTexture2D = new Texture2D(sensorCamera.targetTexture.width, sensorCamera.targetTexture.height, TextureFormat.RGB24, false);
         }
 
-        camText.LoadRawTextureData(request.GetData<byte>());
-        camText.Apply();
+        rgbTexture2D.LoadRawTextureData(request.GetData<byte>());
+        rgbTexture2D.Apply();
         SendImage();
     }
 
@@ -72,7 +73,7 @@ public class RosCameraAsync : MonoBehaviour
         headerMsg.stamp.sec = (int)sec;
         headerMsg.stamp.nanosec = (uint)nanosec;
 
-        msg = camText.ToImageMsg(headerMsg);
+        msg = rgbTexture2D.ToImageMsg(headerMsg);
         ros.Publish(topicName, msg);
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public class Buoyancy : MonoBehaviour
 {
     public bool buoyancyForceActive = true;
-    
+    private Vector3 buoyancyCenter = new Vector3();
     private Submerged submerged;
     private Rigidbody rigidBody;
 
@@ -28,13 +28,18 @@ public class Buoyancy : MonoBehaviour
 
     private void ApplyBuoyancyVolume() 
     {
-        Vector3 buoyancyCenter = submerged.data.centroid;
+        buoyancyCenter = submerged.data.centroid;
         float displacedVolume = submerged.data.volume;
-        Debug.Log(displacedVolume);
         float buoyancyForce = Constants.waterDensity*Constants.gravity*displacedVolume;
         Vector3 forceVector = new Vector3(0f, buoyancyForce, 0f);
         rigidBody.AddForceAtPosition(forceVector, buoyancyCenter);
-        Debug.DrawRay(buoyancyCenter, Vector3.up);
+    }
+
+    void OnDrawGizmos(){
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(buoyancyCenter, 0.1f);
+        Gizmos.color = Color.green;
+        Gizmos.DrawSphere(transform.position, 0.1f);
     }
 
     
