@@ -1,22 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Numerics;
 using UnityEngine;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine.Animations;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
+using Quaternion = UnityEngine.Quaternion;
+using Vector2 = UnityEngine.Vector2;
+using Vector3 = UnityEngine.Vector3;
 
 // TODO: More realistic propeller rotation
 // TODO: Add a swirly water effect behind the propeller + white lines rotating around the propeller
 
 public class ShipController : MonoBehaviour
 {
+    public Vector2 forceClamp = new Vector2(-500f, 2750f);
     public float forceMultiplier = 100f;
     public float rotationMultiplier = 10f;
-    private float propellerRotationCoefficient = 1.0f;
     public bool hasRudder = true;
     public bool holdingRudder = false;
+    public bool debug = false;
     
     public TextMeshProUGUI forceText;
     public TextMeshProUGUI rotationText;
@@ -30,13 +35,17 @@ public class ShipController : MonoBehaviour
     private float returnSpeed = 10f;
     private Vector2 rotateValue;
     private Rigidbody parentRigidbody;
+    private float propellerRotationCoefficient = 1.0f;
+
     
     private Vector3 savedInitialPosition;
     private float currentSpin  = 0;
     private float currentAngle  = 0.0f;
     private float currentThrust = 0.0f;
     private Quaternion savedInitialRotation;
-
+    
+    private float engineRotationLimit  = 50;
+    private Vector3 startDirection;
     
     struct EnginePropellerPair
     {
@@ -71,6 +80,11 @@ public class ShipController : MonoBehaviour
         parentRigidbody = GetComponent<Rigidbody>();
         SearchAndAssignChild(savedPropulsionRoot.GameObject());
         print("Number of EnginePropeller pairs" + enginePropellerPairs.Count); // Debugging
+        if (enginePropellerPairs.Count > 0)
+        {
+            Transform engineJoint = enginePropellerPairs[0].EngineJoint.transform;
+            startDirection =  -engineJoint.forward;//Quaternion.Euler(0, engineRotationLimit, 0)*
+        }
     }
 
     
@@ -102,13 +116,13 @@ public class ShipController : MonoBehaviour
             if (engineJoint.name == "EngineJoint")
             {
                 RotateRudder(GetDesiredRotation(leftStickValue, engineJoint));
-                ApplyForce(netForce, currentAngle, propellerJoint.position);
+                ApplyForce(netForce, pair);
                 RotatePropeller(propellerJoint);
             }
             else if (engineJoint.name == "EngineJointBow")
             {
                 RotateRudder(GetDesiredRotation(-leftStickValue, engineJoint));
-                ApplyForce(netForce, -currentAngle , propellerJoint.position);
+                ApplyForce(netForce, pair);
                 RotatePropeller(propellerJoint);
             }
         }
@@ -138,14 +152,21 @@ public class ShipController : MonoBehaviour
     
     
     /// Apply force to the global parent rigidbody at the propeller joint position 
-    private void ApplyForce(float force, float angle, Vector3 position)
+    private void ApplyForce(float force, EnginePropellerPair pair)
     {
         float finalForce = force * forceMultiplier;
-        finalForce = Mathf.Clamp(finalForce, -500f, 50000000f);
-        Quaternion rotation = Quaternion.Euler(0, angle, 0);
-        Vector3 direction = rotation * transform.forward;
-        currentThrust = finalForce;
+        currentThrust = finalForce = Mathf.Clamp(finalForce, forceClamp.x, forceClamp.y);
+        
+        Vector3 direction = pair.EngineJoint.transform.forward; 
+        Vector3 position = pair.PropellerJoint.transform.position;
+        
         parentRigidbody.AddForceAtPosition(direction * finalForce, position);
+        
+        // Draw force vector
+        if (debug)
+        {
+            Debug.DrawRay(position, direction * finalForce / forceMultiplier, Color.yellow);
+        }
     }
     
     
@@ -168,7 +189,7 @@ public class ShipController : MonoBehaviour
         float newRotation = joint.localEulerAngles.y + desiredRotation;
         newRotation = NormalizeAngle(newRotation);
         if (newRotation > 300) newRotation -= 360; // To avoid snapping at 0/360 degrees
-        currentAngle = Mathf.Clamp(newRotation, -45f, 45f);
+        currentAngle = Mathf.Clamp(newRotation, -engineRotationLimit, engineRotationLimit);
         Quaternion targetRotation = Quaternion.Euler(0, currentAngle, 0);
         return (targetRotation, joint, desiredRotation);
     }
@@ -238,5 +259,33 @@ public class ShipController : MonoBehaviour
     private void OnDisable()
     {
         inputActions.Disable();
+    }
+    
+    
+    private void OnDrawGizmos()
+    {
+        if (!debug) return;
+        if (enginePropellerPairs == null) return;
+
+        foreach (EnginePropellerPair pair in enginePropellerPairs)
+        {
+            Transform engineJoint = pair.EngineJoint.transform;
+
+            // Draw semicircle
+            for (int i = 0; i <= 2*engineRotationLimit; i++)
+            {
+                Vector3 rotatedStartDirection = Quaternion.Euler(0, -89, 0) *transform.rotation * startDirection; // Apply parent rotation to startDirection
+                Vector3 lineStart = engineJoint.position + Quaternion.Euler(0, i -engineRotationLimit, 0) * rotatedStartDirection;
+                Vector3 lineEnd = engineJoint.position + Quaternion.Euler(0, i -engineRotationLimit-1, 0) * rotatedStartDirection;
+                Color lineColor = i < engineRotationLimit ? Color.red : Color.green; // Change color based on angle
+                Debug.DrawLine(lineStart, lineEnd, lineColor);
+            }
+
+            float currentAngle = engineJoint.localRotation.y;
+            
+            // Draw line for current rotation
+            Vector3 currentDirection = Quaternion.Euler(0, currentAngle, 0) * -engineJoint.forward;
+            Debug.DrawLine(engineJoint.position, engineJoint.position + currentDirection, Color.magenta);
+        }
     }
 }
