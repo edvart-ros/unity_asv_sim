@@ -422,7 +422,7 @@ MonoBehaviour:
     m_OverrideState: 1
     m_Value: {x: 1, y: 1, z: 0, w: 0}
   seedMode:
-    m_OverrideState: 0
+    m_OverrideState: 1
     m_Value: 1
 --- !u!114 &-7089757308646879465
 MonoBehaviour:
