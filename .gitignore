@@ -101,3 +101,5 @@ crashlytics-build.properties
 /Logs/shadercompiler-UnityShaderCompiler.exe-0.log
 UserSettings/EditorUserSettings.asset
 UserSettings/Layouts/default-2023.dwlt
+ProjectSettings/TimeManager.asset
+ProjectSettings/DynamicsManager.asset
