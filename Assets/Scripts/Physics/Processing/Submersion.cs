@@ -26,7 +26,7 @@ public class Submersion : MonoBehaviour
     public bool logVolumeData;
     public bool logTimeData;
     
-    private string path = "Assets/Data/";
+    private string path = "Assets/Data/Triangles/";
     private string depthLogFile;
     private string timeLogFile;
     private float displacedVolume;
