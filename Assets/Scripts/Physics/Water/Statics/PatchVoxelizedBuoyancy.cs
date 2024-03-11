@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Physics.Water.Dynamics;
 using UnityEditor.Playables;
 using System.Collections;
+using System.Diagnostics;
 using WaterInteraction;
 using UnityEngine;
 using System.IO;
@@ -27,10 +28,7 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
     public float patchSize = 10;
     public int patchResolution = 4;
     public WaterSurface targetSurface = null;
-    public bool drawPatch;
-    public bool drawVoxelPositionGizmo;
-    
-    public bool logData;
+    public bool CutTheVoxels;
     
     private List<Vector3> pointsInsideMesh = new List<Vector3>();
     //private string pathToVoxelFile = "Assets/Data/localPointsData.json";
@@ -38,7 +36,6 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
     private List<Vector3> globalVoxelPositions = new List<Vector3>();
     //private List<Vector3> relativePositions = new List<Vector3>();
     private Vector3 parentPosition;
-    private string localPath;
     
     private float actualForce;
     private float voxelVolume;
@@ -47,6 +44,17 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
     private Transform parentTransform;
     private Patch patch;
     private Rigidbody shipRigidbody;
+    
+    // Test frameworks
+    public bool drawPatch;
+    public bool drawVoxelPositionGizmo;
+    public bool logVolumeData;
+    public bool logTimeData;
+    
+    private string depthLogFile;
+    private string timeLogFile;
+    private int iteration;
+    private Stopwatch stopwatch = new Stopwatch();
     
     
     void Awake()
@@ -61,38 +69,39 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
 
     private void Start()
     {
-        if (patchSize != 0)
-        {
-            Vector3 gridOrigin = new Vector3(-patchSize/2, 0, patchSize/2);
-            patch = new Patch(targetSurface, patchSize, patchResolution, gridOrigin);
-            patch.Update(transform);
-        } 
-        localPath = path + "VolumeData-" + transform.name + ".csv";
-
-        if (!File.Exists(localPath) && logData)
-        {
-            print("Beginning to log data");
-            Utils.LogDataToFile(localPath,"depth","volume");
-        }
-        if(logData) GetComponent<Rigidbody>().velocity = new Vector3(0f, -0.1f, 0f);
+        if (patchSize == 0) return;
+        
+        Vector3 gridOrigin = new Vector3(-patchSize/2, 0, patchSize/2);
+        patch = new Patch(targetSurface, patchSize, patchResolution, gridOrigin);
+        patch.Update(transform);
+        
+        iteration = 0;
+        
+        InitializeLogs();
     }
 
     
     private void FixedUpdate()
     {
-        UpdateGlobalVoxelPosition();
         if (patchSize == 0) return;
+        stopwatch.Start();
         
+        UpdateGlobalVoxelPosition();
         patch.Update(transform);
-        ApplyForce(GetPointsUnderWaterPatch());
+        if (CutTheVoxels) ApplyForce(GetDetailedPointsUnderWaterPatch());
+        else ApplyForce(GetSimplePointsUnderWaterPatch());
         
+        stopwatch.Stop();
+        
+        if(logTimeData && iteration < 100) Utils.LogDataToFile(timeLogFile, iteration++, stopwatch.Elapsed.TotalMilliseconds * 1000.0);
         if (drawPatch) Utils.DrawPatch(patch);
         //buoyancyText.text = "Buoyancy Force: " + actualForce.ToString("F2");
+        stopwatch.Reset();
     }
     
     
-    /// Returns several lists of points under the water patch.
-    public (Vector3, float) GetPointsUnderWaterPatch()
+    /// Cuts the voxels at the waterline. Results in less discontinutity in the submerged volume
+    public (Vector3, float) GetDetailedPointsUnderWaterPatch()
     {
         float semiSubmergedVolume = 0.0f;
         float baseSurface = 4*voxelRadius*voxelRadius;
@@ -125,10 +134,45 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
         float fullySubmergedVolume = pointsFullySubmerged.Count * voxelVolume;
         float totalVolume = semiSubmergedVolume + fullySubmergedVolume;
         
-        if (logData)
+        if (logVolumeData)
         {
             print("Logging data to file.");
-            Utils.LogDataToFile(localPath, -(transform.position.y - 0.5f), totalVolume);
+            Utils.LogDataToFile(depthLogFile, -(transform.position.y - 0.5f), totalVolume);
+        }
+        
+        float force = CalculateForceFromVolumeOnly(totalVolume);
+        Vector3 centerOfBuoyancy = sumOfPositions / numberOfPoints;
+        return (centerOfBuoyancy, force);
+    }
+    
+    
+    /// Does not cutting of the voxels
+    public (Vector3, float) GetSimplePointsUnderWaterPatch()
+    {
+        float semiSubmergedVolume = 0.0f;
+        float baseSurface = 4*voxelRadius*voxelRadius;
+        Vector3 sumOfPositions = Vector3.zero;
+        int numberOfPoints = 0;
+        
+        List<Vector3> pointsSubmerged = new List<Vector3>();
+
+        foreach (var point in globalVoxelPositions)
+        {
+            float heightOfPoint = patch.GetPatchRelativeHeight(point);
+            if (heightOfPoint < 0.00001f)
+            {
+                pointsSubmerged.Add(point);
+                sumOfPositions += point;
+                numberOfPoints++;
+            }
+        }
+        
+        float totalVolume = pointsSubmerged.Count * voxelVolume;
+        
+        if (logVolumeData)
+        {
+            print("Logging data to file.");
+            Utils.LogDataToFile(depthLogFile, -(transform.position.y - 0.5f), totalVolume);
         }
         
         float force = CalculateForceFromVolumeOnly(totalVolume);
@@ -139,8 +183,8 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
     
     private void ApplyForce((Vector3 centerOfBuoyancy, float force) data)
     {
-        if(!logData) shipRigidbody.AddForceAtPosition(data.force*Vector3.up, data.centerOfBuoyancy);
-        Debug.DrawRay(data.centerOfBuoyancy,data.force*Vector3.up, Color.red);
+        if(!logVolumeData) shipRigidbody.AddForceAtPosition(data.force*Vector3.up, data.centerOfBuoyancy);
+        UnityEngine.Debug.DrawRay(data.centerOfBuoyancy,data.force*Vector3.up, Color.red);
     }
     
     
@@ -165,7 +209,7 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
     
     private Vector3ListWrapper LoadPoints()
     {
-        string json = File.ReadAllText(path + "localPointsData.json");
+        string json = File.ReadAllText(path + "localPointsData-" + transform.name + ".json");
         return JsonUtility.FromJson<Vector3ListWrapper>(json);
     }
     
@@ -212,8 +256,29 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
         
         return (pointsFullySubmerged, pointsAtSurfaceUnderPatch, pointsAtSurfaceOverPatch);
     }
-    
-    
+
+
+    private void InitializeLogs()
+    {
+        depthLogFile = path + "VolumeData-" + transform.name + ".csv";
+        timeLogFile = path + "TimeData-" + transform.name + ".csv";
+
+        if (!File.Exists(depthLogFile) && logVolumeData)
+        {
+            print("Beginning to log volume data");
+            Utils.LogDataToFile(depthLogFile,"depth","volume");
+            // Add a constant downward force 
+            GetComponent<Rigidbody>().velocity = new Vector3(0f, -0.1f, 0f);
+        }
+        
+        if (!File.Exists(timeLogFile) && logTimeData)
+        {
+            print("Beginning to log time data");
+            Utils.LogDataToFile(timeLogFile,"iteration_number","time");
+        }
+    }
+
+
     private void OnDrawGizmos()
     {
         if (globalVoxelPositions.Count == 0) return;

@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.IO;
 using WaterInteraction;
 using UnityEngine;
 
@@ -8,7 +10,7 @@ public class Buoyancy : MonoBehaviour
     private Vector3 buoyancyCenter = new Vector3();
     private Submerged submerged;
     private Rigidbody rigidBody;
-
+    
     
     void Start()
     {
@@ -20,6 +22,7 @@ public class Buoyancy : MonoBehaviour
     void FixedUpdate()
     {
         if (!buoyancyForceActive) return;
+        
         //rigidBody = GetComponent<Rigidbody>();
         submerged = GetComponent<Submersion>().submerged;
         ApplyBuoyancyVolume();
@@ -35,12 +38,12 @@ public class Buoyancy : MonoBehaviour
         rigidBody.AddForceAtPosition(forceVector, buoyancyCenter);
     }
 
-    void OnDrawGizmos(){
+    
+    void OnDrawGizmos()
+    {
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(buoyancyCenter, 0.1f);
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(transform.position, 0.1f);
     }
-
-    
 }

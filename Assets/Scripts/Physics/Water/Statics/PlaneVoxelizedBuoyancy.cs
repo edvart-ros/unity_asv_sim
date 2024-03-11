@@ -138,7 +138,7 @@ public class PlaneVoxelizedBuoyancy : MonoBehaviour
     
     private Vector3ListWrapper LoadPoints()
     {
-        string json = File.ReadAllText(path + "localPointsData.json");
+        string json = File.ReadAllText(path + "localPointsData-" + transform.name + ".json");
         return JsonUtility.FromJson<Vector3ListWrapper>(json);
     }
     

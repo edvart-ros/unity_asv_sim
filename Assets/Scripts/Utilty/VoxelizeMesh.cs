@@ -18,14 +18,15 @@ public class VoxelizeMesh : MonoBehaviour
     public float voxelSize = 6;
     
     private List<Vector3> pointsInsideMesh = new List<Vector3>();
-    private string path = "Assets/Data/localPointsData.json";
-
+    private string path = "Assets/Data/";
+    private string localPath;
 
     /// Voxelize the mesh by evenly distributing a point cloud.
     /// Iterates over these points to determine which are inside.
     /// Saves the points to a file.
     public void DeterminePoints()
     {
+        localPath = path + "localPointsData-" + transform.name + ".json";
         print("Determining Points");
         pointsInsideMesh.Clear();
         Bounds bounds;
@@ -88,7 +89,7 @@ public class VoxelizeMesh : MonoBehaviour
         }
         
         string json = JsonUtility.ToJson(wrapper);
-        File.WriteAllText(path, json);
+        File.WriteAllText(localPath, json);
     }
     
     
