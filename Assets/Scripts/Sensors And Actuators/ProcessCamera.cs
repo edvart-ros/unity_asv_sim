@@ -37,9 +37,7 @@ public class ProcessRenderTexture : MonoBehaviour
             cam = GetComponent<Camera>();
         }
         else if (sensorType == sensorEnum.RGB){
-            Debug.Log(1);
             mat = new Material(Shader.Find("Unlit/NoiseDistortRGB"));
-            Debug.Log(1);
         }
     }
 
