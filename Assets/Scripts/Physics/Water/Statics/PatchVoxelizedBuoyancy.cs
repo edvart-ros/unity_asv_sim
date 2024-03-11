@@ -32,7 +32,7 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
     
     private List<Vector3> pointsInsideMesh = new List<Vector3>();
     //private string pathToVoxelFile = "Assets/Data/localPointsData.json";
-    private string path = "Assets/Data/";
+    private string path = "Assets/Data/Voxels/";
     private List<Vector3> globalVoxelPositions = new List<Vector3>();
     //private List<Vector3> relativePositions = new List<Vector3>();
     private Vector3 parentPosition;
@@ -92,8 +92,13 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
         else ApplyForce(GetSimplePointsUnderWaterPatch());
         
         stopwatch.Stop();
-        
-        if(logTimeData && iteration < 100) Utils.LogDataToFile(timeLogFile, iteration++, stopwatch.Elapsed.TotalMilliseconds * 1000.0);
+
+        if (logTimeData && iteration < 100)
+        {
+            Utils.LogDataToFile(timeLogFile, iteration++, stopwatch.Elapsed.TotalMilliseconds * 1000.0);
+            //print("Time for iteraton " + iteration + " is " + stopwatch.Elapsed.TotalMilliseconds * 1000.0 + " microseconds.");
+            //iteration++;
+        }
         if (drawPatch) Utils.DrawPatch(patch);
         //buoyancyText.text = "Buoyancy Force: " + actualForce.ToString("F2");
         stopwatch.Reset();
@@ -134,7 +139,7 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
         float fullySubmergedVolume = pointsFullySubmerged.Count * voxelVolume;
         float totalVolume = semiSubmergedVolume + fullySubmergedVolume;
         
-        if (logVolumeData)
+        if (logVolumeData&& iteration < 100)
         {
             print("Logging data to file.");
             Utils.LogDataToFile(depthLogFile, -(transform.position.y - 0.5f), totalVolume);
@@ -260,8 +265,8 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
 
     private void InitializeLogs()
     {
-        depthLogFile = path + "VolumeData-" + transform.name + ".csv";
-        timeLogFile = path + "TimeData-" + transform.name + ".csv";
+        depthLogFile = path + "VolumeData-Voxel_" + transform.name + ".csv";
+        timeLogFile = path + "TimeData-Voxel_" + transform.name + ".csv";
 
         if (!File.Exists(depthLogFile) && logVolumeData)
         {
