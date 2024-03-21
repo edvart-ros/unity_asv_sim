@@ -94,7 +94,8 @@ public class Submersion : MonoBehaviour
 
             Utils.DebugDrawTriangle(tri, Color.green);
         }
-        UnityEngine.Debug.Log("volume:" + submerged.data.volume + ", object: " + name);
+        print("volume:" + submerged.data.volume + ", object: " + name);
+
     }
 
 /*
