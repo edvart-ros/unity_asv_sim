@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 7626.0693, g: 5185.1143, b: 4828.3677, a: 1}
+  m_IndirectSpecularColor: {r: 1051.1779, g: 714.75397, b: 666.34186, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -148,7 +148,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 130000
+  m_Intensity: 17954.549
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -228,7 +228,7 @@ MonoBehaviour:
   m_PointlightHDType: 0
   m_SpotLightShape: 0
   m_AreaLightShape: 0
-  m_Intensity: 130000
+  m_Intensity: 17954.549
   m_EnableSpotReflector: 0
   m_LuxAtDistance: 1
   m_InnerSpotPercent: 0
@@ -2389,7 +2389,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 0
   drawSubmerged: 1
-  logData: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!114 &1248159297
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8854,7 +8855,8 @@ MonoBehaviour:
   patchResolution: 4
   drawPatch: 1
   drawSubmerged: 0
-  logData: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!4 &2097019932710773672
 Transform:
   m_ObjectHideFlags: 0
