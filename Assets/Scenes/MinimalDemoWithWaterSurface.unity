@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 38272.38, g: 29061.879, b: 27238.316, a: 1}
+  m_IndirectSpecularColor: {r: 1424.4718, g: 968.7062, b: 902.7052, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -148,7 +148,7 @@ Light:
   serializedVersion: 11
   m_Type: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 730000
+  m_Intensity: 24318.18
   m_Range: 10
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
@@ -228,7 +228,7 @@ MonoBehaviour:
   m_PointlightHDType: 0
   m_SpotLightShape: 0
   m_AreaLightShape: 0
-  m_Intensity: 730000
+  m_Intensity: 24318.18
   m_EnableSpotReflector: 0
   m_LuxAtDistance: 1
   m_InnerSpotPercent: 0
@@ -259,19 +259,22 @@ MonoBehaviour:
   m_UseScreenSpaceShadows: 0
   m_InteractsWithSky: 1
   m_AngularDiameter: 2.5
-  m_DiameterMultiplerMode: 1
-  m_DiameterMultiplier: 1
-  m_DiameterOverride: 0.5
-  m_EmissiveLightSource: 1
-  m_FlareSize: 2
-  m_FlareTint: {r: 1, g: 1, b: 1, a: 1}
-  m_FlareFalloff: 4
-  m_AutomaticMoonPhase: 1
-  m_MoonPhase: 0.2
-  m_MoonPhaseRotation: 0
-  m_Earthshine: 1
-  m_SurfaceTexture: {fileID: 0}
-  m_SurfaceTint: {r: 1, g: 1, b: 1, a: 1}
+  diameterMultiplerMode: 1
+  diameterMultiplier: 1
+  diameterOverride: 0.5
+  celestialBodyShadingSource: 1
+  sunLightOverride: {fileID: 0}
+  sunColor: {r: 1, g: 1, b: 1, a: 1}
+  sunIntensity: 130000
+  moonPhase: 0.2
+  moonPhaseRotation: 0
+  earthshine: 1
+  flareSize: 2
+  flareTint: {r: 1, g: 1, b: 1, a: 1}
+  flareFalloff: 4
+  flareMultiplier: 1
+  surfaceTexture: {fileID: 0}
+  surfaceTint: {r: 1, g: 1, b: 1, a: 1}
   m_Distance: 1.5e+11
   m_UseRayTracedShadows: 0
   m_NumRayTracingSamples: 4
@@ -294,7 +297,7 @@ MonoBehaviour:
   m_MinFilterSize: 0.1
   m_DirLightPCSSBlockerSampleCount: 24
   m_DirLightPCSSFilterSampleCount: 16
-  m_DirLightPCSSMaxBlockerDistance: 64
+  m_DirLightPCSSMaxPenumbraSize: 0.56
   m_DirLightPCSSMaxSamplingDistance: 0.5
   m_DirLightPCSSMinFilterSizeTexels: 1.5
   m_DirLightPCSSMinFilterMaxAngularDiameter: 10
@@ -390,8 +393,7 @@ MonoBehaviour:
   geometryType: 0
   meshRenderers: []
   timeMultiplier: 1
-  cpuSimulation: 1
-  cpuFullResolution: 0
+  scriptInteractions: 1
   cpuEvaluateRipples: 0
   customMaterial: {fileID: 0}
   startSmoothness: 0.95000005
@@ -433,7 +435,6 @@ MonoBehaviour:
   volumeHeight: 0
   volumePrority: 0
   absorptionDistanceMultiplier: 1
-  colorPyramidOffset: 1
   underWaterAmbientProbeContribution: 1
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
@@ -457,6 +458,7 @@ MonoBehaviour:
   foamAreaSize: {x: 200, y: 200}
   foamAreaOffset: {x: 0, y: 0}
   foamPersistenceMultiplier: 0.5
+  foamColor: {r: 1, g: 1, b: 1, a: 1}
   foamTextureTiling: 0.15
   foamSmoothness: 1
   simulationFoam: 1
@@ -2372,8 +2374,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 0
   drawSubmerged: 1
-  logData: 0
-  displacedVolume: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!114 &1719318179
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2403,13 +2405,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad299cf7834a84f2196281b80115c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planeTransform: {fileID: 0}
   buoyancyText: {fileID: 1716123082}
   patchSize: 10
   patchResolution: 10
   targetSurface: {fileID: 217986714}
+  CutTheVoxels: 0
   drawPatch: 1
-  logData: 0
+  drawVoxelPositionGizmo: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!54 &1719318181
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2599,13 +2603,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad299cf7834a84f2196281b80115c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planeTransform: {fileID: 0}
   buoyancyText: {fileID: 1716123082}
   patchSize: 130
   patchResolution: 10
   targetSurface: {fileID: 217986714}
+  CutTheVoxels: 0
   drawPatch: 1
-  logData: 0
+  drawVoxelPositionGizmo: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!64 &1742345496
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -2737,8 +2743,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 1
   drawSubmerged: 1
-  logData: 0
-  displacedVolume: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!1 &1774031221
 GameObject:
   m_ObjectHideFlags: 0
@@ -2842,8 +2848,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 1
   drawSubmerged: 1
-  logData: 0
-  displacedVolume: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!54 &1984874462
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2883,13 +2889,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad299cf7834a84f2196281b80115c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planeTransform: {fileID: 0}
   buoyancyText: {fileID: 1716123082}
   patchSize: 160
   patchResolution: 20
   targetSurface: {fileID: 217986714}
+  CutTheVoxels: 0
   drawPatch: 1
-  logData: 0
+  drawVoxelPositionGizmo: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!114 &1984874467
 MonoBehaviour:
   m_ObjectHideFlags: 0
