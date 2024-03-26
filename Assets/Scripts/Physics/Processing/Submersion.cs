@@ -94,8 +94,6 @@ public class Submersion : MonoBehaviour
 
             Utils.DebugDrawTriangle(tri, Color.green);
         }
-        print("volume:" + submerged.data.volume + ", object: " + name);
-
     }
 
 /*

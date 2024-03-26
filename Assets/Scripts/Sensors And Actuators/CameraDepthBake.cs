@@ -15,11 +15,13 @@ class CameraDepthBake : CustomPass
 
     protected override void Execute(CustomPassContext ctx)
     {
-        if (!render || ctx.hdCamera.camera == bakingCamera || bakingCamera == null || ctx.hdCamera.camera.cameraType == CameraType.SceneView)
+        if (!render || bakingCamera == null){
             return;
+        }
         
-        if (depthTexture == null && normalTexture == null && tangentTexture == null)
+        if (depthTexture == null && normalTexture == null && tangentTexture == null){
             return;
+        }
 
 
 
@@ -41,7 +43,6 @@ class CameraDepthBake : CustomPass
         // Depth
         if (depthTexture != null)
             CustomPassUtils.RenderDepthFromCamera(ctx, bakingCamera, depthTexture, ClearFlag.All, bakingCamera.cullingMask, overrideRenderState: overrideDepthTest);
-
         // Normal
         if (normalTexture != null)
             CustomPassUtils.RenderNormalFromCamera(ctx, bakingCamera, normalTexture, ClearFlag.All, bakingCamera.cullingMask, overrideRenderState: overrideDepthTest);
