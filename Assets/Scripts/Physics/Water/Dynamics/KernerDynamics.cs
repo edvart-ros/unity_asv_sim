@@ -10,7 +10,7 @@ public class KernerDynamics : MonoBehaviour
     public bool debugPressureDrag;
     public bool debugResist;
 
-    [Range(0.5f, 5.0f)]
+    [Range(0.0f, 5.0f)]
     public float viscousForceScale = 1f;
     [Range(0.0f, 1000.0f)]
     public float pressureDragLinearCoefficient = 100;
