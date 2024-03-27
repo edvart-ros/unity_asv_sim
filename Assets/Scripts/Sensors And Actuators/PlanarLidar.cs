@@ -90,7 +90,7 @@ public class PlanarLidar : MonoBehaviour
             JobHandle handle = RaycastCommand.ScheduleBatch(commands, results, batchSize, 1);
             handle.Complete();
 
-            float[] dists = new float[numPoints];
+            float[] dists = new float[numPoints+1];
             for (int i = 0; i < numPoints; i++)
             {
                 var hit = results[i];
