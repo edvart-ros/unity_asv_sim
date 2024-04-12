@@ -41,9 +41,12 @@ public class Buoyancy : MonoBehaviour
     
     void OnDrawGizmos()
     {
+        // debug
+        /*
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(buoyancyCenter, 0.1f);
         Gizmos.color = Color.green;
         Gizmos.DrawSphere(transform.position, 0.1f);
+        */
     }
 }
