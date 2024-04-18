@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 262.30203, g: 324.99054, b: 430.14313, a: 1}
+  m_IndirectSpecularColor: {r: 262.38358, g: 325.10843, b: 430.30963, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -675,7 +675,7 @@ PrefabInstance:
     - target: {fileID: 6676685322939254795, guid: b3b7b131f82bf4f20b30e983ed9c8166,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8618454429579698432, guid: b3b7b131f82bf4f20b30e983ed9c8166,
         type: 3}
@@ -1617,7 +1617,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!64 &886207183
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -1716,8 +1716,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 1
   drawSubmerged: 1
-  logData: 0
-  displacedVolume: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!114 &886207188
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1730,13 +1730,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad299cf7834a84f2196281b80115c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planeTransform: {fileID: 0}
   buoyancyText: {fileID: 0}
   patchSize: 160
   patchResolution: 20
   targetSurface: {fileID: 906479022}
+  CutTheVoxels: 0
   drawPatch: 1
-  logData: 0
+  drawVoxelPositionGizmo: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!54 &886207189
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -2698,7 +2700,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1508658661
 Transform:
   m_ObjectHideFlags: 0
@@ -3782,7 +3784,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1922917219
 Transform:
   m_ObjectHideFlags: 0
@@ -3821,7 +3823,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1945039437
 Transform:
   m_ObjectHideFlags: 0
@@ -3891,13 +3893,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad299cf7834a84f2196281b80115c49c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  planeTransform: {fileID: 1075007764}
   buoyancyText: {fileID: 802404460}
   patchSize: 0
   patchResolution: 4
   targetSurface: {fileID: 0}
+  CutTheVoxels: 0
   drawPatch: 0
-  logData: 0
+  drawVoxelPositionGizmo: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!114 &1945039442
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3910,10 +3914,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d4994672185f34700a873a887557da8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forceClamp: {x: -500, y: 2750}
   forceMultiplier: 10000000
   rotationMultiplier: 10
   hasRudder: 1
   holdingRudder: 0
+  debug: 0
   forceText: {fileID: 2033410647}
   rotationText: {fileID: 902775347}
   currentSpinText: {fileID: 1586934325}

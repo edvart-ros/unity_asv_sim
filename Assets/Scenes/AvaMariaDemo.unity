@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 91.16755, g: 97.61219, b: 144.76419, a: 1}
+  m_IndirectSpecularColor: {r: 227.05563, g: 163.20033, b: 166.74806, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -259,19 +259,22 @@ MonoBehaviour:
   m_UseScreenSpaceShadows: 0
   m_InteractsWithSky: 1
   m_AngularDiameter: 2.5
-  m_DiameterMultiplerMode: 1
-  m_DiameterMultiplier: 1
-  m_DiameterOverride: 0.5
-  m_EmissiveLightSource: 1
-  m_FlareSize: 2
-  m_FlareTint: {r: 1, g: 1, b: 1, a: 1}
-  m_FlareFalloff: 4
-  m_AutomaticMoonPhase: 1
-  m_MoonPhase: 0.2
-  m_MoonPhaseRotation: 0
-  m_Earthshine: 1
-  m_SurfaceTexture: {fileID: 0}
-  m_SurfaceTint: {r: 1, g: 1, b: 1, a: 1}
+  diameterMultiplerMode: 1
+  diameterMultiplier: 1
+  diameterOverride: 0.5
+  celestialBodyShadingSource: 1
+  sunLightOverride: {fileID: 0}
+  sunColor: {r: 1, g: 1, b: 1, a: 1}
+  sunIntensity: 130000
+  moonPhase: 0.2
+  moonPhaseRotation: 0
+  earthshine: 1
+  flareSize: 2
+  flareTint: {r: 1, g: 1, b: 1, a: 1}
+  flareFalloff: 4
+  flareMultiplier: 1
+  surfaceTexture: {fileID: 0}
+  surfaceTint: {r: 1, g: 1, b: 1, a: 1}
   m_Distance: 1.5e+11
   m_UseRayTracedShadows: 0
   m_NumRayTracingSamples: 4
@@ -294,7 +297,7 @@ MonoBehaviour:
   m_MinFilterSize: 0.1
   m_DirLightPCSSBlockerSampleCount: 24
   m_DirLightPCSSFilterSampleCount: 16
-  m_DirLightPCSSMaxBlockerDistance: 64
+  m_DirLightPCSSMaxPenumbraSize: 0.56
   m_DirLightPCSSMaxSamplingDistance: 0.5
   m_DirLightPCSSMinFilterSizeTexels: 1.5
   m_DirLightPCSSMinFilterMaxAngularDiameter: 10
@@ -390,8 +393,7 @@ MonoBehaviour:
   geometryType: 3
   meshRenderers: []
   timeMultiplier: 1
-  cpuSimulation: 1
-  cpuFullResolution: 0
+  scriptInteractions: 1
   cpuEvaluateRipples: 0
   customMaterial: {fileID: 0}
   startSmoothness: 0.95
@@ -433,7 +435,6 @@ MonoBehaviour:
   volumeHeight: 0
   volumePrority: 0
   absorptionDistanceMultiplier: 1
-  colorPyramidOffset: 1
   underWaterAmbientProbeContribution: 1
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
@@ -457,6 +458,7 @@ MonoBehaviour:
   foamAreaSize: {x: 200, y: 200}
   foamAreaOffset: {x: 0, y: 0}
   foamPersistenceMultiplier: 0.5
+  foamColor: {r: 1, g: 1, b: 1, a: 1}
   foamTextureTiling: 0.15
   foamSmoothness: 1
   simulationFoam: 1
@@ -594,7 +596,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buoyancyForceActive: 1
-  debugBuoyancy: 1
 --- !u!54 &278488018
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -638,12 +639,14 @@ MonoBehaviour:
   pressureDragActive: 1
   debugPressureDrag: 0
   debugResist: 0
+  viscousForceScale: 1
   pressureDragLinearCoefficient: 100
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 1
-  totalViscousForce: {x: 0, y: 0, z: 0}
-  totalPressureForce: {x: 0, y: 0, z: 0}
+  suctionDragLinearCoefficient: 100
+  suctionDragQuadraticCoefficient: 30
+  suctionDragFalloffPower: 1
   hullZMin: -2.5
   hullZMax: 2.9
 --- !u!114 &278488020
@@ -665,6 +668,8 @@ MonoBehaviour:
   patchResolution: 4
   drawPatch: 0
   drawSubmerged: 0
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!1 &432432459
 GameObject:
   m_ObjectHideFlags: 0
@@ -743,9 +748,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b545c2eb8688a341876de20411f6598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _topicName: clock
-  sec: 0
-  nanosec: 0
+  m_ClockMode: 0
+  m_LastSetClockMode: 0
+  m_PublishRateHz: 100
 --- !u!4 &637656578
 Transform:
   m_ObjectHideFlags: 0
@@ -1180,8 +1185,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dab42a10177f941c2aa47845ba76a9c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ship: {fileID: 1715571881}
+  pivotOffset: {x: 0, y: 0, z: 0}
+  followTarget: {fileID: 0}
   rotationSpeed: 100
+  enableMousePan: 1
+  cameraFollow: 0
+  collisionLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1001 &1527750373
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1388,12 +1399,14 @@ MonoBehaviour:
   pressureDragActive: 1
   debugPressureDrag: 0
   debugResist: 0
+  viscousForceScale: 1
   pressureDragLinearCoefficient: 100
   pressureDragQuadraticCoefficient: 30
   pressureDragVelocityRef: 1
   pressureDragFalloffPower: 1
-  totalViscousForce: {x: 0, y: 0, z: 0}
-  totalPressureForce: {x: 0, y: 0, z: 0}
+  suctionDragLinearCoefficient: 100
+  suctionDragQuadraticCoefficient: 30
+  suctionDragFalloffPower: 1
   hullZMin: -64
   hullZMax: 64
 --- !u!114 &1715571883
@@ -1415,6 +1428,8 @@ MonoBehaviour:
   patchResolution: 4
   drawPatch: 1
   drawSubmerged: 1
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!114 &1715571884
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1428,7 +1443,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   buoyancyForceActive: 1
-  debugBuoyancy: 1
 --- !u!54 &1715571885
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1510,7 +1524,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26952bc3b0c51154f8fd10cd54eaff81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  fpsText: {fileID: 1619208909}
+  fpsText: {fileID: 0}
 --- !u!114 &1842765365
 MonoBehaviour:
   m_ObjectHideFlags: 0
