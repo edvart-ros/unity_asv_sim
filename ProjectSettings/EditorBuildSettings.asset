@@ -6,8 +6,8 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/OutdoorsScene.unity
-    guid: 8124e5870f4fd4c779e7a5f994e84ad1
+    path: Assets/Scenes/VoxelDepthVolumeTest.unity
+    guid: b21ca15ced98e4629be84a4dddf19dda
   m_configObjects:
     com.unity.input.settings: {fileID: 11400000, guid: 9d00f1c425b894e25a9f38c9c188d9f5,
       type: 2}

@@ -456,10 +456,10 @@ MonoBehaviour:
   active: 0
   enable:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 1
   triangleSize:
-    m_OverrideState: 1
-    m_Value: 30
+    m_OverrideState: 0
+    m_Value: 35.3
   ambientProbeDimmer:
     m_OverrideState: 1
     m_Value: 0.5

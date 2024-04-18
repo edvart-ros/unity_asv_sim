@@ -139,7 +139,7 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
         float fullySubmergedVolume = pointsFullySubmerged.Count * voxelVolume;
         float totalVolume = semiSubmergedVolume + fullySubmergedVolume;
         
-        if (logVolumeData&& iteration < 100)
+        if (logVolumeData && iteration < 3)
         {
             print("Logging data to file.");
             Utils.LogDataToFile(depthLogFile, -(transform.position.y - 0.5f), totalVolume);
@@ -265,8 +265,8 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
 
     private void InitializeLogs()
     {
-        depthLogFile = path + "VolumeData-Voxel_" + transform.name + ".csv";
-        timeLogFile = path + "TimeData-Voxel_" + transform.name + ".csv";
+        depthLogFile = path + "VolumeData-" + transform.name + ".csv";
+        timeLogFile = path + "TimeData-" + transform.name + ".csv";
 
         if (!File.Exists(depthLogFile) && logVolumeData)
         {

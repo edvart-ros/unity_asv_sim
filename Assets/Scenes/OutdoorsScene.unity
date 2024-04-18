@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 2705.9963, g: 2605.68, b: 3452.9614, a: 1}
+  m_IndirectSpecularColor: {r: 7499.0166, g: 4908.696, b: 4341.024, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -648,14 +648,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02aaa02f4b20edc40a68e63aef6d7315, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ImagetopicName: wamv/image/compressed
-  cameraInfoTopicName: wamv/camera_info
-  ImageCamera: {fileID: 91354010}
-  FrameId: camera_link
-  resolutionWidth: 640
-  resolutionHeight: 480
-  qualityLevel: 50
-  publishMessageFrequency: 0.005
 --- !u!114 &91354008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1116,19 +1108,22 @@ MonoBehaviour:
   m_UseScreenSpaceShadows: 0
   m_InteractsWithSky: 1
   m_AngularDiameter: 2.5
-  m_DiameterMultiplerMode: 1
-  m_DiameterMultiplier: 1
-  m_DiameterOverride: 0.5
-  m_EmissiveLightSource: 1
-  m_FlareSize: 1.34
-  m_FlareTint: {r: 1, g: 1, b: 1, a: 1}
-  m_FlareFalloff: 4
-  m_AutomaticMoonPhase: 1
-  m_MoonPhase: 0.2
-  m_MoonPhaseRotation: 0
-  m_Earthshine: 1
-  m_SurfaceTexture: {fileID: 0}
-  m_SurfaceTint: {r: 1, g: 1, b: 1, a: 1}
+  diameterMultiplerMode: 1
+  diameterMultiplier: 1
+  diameterOverride: 0.5
+  celestialBodyShadingSource: 1
+  sunLightOverride: {fileID: 0}
+  sunColor: {r: 1, g: 1, b: 1, a: 1}
+  sunIntensity: 130000
+  moonPhase: 0.2
+  moonPhaseRotation: 0
+  earthshine: 1
+  flareSize: 1.34
+  flareTint: {r: 1, g: 1, b: 1, a: 1}
+  flareFalloff: 4
+  flareMultiplier: 1
+  surfaceTexture: {fileID: 0}
+  surfaceTint: {r: 1, g: 1, b: 1, a: 1}
   m_Distance: 1.5e+11
   m_UseRayTracedShadows: 0
   m_NumRayTracingSamples: 4
@@ -1151,7 +1146,7 @@ MonoBehaviour:
   m_MinFilterSize: 0.1
   m_DirLightPCSSBlockerSampleCount: 24
   m_DirLightPCSSFilterSampleCount: 16
-  m_DirLightPCSSMaxBlockerDistance: 64
+  m_DirLightPCSSMaxPenumbraSize: 0.56
   m_DirLightPCSSMaxSamplingDistance: 0.5
   m_DirLightPCSSMinFilterSizeTexels: 1.5
   m_DirLightPCSSMinFilterMaxAngularDiameter: 10
@@ -1247,8 +1242,7 @@ MonoBehaviour:
   geometryType: 3
   meshRenderers: []
   timeMultiplier: 1
-  cpuSimulation: 1
-  cpuFullResolution: 0
+  scriptInteractions: 1
   cpuEvaluateRipples: 0
   customMaterial: {fileID: 0}
   startSmoothness: 0.95
@@ -1290,7 +1284,6 @@ MonoBehaviour:
   volumeHeight: 0
   volumePrority: 0
   absorptionDistanceMultiplier: 1
-  colorPyramidOffset: 1
   underWaterAmbientProbeContribution: 1
   underWaterScatteringColorMode: 0
   underWaterScatteringColor: {r: 0, g: 0.27, b: 0.23, a: 1}
@@ -1314,6 +1307,7 @@ MonoBehaviour:
   foamAreaSize: {x: 200, y: 200}
   foamAreaOffset: {x: 0, y: 0}
   foamPersistenceMultiplier: 0.5
+  foamColor: {r: 1, g: 1, b: 1, a: 1}
   foamTextureTiling: 0.15
   foamSmoothness: 1
   simulationFoam: 1
@@ -1363,9 +1357,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  repetitionSize: 481
+  repetitionSize: 398
   largeOrientationValue: 0
-  largeWindSpeed: 17.8
+  largeWindSpeed: 15
   largeChaos: 0
   largeBand0Multiplier: 1
   largeBand0FadeMode: 1
@@ -1907,9 +1901,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b545c2eb8688a341876de20411f6598, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _topicName: clock
-  sec: 0
-  nanosec: 0
+  m_ClockMode: 0
+  m_LastSetClockMode: 0
+  m_PublishRateHz: 100
 --- !u!4 &637656578
 Transform:
   m_ObjectHideFlags: 0
@@ -3608,18 +3602,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 08caa5496c70fb54bb823cbb933b2916, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxRange: 100
-  publishData: 1
-  topicName: points
-  frameId: lidar_link
-  numHorizontalBeams: 566
-  hz: 10.3
-  numVerticalBeams: 4
-  minDistance: 0.3
-  horizontalFOV: 6.28
-  verticalFOV: 0.523599
-  noisePercentage: 5.83
-  drawRays: 0
 --- !u!1 &2082548578
 GameObject:
   m_ObjectHideFlags: 0
@@ -3817,6 +3799,8 @@ MonoBehaviour:
   patchResolution: 10
   drawPatch: 1
   drawSubmerged: 1
+  logVolumeData: 0
+  logTimeData: 0
 --- !u!64 &2082548590
 MeshCollider:
   m_ObjectHideFlags: 0
