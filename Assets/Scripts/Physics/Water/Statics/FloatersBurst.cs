@@ -27,7 +27,13 @@ public class FitToWaterSurface_Burst : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        foreach(Transform child in gameObject.transform)
+        {
+            objects.Add(child.gameObject);
+        }
+
         numObjects = objects.Count;
+
         // Allocate the buffers
         targetPositionBuffer = new NativeArray<float3>(numObjects, Allocator.Persistent);
         errorBuffer = new NativeArray<float>(numObjects, Allocator.Persistent);

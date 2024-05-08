@@ -1,3 +1,4 @@
+#if UNITY_EDTIOR 
 using UnityEngine;
 using UnityEditor;
 
@@ -18,3 +19,5 @@ public class VoxelizeMeshEditor : Editor
         }
     }
 }
+
+#endif

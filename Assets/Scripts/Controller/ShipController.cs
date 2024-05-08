@@ -97,12 +97,14 @@ public class ShipController : MonoBehaviour
         
         if (savedPropulsionRoot) WorkOnJoints(leftStickValue, netForce);
         
+        /*
         forceText.text = "Force: " + netForce.ToString("F2");
         rotationText.text = "Rotation: " + leftStickValue.ToString("F2");
         currentAngleText.text = "Current Angle: " + currentAngle.ToString("F0");
         currentThrustText.text = "Current Force: " + currentThrust.ToString("F0");
         currentSpinText.text = "Current Spin: " + (currentSpin / Time.deltaTime).ToString("F0") + " degrees/frame";
-    }
+        */
+        }
     
     
     /// Find all engine joints as children of the propulsion object and populate the list
