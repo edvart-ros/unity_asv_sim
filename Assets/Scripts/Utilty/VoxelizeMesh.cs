@@ -18,7 +18,7 @@ public class VoxelizeMesh : MonoBehaviour
     public float voxelSize = 6;
     
     private List<Vector3> pointsInsideMesh = new List<Vector3>();
-    private string path = "Assets/Data/";
+    private string path = "Assets/Data/Voxels/";
     private string localPath;
 
     /// Voxelize the mesh by evenly distributing a point cloud.
