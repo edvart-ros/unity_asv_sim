@@ -15,7 +15,7 @@ MonoBehaviour:
   m_RenderPipelineSettings:
     supportShadowMask: 0
     supportSSR: 0
-    supportSSRTransparent: 0
+    supportSSRTransparent: 1
     supportSSAO: 1
     supportSSGI: 0
     supportSubsurfaceScattering: 1
@@ -39,7 +39,8 @@ MonoBehaviour:
     maximumDeformerCount: 64
     supportWaterFoam: 0
     foamAtlasSize: 512
-    waterCPUSimulation: 0
+    waterScriptInteractionsMode: 0
+    waterFullCPUSimulation: 0
     supportComputeThickness: 0
     computeThicknessResolution: 1
     computeThicknessLayerMask:
@@ -52,7 +53,7 @@ MonoBehaviour:
     colorBufferFormat: 74
     supportCustomPass: 1
     customBufferFormat: 12
-    supportedLitShaderMode: 2
+    supportedLitShaderMode: 3
     planarReflectionResolution:
       m_Values: 000100000002000000020000
       m_SchemaId:

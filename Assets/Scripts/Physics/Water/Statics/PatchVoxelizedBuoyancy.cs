@@ -153,7 +153,7 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
     /// Does not cutting of the voxels
     public (Vector3, float) GetSimplePointsUnderWaterPatch()
     {
-        float semiSubmergedVolume = 0.0f;
+        // float semiSubmergedVolume = 0.0f; // never used (?)
         float baseSurface = 4*voxelRadius*voxelRadius;
         Vector3 sumOfPositions = Vector3.zero;
         int numberOfPoints = 0;
