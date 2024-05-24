@@ -5,10 +5,10 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Rendering.HighDefinition;
 
-public class FitToWaterSurface_Burst : MonoBehaviour
+public class FloatersBurst : MonoBehaviour
 {
     // Public parameters
-    public WaterSurface waterSurface = null;
+    public WaterSurface waterSurface;
 
     // List of internal cubes
     public List<GameObject> objects = new List<GameObject>();
@@ -48,7 +48,10 @@ public class FitToWaterSurface_Burst : MonoBehaviour
     void Update()
     {
         if (waterSurface == null)
+        {
+            Debug.LogWarning("water surface property not set");
             return;
+        }
         // Try to get the simulation data if available
         WaterSimSearchData simData = new WaterSimSearchData();
         if (!waterSurface.FillWaterSearchData(ref simData))

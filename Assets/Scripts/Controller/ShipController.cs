@@ -79,7 +79,7 @@ public class ShipController : MonoBehaviour
             transform.Find("PropulsionOutboard") : transform.Find("PropulsionRudder");        
         parentRigidbody = GetComponent<Rigidbody>();
         SearchAndAssignChild(savedPropulsionRoot.GameObject());
-        print("Number of EnginePropeller pairs" + enginePropellerPairs.Count); // Debugging
+        //print("Number of EnginePropeller pairs" + enginePropellerPairs.Count); // Debugging
         if (enginePropellerPairs.Count > 0)
         {
             Transform engineJoint = enginePropellerPairs[0].EngineJoint.transform;
