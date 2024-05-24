@@ -45,8 +45,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dab42a10177f941c2aa47845ba76a9c6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ship: {fileID: 0}
+  pivotOffset: {x: 0, y: 0, z: 0}
+  followTarget: {fileID: 0}
   rotationSpeed: 100
+  enableMousePan: 1
+  cameraFollow: 0
+  collisionLayerMask:
+    serializedVersion: 2
+    m_Bits: 0
 --- !u!1 &8464599424331794074
 GameObject:
   m_ObjectHideFlags: 0
@@ -75,7 +81,7 @@ Transform:
   m_GameObject: {fileID: 8464599424331794074}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 10, z: -140}
+  m_LocalPosition: {x: 0, y: 0, z: -15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

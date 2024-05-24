@@ -44,7 +44,7 @@ public class ShipController : MonoBehaviour
     private float currentThrust = 0.0f;
     private Quaternion savedInitialRotation;
     
-    private float engineRotationLimit  = 50;
+    private float engineRotationLimit  = 25;
     private Vector3 startDirection;
     
     struct EnginePropellerPair
@@ -97,13 +97,13 @@ public class ShipController : MonoBehaviour
         
         if (savedPropulsionRoot) WorkOnJoints(leftStickValue, netForce);
         
-        /*
+        
         forceText.text = "Force: " + netForce.ToString("F2");
         rotationText.text = "Rotation: " + leftStickValue.ToString("F2");
         currentAngleText.text = "Current Angle: " + currentAngle.ToString("F0");
         currentThrustText.text = "Current Force: " + currentThrust.ToString("F0");
         currentSpinText.text = "Current Spin: " + (currentSpin / Time.deltaTime).ToString("F0") + " degrees/frame";
-        */
+        
         }
     
     

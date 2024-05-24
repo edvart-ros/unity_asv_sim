@@ -227,9 +227,6 @@ MonoBehaviour:
   aerosolAnisotropy:
     m_OverrideState: 0
     m_Value: 0
-  numberOfBounces:
-    m_OverrideState: 0
-    m_Value: 3
   groundTint:
     m_OverrideState: 0
     m_Value: {r: 0.4, g: 0.25, b: 0.15, a: 1}
@@ -272,6 +269,9 @@ MonoBehaviour:
   horizonZenithShift:
     m_OverrideState: 0
     m_Value: 0
+  numberOfBounces:
+    m_OverrideState: 0
+    m_Value: 3
   m_SkyVersion: 2
   m_ObsoleteEarthPreset:
     m_OverrideState: 0
