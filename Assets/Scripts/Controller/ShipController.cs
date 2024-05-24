@@ -35,7 +35,7 @@ public class ShipController : MonoBehaviour
     private float returnSpeed = 10f;
     private Vector2 rotateValue;
     private Rigidbody parentRigidbody;
-    private float propellerRotationCoefficient = 1.0f;
+    //private float propellerRotationCoefficient = 1.0f;
 
     
     private Vector3 savedInitialPosition;

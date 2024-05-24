@@ -182,6 +182,7 @@ MonoBehaviour:
       forcedPercentage: 100
       lowResTransparencyMinimumThreshold: 0
       rayTracingHalfResThreshold: 50
+      lowResSSGIMinimumThreshold: 0
     lowresTransparentSettings:
       enabled: 1
       checkerboardDepthBuffer: 1
@@ -259,9 +260,9 @@ MonoBehaviour:
       - 50
       RTGIFullResolution: 000001
       RTGIClampValue:
-      - 0.5
-      - 0.8
-      - 1.5
+      - 2
+      - 3
+      - 5
       RTGIRaySteps: 200000003000000040000000
       RTGIDenoise: 010101
       RTGIHalfResDenoise: 010000
@@ -337,7 +338,7 @@ MonoBehaviour:
     - format: 0
       sizeInMegaBytes: 128
   m_UseRenderGraph: 1
-  m_Version: 24
+  m_Version: 25
   m_ObsoleteFrameSettings:
     overrides: 0
     enableShadow: 0
@@ -524,8 +525,7 @@ MonoBehaviour:
     sssCustomDownsampleSteps: 0
     msaaMode: 0
     materialQuality: 0
-  m_ObsoleteRenderPipelineResources: {fileID: 11400000, guid: 3ce144cff5783da45aa5d4fdc2da14b7,
-    type: 2}
+  m_ObsoleteRenderPipelineResources: {fileID: 0}
   m_ObsoleteRenderPipelineRayTracingResources: {fileID: 0}
   m_ObsoleteBeforeTransparentCustomPostProcesses: []
   m_ObsoleteBeforePostProcessCustomPostProcesses: []

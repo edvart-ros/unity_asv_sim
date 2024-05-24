@@ -57,7 +57,7 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 1
   seaLevel:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   planetaryRadius:
     m_OverrideState: 0
@@ -92,9 +92,6 @@ MonoBehaviour:
   aerosolAnisotropy:
     m_OverrideState: 0
     m_Value: 0
-  numberOfBounces:
-    m_OverrideState: 0
-    m_Value: 3
   groundTint:
     m_OverrideState: 0
     m_Value: {r: 0.4, g: 0.25, b: 0.15, a: 1}
@@ -137,6 +134,9 @@ MonoBehaviour:
   horizonZenithShift:
     m_OverrideState: 0
     m_Value: 0
+  numberOfBounces:
+    m_OverrideState: 0
+    m_Value: 3
   m_SkyVersion: 2
   m_ObsoleteEarthPreset:
     m_OverrideState: 0
@@ -161,7 +161,7 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value: 1
   earthCurvature:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   cloudTiling:
     m_OverrideState: 0
@@ -392,16 +392,16 @@ MonoBehaviour:
     m_OverrideState: 0
     m_Value:
       mode: 0
-      customValue: 100
+      customValue: 1
       additiveValue: 0
-      multiplyValue: 1
+      multiplyValue: 0
   orientation:
     m_OverrideState: 0
     m_Value:
-      mode: 1
+      mode: 0
       customValue: 0
       additiveValue: 0
-      multiplyValue: 1
+      multiplyValue: 0
   altitudeDistortion:
     m_OverrideState: 0
     m_Value: 0.25
@@ -428,7 +428,7 @@ MonoBehaviour:
     m_Value: 0
   perceptualBlending:
     m_OverrideState: 0
-    m_Value: 1
+    m_Value: 0
   shadows:
     m_OverrideState: 0
     m_Value: 1
