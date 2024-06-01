@@ -69,6 +69,7 @@ public class ProcessRenderTexture : MonoBehaviour
         mat.SetFloat("_T1", T1);
         mat.SetFloat("_T2", T2);
         mat.SetFloat("_flat_noise", flatNoise);
+        Debug.Log(mat.shader);
         Graphics.Blit(inputRenderTexture, outputRenderTexture, mat);
     }
 }

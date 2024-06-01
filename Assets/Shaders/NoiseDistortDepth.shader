@@ -137,7 +137,6 @@ Shader "Unlit/NoiseDistortDepth"
                 else{
                     color = AddNoise(color, xy_u, _flat_noise + _depth_angle_noise_gain*(1-towardsCameraFactor));
                 }
-
                 return color.x;
             }
             ENDCG

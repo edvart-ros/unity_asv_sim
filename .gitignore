@@ -23,6 +23,7 @@ Logs/*
 .vs/
 UserSettings/
 Assets/Models/Otter/OtterUnity.dae
+Assets/Models/Otter/OtterUnity.dae.meta
 git-filter-repo
 
 #
