@@ -11,7 +11,6 @@ public class Buoyancy : MonoBehaviour
     private Submerged submerged;
     private Rigidbody rigidBody;
     
-    
     void Start()
     {
         rigidBody = GetComponent<Rigidbody>();
@@ -23,7 +22,6 @@ public class Buoyancy : MonoBehaviour
     {
         if (!buoyancyForceActive) return;
         
-        //rigidBody = GetComponent<Rigidbody>();
         submerged = GetComponent<Submersion>().submerged;
         ApplyBuoyancyVolume();
     }
@@ -36,17 +34,5 @@ public class Buoyancy : MonoBehaviour
         float buoyancyForce = Constants.waterDensity*Constants.gravity*displacedVolume;
         Vector3 forceVector = new Vector3(0f, buoyancyForce, 0f);
         rigidBody.AddForceAtPosition(forceVector, buoyancyCenter);
-    }
-
-    
-    void OnDrawGizmos()
-    {
-        // debug
-        /*
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(buoyancyCenter, 0.1f);
-        Gizmos.color = Color.green;
-        Gizmos.DrawSphere(transform.position, 0.1f);
-        */
     }
 }

@@ -20,18 +20,9 @@ public class Submersion : MonoBehaviour
     private Patch patch;
     //public bool drawWaterLine;
 
-    // Test frameworks
     public bool drawPatch;
     public bool drawSubmerged;
-    public bool logVolumeData;
-    public bool logTimeData;
-    
-    private string path = "Assets/Data/Triangles/";
-    private string depthLogFile;
-    private string timeLogFile;
     private float displacedVolume;
-    private int iteration;
-    private Stopwatch stopwatch = new Stopwatch();
     
     
     void Start()
@@ -41,28 +32,18 @@ public class Submersion : MonoBehaviour
         submerged = new Submerged(simplifiedMesh, debug:true); // set up submersion by providing the simplified hull mesh
         patch.Update(transform); // updates the patch to follow the boat and queried water height
         
-        iteration = 0;
-        InitializeLogs();
     }
 
     
     void FixedUpdate()
     {
-        stopwatch.Start();
-        
         patch.Update(transform); // updates the patch to follow the boat and queried water height
         submerged.Update(patch, transform);
         
-        stopwatch.Stop();
-        
         displacedVolume = submerged.data.volume;
-        
-        if (logVolumeData) Utils.LogDataToFile(depthLogFile, -(transform.position.y-0.5f), displacedVolume);
-        if (logTimeData && iteration < 100) Utils.LogDataToFile(timeLogFile, iteration++, stopwatch.Elapsed.TotalMilliseconds * 1000.0);
         
         if (drawPatch) DebugPatch();
         if (drawSubmerged) DebugSubmerged();
-        stopwatch.Reset();
     }
     
     
@@ -94,43 +75,5 @@ public class Submersion : MonoBehaviour
 
             Utils.DebugDrawTriangle(tri, Color.green);
         }
-    }
-
-/*
-    private void DebugWaterLine(){
-        Vector3[] verts = submerged.waterLineVerts;
-        for (int i = 0; i < verts.Length-1; i+=2
-        ){
-            Debug.DrawLine(transform.TransformPoint(verts[i]), transform.TransformPoint(verts[i+1]), Color.magenta);
-        }
-    }
-*/
-
-
-    private void InitializeLogs()
-    {
-        depthLogFile = path + "VolumeData-" + transform.name + ".csv";
-        timeLogFile = path + "TimeData-Submersion-" + transform.name + ".csv";
-
-        if (!File.Exists(depthLogFile) && logVolumeData)
-        {
-            print("Beginning to log volume data");
-            Utils.LogDataToFile(depthLogFile,"depth","volume");
-            // Add a constant downward force 
-            GetComponent<Rigidbody>().velocity = new Vector3(0f, -0.1f, 0f);
-        }
-        
-        if (!File.Exists(timeLogFile) && logTimeData)
-        {
-            print("Beginning to log time data");
-            Utils.LogDataToFile(timeLogFile,"iteration_number","time");
-        }
-    }
-    
-    
-    private void OnDrawGizmos() 
-    {
-        //Gizmos.color = Color.magenta;
-        //Gizmos.DrawSphere(submerged.centroid, 4f);
     }
 }

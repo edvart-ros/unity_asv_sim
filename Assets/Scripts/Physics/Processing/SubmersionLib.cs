@@ -14,7 +14,6 @@ namespace WaterInteraction
         public Vector3[] normals;
         public Transform transform;
 
-        //public Vector3[] waterLineVerts { get; set; }
         public Vector3[] faceCentersWorld;
         public float[] faceCenterHeightsAboveWater;
         public float[] triangleAreas;
@@ -27,7 +26,6 @@ namespace WaterInteraction
             vertices = new Vector3[maxNumTriangles];
             triangles = new int[maxNumTriangles];
             normals = new Vector3[maxNumTriangles/3];
-            //waterLineVerts = new Vector3[maxNumTriangles];
             faceCentersWorld = new Vector3[maxNumTriangles/3];
             faceCenterHeightsAboveWater = new float[maxNumTriangles/3];
             triangleAreas = new float[maxNumTriangles/3];
