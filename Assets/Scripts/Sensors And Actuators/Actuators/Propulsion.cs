@@ -55,7 +55,7 @@ public class Propulsion : MonoBehaviour
         Vector3 thrustDir = transform.TransformDirection(thrustDirLocal);
         Vector3 thrustForce = thrustCurr*thrustDir;
         rb.AddForceAtPosition(thrustForce, propellerJoint.transform.position);
-        Debug.DrawRay(propellerJoint.transform.position, thrustForce/maxThrust);
+        //Debug.DrawRay(propellerJoint.transform.position, thrustForce/maxThrust);
 
         // propeller visual control
         float propAngleTurnRate = (thrustCurr/maxThrust)*(maxRpmVisual/60);

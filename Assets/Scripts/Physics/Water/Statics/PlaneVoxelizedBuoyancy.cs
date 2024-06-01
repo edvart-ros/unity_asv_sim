@@ -112,7 +112,7 @@ public class PlaneVoxelizedBuoyancy : MonoBehaviour
     {
         float force = CalculateForce(data.numberOfPoints, voxelVolume);
         shipRigidbody.AddForceAtPosition(force*Vector3.up, data.centerOfBuoyancy);
-        Debug.DrawRay(data.centerOfBuoyancy,force*Vector3.up, Color.red);
+        //Debug.DrawRay(data.centerOfBuoyancy,force*Vector3.up, Color.red);
     }
     
     

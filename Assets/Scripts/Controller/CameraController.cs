@@ -90,7 +90,7 @@ public class CameraController : MonoBehaviour
     {
         Vector3 idealCameraPoint = followTarget.position + transform.localRotation * defaultCameraPosition;
         Vector3 pivotPosition = followTarget.position + pivotOffset;
-        Debug.DrawLine(pivotPosition,idealCameraPoint, Color.green);
+        //Debug.DrawLine(pivotPosition,idealCameraPoint, Color.green);
         transform.position = pivotPosition; 
         Vector3 rayDirection = idealCameraPoint - pivotPosition;
         RaycastHit hit;
@@ -101,8 +101,8 @@ public class CameraController : MonoBehaviour
         {
             // Shift the hitpoint along the ray by a small amount to avoid z-fighting
             hit.point -= rayDirection.normalized * 0.25f;
-            Debug.DrawLine(pivotPosition,  hit.point, Color.cyan);
-            Debug.DrawRay(hit.point,Vector3.up*10f, Color.magenta);
+            //Debug.DrawLine(pivotPosition,  hit.point, Color.cyan);
+            //Debug.DrawRay(hit.point,Vector3.up*10f, Color.magenta);
             cameraTransform.position = hit.point;
             //print("Collision detected.");
         }
