@@ -1,17 +1,5 @@
 {
   "dependencies": {
-    "com.cesium.unity": {
-      "version": "1.7.1",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.mathematics": "1.2.0",
-        "com.unity.test-framework": "1.1.31",
-        "com.unity.shadergraph": "12.1.6",
-        "com.unity.inputsystem": "1.4.2"
-      },
-      "url": "https://unity.pkg.cesium.com"
-    },
     "com.unity.burst": {
       "version": "1.8.13",
       "depth": 1,
@@ -124,25 +112,6 @@
       "depth": 2,
       "source": "registry",
       "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.nuget.newtonsoft-json": {
-      "version": "3.2.1",
-      "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
-    },
-    "com.unity.perception": {
-      "version": "1.0.0-preview.1",
-      "depth": 0,
-      "source": "registry",
-      "dependencies": {
-        "com.unity.burst": "1.7.3",
-        "com.unity.collections": "1.2.4",
-        "com.unity.nuget.newtonsoft-json": "3.0.2",
-        "com.unity.render-pipelines.core": "12.1.7"
-      },
       "url": "https://packages.unity.com"
     },
     "com.unity.performance.profile-analyzer": {
@@ -291,13 +260,6 @@
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
-    },
-    "com.z3lx.solo2yolo": {
-      "version": "https://github.com/z3lx/solo2yolo.git?path=src/solo2yolo-unity/Packages/solo2yolo",
-      "depth": 0,
-      "source": "git",
-      "dependencies": {},
-      "hash": "d46fec2c592ad506470e2a96d7b1d1f0b8afe700"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",
