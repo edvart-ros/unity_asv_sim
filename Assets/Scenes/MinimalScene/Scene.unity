@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 3979.6343, g: 3042.049, b: 3002.3752, a: 1}
+  m_IndirectSpecularColor: {r: 3979.6929, g: 3042.0881, b: 3002.3127, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -796,6 +796,21 @@ PrefabInstance:
     - target: {fileID: 7425569542785440312, guid: 1a43b4396f07d4dc486a635b18efbc22,
         type: 3}
       propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7687212814015697926, guid: 1a43b4396f07d4dc486a635b18efbc22,
+        type: 3}
+      propertyPath: drawPatch
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7687212814015697926, guid: 1a43b4396f07d4dc486a635b18efbc22,
+        type: 3}
+      propertyPath: drawSubmerged
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7687212814015697926, guid: 1a43b4396f07d4dc486a635b18efbc22,
+        type: 3}
+      propertyPath: logVolumeData
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7687212814015697926, guid: 1a43b4396f07d4dc486a635b18efbc22,
@@ -2763,8 +2778,6 @@ MonoBehaviour:
   patchResolution: 4
   drawPatch: 0
   drawSubmerged: 0
-  logVolumeData: 0
-  logTimeData: 0
 --- !u!4 &1554605613
 Transform:
   m_ObjectHideFlags: 0
@@ -3295,8 +3308,6 @@ MonoBehaviour:
   patchResolution: 5
   drawPatch: 0
   drawSubmerged: 0
-  logVolumeData: 0
-  logTimeData: 0
 --- !u!114 &1821437946
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5117,8 +5128,6 @@ MonoBehaviour:
   patchResolution: 4
   drawPatch: 0
   drawSubmerged: 0
-  logVolumeData: 0
-  logTimeData: 0
 --- !u!64 &7840755313399978689
 MeshCollider:
   m_ObjectHideFlags: 0
