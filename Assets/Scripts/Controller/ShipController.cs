@@ -280,14 +280,14 @@ public class ShipController : MonoBehaviour
                 Vector3 lineStart = engineJoint.position + Quaternion.Euler(0, i -engineRotationLimit, 0) * rotatedStartDirection;
                 Vector3 lineEnd = engineJoint.position + Quaternion.Euler(0, i -engineRotationLimit-1, 0) * rotatedStartDirection;
                 Color lineColor = i < engineRotationLimit ? Color.red : Color.green; // Change color based on angle
-                Debug.DrawLine(lineStart, lineEnd, lineColor);
+                //Debug.DrawLine(lineStart, lineEnd, lineColor);
             }
 
             float currentAngle = engineJoint.localRotation.y;
             
             // Draw line for current rotation
             Vector3 currentDirection = Quaternion.Euler(0, currentAngle, 0) * -engineJoint.forward;
-            Debug.DrawLine(engineJoint.position, engineJoint.position + currentDirection, Color.magenta);
+            //Debug.DrawLine(engineJoint.position, engineJoint.position + currentDirection, Color.magenta);
         }
     }
 }

@@ -67,7 +67,7 @@ public class WindForce : MonoBehaviour
             }
         }
         //rb.AddForce(totalWindForce);
-        Debug.DrawRay(transform.position, totalWindForce/100);
+        //Debug.DrawRay(transform.position, totalWindForce/100);
 
     }
 }

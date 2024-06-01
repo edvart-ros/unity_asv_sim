@@ -11,6 +11,7 @@ public class ProcessRenderTexture : MonoBehaviour
     public RenderTexture inputRenderTexture;
     public RenderTexture normalsRenderTexture;
     public RenderTexture outputRenderTexture;
+    public bool drawFrustum = false;
     private Camera cam;
 
     [Range(0.0f, 1.0f)]
@@ -47,15 +48,14 @@ public class ProcessRenderTexture : MonoBehaviour
             mat.SetTexture("_NormalsTex", normalsRenderTexture);
             cam.CalculateFrustumCorners(new Rect(0, 0, 1, 1), cam.farClipPlane, Camera.MonoOrStereoscopicEye.Mono, frustumCorners);
             
-            // debug frustum
-            /*
             for (int i = 0; i < 4; i++)
             {
                 normCorners[i] = cam.transform.TransformVector(frustumCorners[i]);
                 normCorners[i] = normCorners[i].normalized;
-                Debug.DrawRay(cam.transform.position, normCorners[i], Color.red);
+                if (drawFrustum)
+                    Debug.DrawRay(cam.transform.position, normCorners[i], Color.red);
             }
-            */
+
             mat.SetVector("_BL", normCorners[0]);
             mat.SetVector("_TL", normCorners[1]);
             mat.SetVector("_TR", normCorners[2]);
@@ -69,7 +69,6 @@ public class ProcessRenderTexture : MonoBehaviour
         mat.SetFloat("_T1", T1);
         mat.SetFloat("_T2", T2);
         mat.SetFloat("_flat_noise", flatNoise);
-        Debug.Log(mat.shader);
         Graphics.Blit(inputRenderTexture, outputRenderTexture, mat);
     }
 }

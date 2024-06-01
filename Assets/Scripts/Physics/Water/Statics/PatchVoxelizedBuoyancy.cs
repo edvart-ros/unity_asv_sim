@@ -188,7 +188,7 @@ public class PatchVoxelizedBuoyancy : MonoBehaviour
     private void ApplyForce((Vector3 centerOfBuoyancy, float force) data)
     {
         if(!logVolumeData) shipRigidbody.AddForceAtPosition(data.force*Vector3.up, data.centerOfBuoyancy);
-        UnityEngine.Debug.DrawRay(data.centerOfBuoyancy,data.force*Vector3.up, Color.red);
+        //UnityEngine.Debug.DrawRay(data.centerOfBuoyancy,data.force*Vector3.up, Color.red);
     }
     
     
