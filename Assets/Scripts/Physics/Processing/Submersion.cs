@@ -12,7 +12,7 @@ public class Submersion : MonoBehaviour
     [ReadOnly]
     public Submerged submerged;
     
-    public WaterSurface targetSurface = null;
+    public WaterSurface waterSurface = null;
     public Mesh simplifiedMesh;
     public float patchSize = 10;
     public int patchResolution = 4;
@@ -28,7 +28,7 @@ public class Submersion : MonoBehaviour
     void Start()
     {
         Vector3 gridOrigin = new Vector3(-patchSize/2, 0, patchSize/2);
-        patch = new Patch(targetSurface, patchSize, patchResolution, gridOrigin);
+        patch = new Patch(waterSurface, patchSize, patchResolution, gridOrigin);
         submerged = new Submerged(simplifiedMesh, debug:true); // set up submersion by providing the simplified hull mesh
         patch.Update(transform); // updates the patch to follow the boat and queried water height
         

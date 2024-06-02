@@ -4,28 +4,32 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Robotics.ROSTCPConnector;
 using RosMessageTypes.Std;
+using UnityEngine.Serialization;
 
-
-public class Propulsion : MonoBehaviour
+public class ROSPropulsion : MonoBehaviour
 {
     ROSConnection ros;
+    [Tooltip("The transform that is rotated by sending angle commands")]
     public GameObject engineJoint;
-    public String topicName;
+    [Tooltip("The transform that spins the propeller (visual only)")]
     public GameObject propellerJoint;
+    public String topicName;
     private float angleSetpoint = 0.0f;
     private float angleCurr = 0.0f;
 
-    [Range(0.00001f, 1.0f)]
+    [Range(0.00001f, 1.0f)] [Tooltip("Controls the responsiveness of the angle servo")]
     public float angleK = 0.005f;
 
     private float thrustCommand = 0.0f;
-    [Range(0.001f, 1.0f)]
+    [Range(0.001f, 1.0f)] [Tooltip("Controls the responsiveness of the thrust force")]
     public float thrustK = 1.0f;
     public float maxThrust = 250.0f;
     [Range(0.0f, 3000.0f)]
     public float maxRpmVisual = 500.0f;
     private float thrustCurr;
-    private Rigidbody rb;
+    [Tooltip("The rigid body to apply the forces to (the boat)")]
+    public Rigidbody rigidBody;
+    public bool debug;
 
 
     void Start()
@@ -33,12 +37,11 @@ public class Propulsion : MonoBehaviour
         ROSConnection.GetOrCreateInstance().Subscribe<Float32Msg>(topicName + "/thrust", thrustCallback);
         ROSConnection.GetOrCreateInstance().Subscribe<Float32Msg>(topicName + "/angle", angleCallback);
 
-        rb = GetComponent<Rigidbody>();
         thrustCurr = 0.0f;
         angleCurr = NormalizeAngle(engineJoint.transform.rotation.eulerAngles.y);
     }
 
-    void Update()
+    void FixedUpdate()
     {
         // engine angle control
         float angleError = AngleDifference(angleSetpoint, angleCurr);
@@ -54,12 +57,13 @@ public class Propulsion : MonoBehaviour
         Vector3 thrustDirLocal = new Vector3(Mathf.Sin(Mathf.Deg2Rad*angleCurr), 0.0f, Mathf.Cos(Mathf.Deg2Rad*angleCurr));
         Vector3 thrustDir = transform.TransformDirection(thrustDirLocal);
         Vector3 thrustForce = thrustCurr*thrustDir;
-        rb.AddForceAtPosition(thrustForce, propellerJoint.transform.position);
-        //Debug.DrawRay(propellerJoint.transform.position, thrustForce/maxThrust);
+        rigidBody.AddForceAtPosition(thrustForce, propellerJoint.transform.position);
+        
+        if (debug) Debug.DrawRay(propellerJoint.transform.position, thrustForce/maxThrust);
 
         // propeller visual control
         float propAngleTurnRate = (thrustCurr/maxThrust)*(maxRpmVisual/60);
-        Quaternion rotation = Quaternion.Euler(propAngleTurnRate*360.0f*Time.deltaTime, 0.0f, 0.0f);
+        Quaternion rotation = Quaternion.Euler(0.0f, 0.0f, -propAngleTurnRate*360.0f*Time.deltaTime);
         propellerJoint.transform.localRotation *= rotation;
     }
 
