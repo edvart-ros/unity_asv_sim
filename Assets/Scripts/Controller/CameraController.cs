@@ -1,11 +1,6 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 
 // TODO: Add toggle follow mode button
 // TODO: Add a camera zoom mode
@@ -130,12 +125,12 @@ public class CameraController : MonoBehaviour
     
     private void OnEnable()
     {
-        inputActions.Enable();
+        if (inputActions != null) inputActions.Enable();
     }
 
     
     private void OnDisable()
     {
-        inputActions.Disable();
+        if (inputActions != null) inputActions.Disable();
     }
 }
