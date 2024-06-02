@@ -1,6 +1,8 @@
 # Unity ASV Simulator
 This is a project meant to serve as a foundation for simulating unmanned/autonomous surface vessels in Unity with HDRP (High Definition Rendering Pipeline).
 
+https://github.com/edvart-ros/unity_asv_sim/assets/94528774/35275add-04a7-4d5d-b1de-eafd5a51cb38
+
 ## Features
 - ROS/ROS2 integration with Unity ROS-TCP-Connector (https://github.com/Unity-Technologies/ROS-TCP-Connector)
 - High quality water system through Unity's HDRP Water System (https://blog.unity.com/engine-platform/new-hdrp-water-system-in-2022-lts-and-2023-1)
@@ -76,8 +78,6 @@ There are many more scripts set up in this scene, and in the project, and it's a
 
 
 ## Demonstration
-https://github.com/edvart-ros/unity_asv_sim/assets/94528774/35275add-04a7-4d5d-b1de-eafd5a51cb38
-
 https://github.com/edvart-ros/unity_asv_sim/assets/94528774/98dcea8f-6421-42f1-b26a-0a4edf289c9d
 
 ![bilde](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/e7928355-eacf-41d1-8bfe-dcd7cc979207)
