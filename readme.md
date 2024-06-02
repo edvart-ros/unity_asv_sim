@@ -39,14 +39,20 @@ Clone the source code of the Unity project in a suitable directory:
 ### 3. Add the project to Unity Hub
 Open Unity Hub and click on "Add project from disk"
 
-[Image]
+![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/bb392f85-1678-42ac-b536-531f8b0050e6)
+
 
 Locate the root directory of the project source code (e.g` <my_unity_projects_folder/unity_asv_sim/>`) and click "Open". This should add the project to your Projects list. 
 
 ### 4. Launch the project
 You should now be able to launch the project and have a look around. To view a simple demo scene, open the scene located in `Assets/Scenes/MinimalScene/` by navigating through the project inspector in the editor.
+![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/c7bdcf44-9f95-4bbf-97d5-934bbbe6dd6f)
 
-This scene is set up with a few floating objects, one of them being controllable via mouse + keyboard.
+This scene is set up with a few floating objects, one of them being controllable via mouse + keyboard. Hit the play button, enter the Game window and try navigating the WAM-V around with your keyboard (WASD). The camera is configured to follow the WAM-V
+and can be controlled via the mouse.
+
+![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/83a8bfac-f161-48b0-986c-15f184ecc1e5)
+
 
 
 
