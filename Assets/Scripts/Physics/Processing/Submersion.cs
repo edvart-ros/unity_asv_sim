@@ -5,6 +5,7 @@ using Unity.Collections;
 using WaterInteraction;
 using UnityEngine;
 using System.IO;
+using PlasticPipe.PlasticProtocol.Client;
 
 
 public class Submersion : MonoBehaviour
@@ -12,9 +13,13 @@ public class Submersion : MonoBehaviour
     [ReadOnly]
     public Submerged submerged;
     
-    public WaterSurface targetSurface = null;
+    [Tooltip("HDRP water surface used for height querying")]
+    public WaterSurface waterSurface = null;
+    [Tooltip("A simplified mesh for physics calculations")]
     public Mesh simplifiedMesh;
+    [Tooltip("Side length of square water surface approximation patch. Much be large enough to fit entire vessel")]
     public float patchSize = 10;
+    [Tooltip("Higher number gives a better approximation of water surface")]
     public int patchResolution = 4;
     
     private Patch patch;
@@ -28,13 +33,12 @@ public class Submersion : MonoBehaviour
     void Start()
     {
         Vector3 gridOrigin = new Vector3(-patchSize/2, 0, patchSize/2);
-        patch = new Patch(targetSurface, patchSize, patchResolution, gridOrigin);
+        patch = new Patch(waterSurface, patchSize, patchResolution, gridOrigin);
         submerged = new Submerged(simplifiedMesh, debug:true); // set up submersion by providing the simplified hull mesh
         patch.Update(transform); // updates the patch to follow the boat and queried water height
         
     }
 
-    
     void FixedUpdate()
     {
         patch.Update(transform); // updates the patch to follow the boat and queried water height

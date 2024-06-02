@@ -14,20 +14,26 @@ using Vector3 = UnityEngine.Vector3;
 // TODO: More realistic propeller rotation
 // TODO: Add a swirly water effect behind the propeller + white lines rotating around the propeller
 
+
 public class ShipController : MonoBehaviour
 {
+    [System.Serializable]
+    public struct UIText
+    {
+        public TextMeshProUGUI forceText;
+        public TextMeshProUGUI rotationText;
+        public TextMeshProUGUI currentSpinText;
+        public TextMeshProUGUI currentAngleText;
+        public TextMeshProUGUI currentThrustText;
+    }
+    
     public Vector2 forceClamp = new Vector2(-500f, 2750f);
     public float forceMultiplier = 100f;
     public float rotationMultiplier = 10f;
-    public bool hasRudder = true;
     public bool holdingRudder = false;
     public bool debug = false;
     
-    public TextMeshProUGUI forceText;
-    public TextMeshProUGUI rotationText;
-    public TextMeshProUGUI currentSpinText;
-    public TextMeshProUGUI currentAngleText;
-    public TextMeshProUGUI currentThrustText;
+    public UIText UI;
     
     private List<EnginePropellerPair> enginePropellerPairs = new List<EnginePropellerPair>();
     private Transform savedPropulsionRoot;
@@ -97,13 +103,11 @@ public class ShipController : MonoBehaviour
         
         if (savedPropulsionRoot) WorkOnJoints(leftStickValue, netForce);
         
-        
-        forceText.text = "Force: " + netForce.ToString("F2");
-        rotationText.text = "Rotation: " + leftStickValue.ToString("F2");
-        currentAngleText.text = "Current Angle: " + currentAngle.ToString("F0");
-        currentThrustText.text = "Current Force: " + currentThrust.ToString("F0");
-        currentSpinText.text = "Current Spin: " + (currentSpin / Time.deltaTime).ToString("F0") + " degrees/frame";
-        
+        if (UI.forceText) UI.forceText.text = "Force: " + netForce.ToString("F2");
+        if (UI.rotationText) UI.rotationText.text = "Rotation: " + leftStickValue.ToString("F2");
+        if (UI.currentAngleText) UI.currentAngleText.text = "Current Angle: " + currentAngle.ToString("F0");
+        if (UI.currentThrustText) UI.currentThrustText.text = "Current Force: " + currentThrust.ToString("F0");
+        if (UI.currentSpinText) UI.currentSpinText.text = "Current Spin: " + (currentSpin / Time.deltaTime).ToString("F0") + " degrees/frame";
         }
     
     
@@ -254,13 +258,13 @@ public class ShipController : MonoBehaviour
     
     private void OnEnable()
     {
-        inputActions.Enable();
+        if (inputActions != null) inputActions.Enable();
     }
     
     
     private void OnDisable()
     {
-        inputActions.Disable();
+        if (inputActions != null) inputActions.Disable();
     }
     
     
