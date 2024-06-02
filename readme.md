@@ -20,7 +20,7 @@ For running the simulator itself, see the official Unity HDRP system requirement
 For ROS compatability, the system must (obviously) have some way of running ROS. Unity's ROS-TCP-Connector is used as the interface between ROS and Unity. See the official documentation and tutorials at https://github.com/Unity-Technologies/ROS-TCP-Connector for more information. ROS 2 Humble and ROS 2 Iron has been tested, but the simulator should be compatible with any ROS version supported by the ROS-TCP-Endpoint.
 
 
-The simulator has been tested on Windows 11 (with Robostack or Docker), MacOS Sierra (not tested with ROS) and Ubuntu 24.04 (native). 
+The simulator has been tested on Windows 11 (with Robostack or Docker), MacOS Sonoma (not tested with ROS) and Ubuntu 24.04 (native). 
 
 ## Getting Started
 ### 1. Install Unity Hub & Editor
