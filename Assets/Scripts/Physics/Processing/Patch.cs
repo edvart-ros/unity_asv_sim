@@ -19,7 +19,7 @@ namespace WaterInteraction
         // Input job parameters
         NativeArray<float3> targetPositionBuffer;
         // Output job parameters
-        NativeArray<float3> projectedPositionWorldSpaceBuffer; // projectedPositionWSBuffer Is this World Space?
+        NativeArray<float3> projectedPositionWorldSpaceBuffer;
         NativeArray<float3> candidatePositionBuffer;
         NativeArray<float3> directionBuffer;
         NativeArray<int> stepCountBuffer;

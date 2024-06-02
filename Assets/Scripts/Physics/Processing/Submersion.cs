@@ -10,7 +10,6 @@ using PlasticPipe.PlasticProtocol.Client;
 
 public class Submersion : MonoBehaviour
 {
-    // 
     [ReadOnly]
     public Submerged submerged;
     
@@ -20,6 +19,7 @@ public class Submersion : MonoBehaviour
     public Mesh simplifiedMesh;
     [Tooltip("Side length of square water surface approximation patch. Much be large enough to fit entire vessel")]
     public float patchSize = 10;
+    [Tooltip("Higher number gives a better approximation of water surface")]
     public int patchResolution = 4;
     
     private Patch patch;
