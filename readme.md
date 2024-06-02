@@ -74,7 +74,31 @@ The remaining components are custom scripts, written specifically for ASV simula
 
 There are many more scripts set up in this scene, and in the project, and it's a good idea to have a look at what they do.
 
+## 6. Set up and validate ROS connection
+The Unity-ROS connection can be configured by opening  `Robotics -> ROS Settings` in the Unity Editor:
 
+![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/0d8c92ea-d878-4bbd-8845-ee5f0c4cc39c)
+
+By default, the ROS IP is set to localhost (127.0.0.1) and the port is set to 10001.
+
+After installing the ROS-TCP-Endpoint package (https://github.com/Unity-Technologies/ROS-TCP-Endpoint), run the following command:
+
+    ros2 run ros_tcp_endpoint default_server_endpoint --ros-args -p ROS_IP:=127.0.0.1 -p ROS_TCP_PORT:=10001
+
+Your ROS environment should now be set up to subscribe and publish to the Unity simulator (as long as it is running).
+We recommend that you run this command *before* hitting play in the Unity Editor.
+
+Starting the simulator again in Unity, you should see something like this in your terminal output:
+
+![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/e6572e07-1029-4b0c-b09f-e0c227483949)
+
+Through these topics, you can interact with the simulation in real-time by publishing and subscribing to messages.
+For example, we can inspect the data that is being published by the simulated IMU sensor:
+
+    ros2 topic echo /imu/raw
+
+
+![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/7fa62a56-956c-4b72-87ba-78e119059056)
 
 
 ## Demonstration
