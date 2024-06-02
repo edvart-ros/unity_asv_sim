@@ -20,6 +20,35 @@ For ROS compatability, the system must (obviously) have some way of running ROS.
 
 The simulator has been tested on Windows 11 (with Robostack or Docker), MacOS Sierra (not tested with ROS) and Ubuntu 24.04 (native). 
 
+## Getting Started
+### 1. Install Unity Hub & Editor
+Follow the official instructions for installing the Unity Hub and Unity Editor on your machine (Windows, Mac or Linux): https://unity.com/download.
+
+The project has been tested on and is currently configured for the 2023.2.20f1 Editor version, but it should also be compatible with newer versions of Unity, like Unity 6. 
+
+If you install a version other than the one the repo is configured for, you may be given a warning about changing the editor version. We have changed editor version several times, and there are usually no issues with newer Unity versions. 
+
+This project does not require a paid license, so just use the free one.
+
+### 2. Clone the source code
+Clone the source code of the Unity project in a suitable directory:
+
+    cd <my_unity_projects_folder>
+    git clone https://github.com/edvart-ros/unity_asv_sim.git
+
+### 3. Add the project to Unity Hub
+Open Unity Hub and click on "Add project from disk"
+
+[Image]
+
+Locate the root directory of the project source code (e.g` <my_unity_projects_folder/unity_asv_sim/>`) and click "Open". This should add the project to your Projects list. 
+
+### 4. Launch the project
+You should now be able to launch the project and have a look around. To view a simple demo scene, open the scene located in `Assets/Scenes/MinimalScene/` by navigating through the project inspector in the editor.
+
+This scene is set up with a few floating objects, one of them being controllable via mouse + keyboard.
+
+
 
 
 ## Demonstration
