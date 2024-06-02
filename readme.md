@@ -54,6 +54,24 @@ and can be controlled via the mouse.
 ![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/83a8bfac-f161-48b0-986c-15f184ecc1e5)
 
 
+## 5. Familiarize yourself with the Unity environment
+The scene consists of a set of "Game Object" which can be seen in the project hierarchy. Each game object has a "Transform" describing their pose, and "Components" are added to game objects to make them do things. 
+You can also use game objects to structure your scene. In this scene, "Boats" is an empty game object which simply groups all the boats in the scene together. Further, the WAM-V vessel has several child objects which makes development and customization more convenient:
+
+![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/81155646-4244-45c2-9db4-652f86a41cec)
+
+Select the WAM-V in the scene hierarchy and have a look at its components in the inspector:
+
+![image](https://github.com/edvart-ros/unity_asv_sim/assets/94528774/5a493aa0-ebe5-416c-87a9-66db0edefa46)
+
+As previously mentioned, the Tranform component simply holds the pose of the object, relative to the world origin or parent game object (the "Boats" game object in this case).
+The Mesh filter, Mesh Renderer and Mesh collider are built-in Unity components that hold the object's 3D geometry, defines visual properties and enables collisions with other objects.
+The Rigidbody component is another built-in component which defines the basic physical characteristics of the object, used by Unity's physics backend (PhysX).
+
+The remaining components are custom scripts, written specifically for ASV simulation. `Submersion` and `Buoyancy` are required to make the WAM-V float, and `Ship Controller` enables keyboard controls of the WAM-V.
+
+There are many more scripts set up in this scene, and in the project, and it's a good idea to have a look at what they do.
+
 
 
 
