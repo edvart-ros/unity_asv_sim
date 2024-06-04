@@ -44,6 +44,7 @@ namespace sensors_actuators
 
         private Vector3[] scanDirVectors;
         private Transform transform1;
+        private Vector3 transformScale;
 
 
         private float[] scanPatternParams;
@@ -67,6 +68,7 @@ namespace sensors_actuators
                 return;
             }
 
+            transformScale = transform.lossyScale;
             Vector3[] points =  PerformScan(scanDirVectors);
             if (publishData){
                 PointCloud2Msg msg = PointsToPointCloud2(points);
@@ -134,6 +136,7 @@ namespace sensors_actuators
                 {
                     Vector3 beam = transform1.InverseTransformPoint(hit.point);
                     points[i] = beam;
+                    
                     if (drawRays)
                     {
                         Debug.DrawLine(transform1.position, transform.TransformPoint(beam), Color.red);
@@ -180,9 +183,9 @@ namespace sensors_actuators
             // finally, populate the data field, containing the actual points in bytes
             List<byte> dataList = new List<byte>();
             foreach(Vector3 point in points) {
-                dataList.AddRange(BitConverter.GetBytes(point.z));
-                dataList.AddRange(BitConverter.GetBytes(-point.x));
-                dataList.AddRange(BitConverter.GetBytes(point.y));
+                dataList.AddRange(BitConverter.GetBytes(point.z*transformScale.z));
+                dataList.AddRange(BitConverter.GetBytes(-point.x*transformScale.x));
+                dataList.AddRange(BitConverter.GetBytes(point.y*transformScale.y));
             }
             msg.data = dataList.ToArray();
             return msg;
