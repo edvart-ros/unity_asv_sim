@@ -10,7 +10,7 @@ using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 public class RosCameraAsync : MonoBehaviour
 {
     public  RenderTexture rgbRenderTexture;
-    public string topicName = "camera/image";
+    public string topicName = "camera/image_raw";
     public string frameId = "camera_link_optical_frame";
     public bool publish = true;
     [Range(3.0f, 40.0f)]
@@ -26,6 +26,7 @@ public class RosCameraAsync : MonoBehaviour
     {
         timeSincePublish = 0.0f;
         sensorCamera = gameObject.GetComponent<Camera>();
+        sensorCamera.targetTexture = rgbRenderTexture;
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<ImageMsg>(topicName);
         headerMsg.frame_id = frameId;

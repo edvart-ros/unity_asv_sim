@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 3980.9302, g: 3043.8792, b: 3007.883, a: 1}
+  m_IndirectSpecularColor: {r: 3982.018, g: 3044.1116, b: 3007.3127, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -4966,6 +4966,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7006649626837588769}
   - component: {fileID: 7844370930280344645}
+  - component: {fileID: 7844370930280344646}
   m_Layer: 0
   m_Name: Odometer
   m_TagString: Untagged
@@ -5361,7 +5362,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5678286952402211792
 Transform:
   m_ObjectHideFlags: 0
@@ -5921,7 +5922,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5612998404448592843}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 760503290fcf4b14496695479586f03d, type: 3}
   m_Name: 
@@ -6164,7 +6165,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5612998404448592843}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 252e063020d674d42a4706b92513941f, type: 3}
   m_Name: 
@@ -6451,8 +6452,34 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topicName: odometry
-  rigidBody: {fileID: 5851860746481204658}
   Hz: 50
+--- !u!54 &7844370930280344646
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4763628532192935181}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 0
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 0
 --- !u!1 &7956408314916505582
 GameObject:
   m_ObjectHideFlags: 0
@@ -7283,7 +7310,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5612998404448592843}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 252e063020d674d42a4706b92513941f, type: 3}
   m_Name: 

@@ -19,6 +19,7 @@ public class Lidar2D : MonoBehaviour
     public string frameId = "lidar_link";
     public bool publishData = true;
     public bool drawRays = false;
+    private Vector3 transformScale;
     private float scanTime;
     private float timeSinceScan = 0.0f;
     private Vector3[] scanDirVectors;
@@ -39,7 +40,7 @@ public class Lidar2D : MonoBehaviour
                 return;
             }
 
-
+            transformScale = transform.lossyScale;
             scanDirVectors = GenerateScanVectors();
             float[] dists  =  PerformScan(scanDirVectors);
             if (publishData){

@@ -8,7 +8,7 @@ using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 
 public class CameraInfo : MonoBehaviour
 {
-    public string topicName = "camera/info";
+    public string topicName = "camera/camera_info";
     public string frameId = "camera_link_optical_frame";
     public bool publish = true;
     private float Hz = 5.0f;

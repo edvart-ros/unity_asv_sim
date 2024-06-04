@@ -5,16 +5,21 @@ using Unity.Robotics.ROSTCPConnector;
 using UnityEngine;
 using System;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.HighDefinition;
 
 public class RosDepthCameraAsync : MonoBehaviour
 {
     static byte[] s_ScratchSpace;
     public  RenderTexture depthRenderTexture;
-    public string topicName = "camera/depth/image";
+    public string topicName = "camera/depth";
     public string frameId = "camera_link_optical_frame";
     public bool publish = true;
     [Range(5.0f, 40.0f)]
     public float Hz = 15.0f;
+
+    private CustomPassVolume customPassVolume;
+    private CameraDepthBake depthBakePass = new CameraDepthBake();
+    private Camera cam;
     private ROSConnection ros;
     private float timeSincePublish;
     private Texture2D depthTex2D;
@@ -24,6 +29,14 @@ public class RosDepthCameraAsync : MonoBehaviour
     void Start()
     {
         timeSincePublish = 0.0f;
+        cam = GetComponent<Camera>();
+        customPassVolume = gameObject.AddComponent<CustomPassVolume>();
+        customPassVolume.injectionPoint = CustomPassInjectionPoint.AfterPostProcess;
+        customPassVolume.targetCamera = cam;
+        depthBakePass.bakingCamera = cam;
+        depthBakePass.depthTexture = depthRenderTexture;
+        customPassVolume.customPasses.Add(depthBakePass);
+        
         ros = ROSConnection.GetOrCreateInstance();
         ros.RegisterPublisher<ImageMsg>(topicName);
         headerMsg.frame_id = frameId;

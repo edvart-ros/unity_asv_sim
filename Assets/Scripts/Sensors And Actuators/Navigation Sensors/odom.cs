@@ -10,9 +10,9 @@ public class Odom : MonoBehaviour
 {
     ROSConnection ros;
     public string topicName = "odometry";
-    public Rigidbody rigidBody;
     public float Hz = 50.0f;
     private OdometryMsg msg;
+    private Rigidbody odomBody;
     private float timeSincePublish;
 
 
@@ -20,6 +20,7 @@ public class Odom : MonoBehaviour
     void Start()
     {
         ros = ROSConnection.GetOrCreateInstance();
+        odomBody = gameObject.GetComponent<Rigidbody>();
         ros.RegisterPublisher<OdometryMsg>(topicName);
         timeSincePublish = 0.0f;
     }
@@ -43,13 +44,13 @@ public class Odom : MonoBehaviour
                 y = -pos.x, 
                 z = pos.y
             };
-            msg.pose.pose.orientation = rigidBody.transform.rotation.To<FLU>();
+            msg.pose.pose.orientation = odomBody.transform.rotation.To<FLU>();
             
-            Vector3 localVelocity = transform.InverseTransformDirection(rigidBody.velocity);
+            Vector3 localVelocity = transform.InverseTransformDirection(odomBody.velocity);
             msg.twist.twist.linear.x = localVelocity.z;
             msg.twist.twist.linear.y = -localVelocity.x;
             msg.twist.twist.linear.z = localVelocity.y;
-            msg.twist.twist.angular.z = -rigidBody.angularVelocity.y;
+            msg.twist.twist.angular.z = -odomBody.angularVelocity.y;
 
             ros.Publish(topicName, msg);
         }
